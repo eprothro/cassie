@@ -1,2 +1,4 @@
 --color
 --require spec_helper
+--tag only
+--format documentation

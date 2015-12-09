@@ -16,4 +16,11 @@ RSpec.describe Cassie::Query do
       expect(klass.statement).to eq(statement)
     end
   end
+  describe ".statement" do
+    context "when no cql has been set" do
+      it "returns nil" do
+        expect(klass.statement).to be_nil
+      end
+    end
+  end
 end

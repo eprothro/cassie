@@ -19,35 +19,19 @@ module Cassie::Queries
 
       def statement
         self.const_get(:STATEMENT)
-      end
-
-      def prepared_statement
-        # use class instance variable to esnure only 1
-        # statement is prepared per process
-        # no mutex required in MRI because of GIL
-        #
-        # note: cassandra-driver handles the case
-        #       of executing a prepared statement
-        #       on a host where it has not been prepared
-        #       yet, by re-preparing.
-        @prepared_statement ||= begin
-          session.prepare(statement)
-        end
+      rescue NameError
       end
     end
 
+    # Executes the statment, populates result
+    # returns true or false indicating a successful execution or not
     def execute
-      @result = session.execute(prepared_statement, arguments: bindings)
-
+      @result = session.execute(statement, arguments: bindings)
       execution_successful?
     end
 
     def statement
       self.class.statement
-    end
-
-    def prepared_statement
-      self.class.prepared_statement
     end
 
     protected

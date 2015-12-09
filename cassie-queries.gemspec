@@ -1,7 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'cassie-queries'
-  s.version     = '0.0.1.pre'
-  s.date        = '2015-12-09'
+  s.version     = '0.0.1.a3'
   s.summary     = "Apache Cassandra query management"
   s.description = <<-EOS.strip.gsub(/\s+/, ' ')
     `cassie-queries` is a lightweight interface adapter allowing
@@ -17,4 +16,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'activesupport', '~> 4.2'
 
   s.add_development_dependency 'rspec', '~> 3.4'
+  s.add_development_dependency 'byebug'
 end
