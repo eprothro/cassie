@@ -3,6 +3,7 @@ module Cassie
   require_relative 'queries/session'
   require_relative 'queries/statement'
   require_relative 'queries/prepared_statement'
+  require_relative 'queries/pagination'
   require_relative 'queries/instrumentation'
   require_relative 'queries/logging'
 
@@ -10,6 +11,7 @@ module Cassie
     include Queries::Session
     include Queries::Statement
     include Queries::PreparedStatement
+    include Queries::Pagination
     include Queries::Instrumentation
     include Queries::Logging
   end

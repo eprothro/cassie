@@ -108,6 +108,37 @@ set_2 = q.fetch([7, 8, 9, 10, 11, 12])
 
 Unbound statements are not supported yet (if ever). Get your binding on, thug.
 
+### Cursored Paging
+
+Read about [cursored pagination](https://www.google.com/webhp?q=cursored%20paging#safe=off&q=cursor+paging) if unfamiliar with concept and how it optimizes paging through frequently updated data sets and I/O bandwidth.
+
+```ruby
+# Imagine a set of id's 100 decreasing to 1
+# where the client already has 1-50 in memory.
+
+q = MyPagedQuery.new(page_size: 25, user: current_user)
+
+# fetch 100 - 76
+page_1 = q.fetch(max_id: nil, since_id: 50)
+q.next_max_id
+# => 75
+
+# fetch 75 - 51
+page_2 = q.fetch(max_id: q.next_max_id, since_id: 50)
+q.next_max_id
+# => nil
+```
+
+```ruby
+class MyPagedQuery < Cassie::Query
+
+max_cursor :id
+since_cursor :id
+
+end
+```
+
+
 ### Logging
 
 You may set the log level to debug to log execution to STDOUT (by default).
