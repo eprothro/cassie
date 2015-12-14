@@ -12,6 +12,7 @@ module Cassie::Queries
     module ClassMethods
       def inherited(subclass)
         subclass.prepare = prepare
+        super
       end
 
       def prepare?

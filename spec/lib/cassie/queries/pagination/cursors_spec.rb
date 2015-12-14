@@ -1,4 +1,4 @@
-RSpec.describe Cassie::Queries::Pagination::Cursors do
+RSpec.describe Cassie::Queries::Pagination::Cursors, :only do
   let(:klass) do
     Class.new(Cassie::Query) do
       cql "statement"
@@ -6,10 +6,6 @@ RSpec.describe Cassie::Queries::Pagination::Cursors do
   end
   let(:object) { klass.new }
   let(:statement){ "statement" }
-
-  describe "#page_size" do
-
-  end
 
   describe "#max_cursor" do
     let(:klass) do
@@ -19,6 +15,9 @@ RSpec.describe Cassie::Queries::Pagination::Cursors do
       end
     end
     it "adds a next_max_field method" do
+    end
+    it "adds a where for the field with a <= matcher" do
+      expect(klass.wheres).to include [:field, :lteq, :field]
     end
 
     describe "initiailize" do
@@ -36,6 +35,9 @@ RSpec.describe Cassie::Queries::Pagination::Cursors do
     it "adds a since_field getter" do
     end
     it "adds a since_field setter" do
+    end
+    it "adds a where for the field with a > matcher" do
+      expect(klass.wheres).to include [:field, :gt]
     end
 
     describe "initiailize" do

@@ -1,12 +1,13 @@
 # cassie-queries
-This is a work in progress and it's final interface will probably look nothing like below.
-We're intentionally moving very incrementally, working to provide a library that is
+
+This is a work in progress. We're intentionally moving very incrementally, working to provide a library that is
 
 * Easy to use
 * Easy to understand (and thus maintain)
+* Easy to test
 * Works well with a data mapper design pattern
 
-See the current interface below, which almost certainly will change drastically. Use at your own risk prior to 0.1.0 :).
+The current interface below, will almost certainly change drastically. Use at your own risk prior to 0.1.0 :).
 
 ### Installation
 
@@ -21,37 +22,53 @@ gem install cassie-queries --pre
 
 ### Usage
 
+What you might expect to see:
+
+```
+Cassie.insert(:users_by_username,
+              "id = #{some_id}",
+              username: some_username)
+```
+
+Queries defined on the fly like this tend to not be good for an application in the long term. They:
+  * create gaps in test coverage
+  * resist documentation
+  * resist refactoring
+
+Your application queries represent behavior, `cassie-queries` is structured to help you create the classes that your queries deserve so you can sleep better at night.
+
 ```ruby
-class MyQuery < Cassie::Query
-  # some code to define a `MyQuery.session` method
+user = User.new(username: username)
+user.generate_id
+
+MyInsertionQuery.new.insert(user)
+```
+
+```ruby
+class MyInsertionQuery < Cassie::Query
+  # some code to define a `MyInsertionQuery.session` class method
   # that returns a valid Cassandra Session object
   include CassandraSession
 
-  cql %(
-    INSERT INTO users_by_username
-    (id, username)
-    VALUES (?, ?);
-  )
+  insert :users_by_username do
+    :id,
+    :username
+  end
 
   attr_accessor :user
 
   def insert(user)
     @user = user
+    execute
   end
 
-  def bindings
-    [
-      user.id,
-      user.username
-    ]
+  def id
+    user.id
+  end
+  def username
+    user.username
   end
 end
-```
-```ruby
-user = User.new(username: username)
-user.generate_id
-
-MyQuery.new.insert(user)
 ```
 
 ### Prepared statements
@@ -67,32 +84,21 @@ If you want to dynamically specify the statement, override the object's `#statem
 class MySpecialQuery < Cassie::Query
   include CassandraSession
 
+  select :users_by_some_value do
+    where :some_value, :in
+  end
+
   self.prepare = false
 
-  attr_reader :values
+  attr_reader :some_values
 
-  def fetch(values)
-    @values = values
+  def fetch(some_values)
+    @some_values = some_values
     execute
     result.rows.map { |r| build_user(r) }
   end
 
-  def statement
-    %(
-      SELECT * from users_by_some_value
-      WHERE phone IN (#{binding_markers});"
-      )
-  end
-
-  def bindings
-    values
-  end
-
   private
-
-  def binding_markers
-   Array.new(values.count){"?"}.join(", ")
-  end
 
   def build_user(row_hash)
     User.new(row_hash)
@@ -119,22 +125,39 @@ Read about [cursored pagination](https://www.google.com/webhp?q=cursored%20pagin
 q = MyPagedQuery.new(page_size: 25, user: current_user)
 
 # fetch 100 - 76
-page_1 = q.fetch(max_id: nil, since_id: 50)
-q.next_max_id
+page_1 = q.fetch(max_event_id: nil, since_event_id: 50)
+q.next_max_event_id
 # => 75
 
 # fetch 75 - 51
-page_2 = q.fetch(max_id: q.next_max_id, since_id: 50)
+page_2 = q.fetch(max_event_id: q.next_max_event_id, since_event_id: 50)
 q.next_max_id
 # => nil
 ```
 
 ```ruby
 class MyPagedQuery < Cassie::Query
+  include CassandraSession
 
-max_cursor :id
-since_cursor :id
+  select :events_by_user do
+    where :user_id, :eq
 
+    max_cursor :event_id
+    since_cursor :event_id
+  end
+
+  def fetch(opts={})
+    self.max_event_id = opts[:max_event_id]
+    self.since_event_id = opts[:since_event_id]
+    execute
+    result.rows.map { |r| build_user(r) }
+  end
+
+  private
+
+  def build_user(row_hash)
+    User.new(row_hash)
+  end
 end
 ```
 

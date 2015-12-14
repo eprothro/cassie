@@ -78,8 +78,10 @@ RSpec.describe Cassie::Queries::Pagination do
         expect(object.page_size).to eq(alt_page_size)
       end
       it "doesn't change subclass" do
+        expect(subclass.page_size).to eq(default_page_size)
       end
       it "doesn't change base class" do
+        expect(base_class.page_size).to eq(default_page_size)
       end
     end
 

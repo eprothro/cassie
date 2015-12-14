@@ -12,10 +12,12 @@ module Cassie::Queries
     module ClassMethods
       def inherited(subclass)
         subclass.page_size = page_size
+        super
       end
 
       def page_size
-        @page_size || Cassie::Queries::Pagination::PageSize.default
+        return @page_size if defined?(@page_size)
+        Cassie::Queries::Pagination::PageSize.default
       end
 
       def page_size=(val)
@@ -24,7 +26,8 @@ module Cassie::Queries
     end
 
     def page_size
-      @page_size || self.class.page_size
+      return @page_size if defined?(@page_size)
+      self.class.page_size
     end
 
     def page_size=(val)

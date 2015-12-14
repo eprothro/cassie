@@ -14,5 +14,14 @@ module Cassie
     include Queries::Pagination
     include Queries::Instrumentation
     include Queries::Logging
+
+    def initialize(*args)
+      value = super(*args)
+      after_initialize(*args)
+      value
+    end
+
+    def after_initialize(*args)
+    end
   end
 end
