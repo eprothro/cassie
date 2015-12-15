@@ -1,12 +1,15 @@
 require 'active_support/core_ext/string/filters'
 require_relative 'statement/filtering'
+require_relative 'statement/prepared'
 
 module Cassie::Queries
   module Statement
     extend ::ActiveSupport::Concern
 
     included do
+      include Prepared
       include Filtering
+
       attr_reader :result
     end
 

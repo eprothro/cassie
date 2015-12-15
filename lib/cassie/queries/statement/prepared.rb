@@ -1,5 +1,5 @@
-module Cassie::Queries
-  module PreparedStatement
+module Cassie::Queries::Statement
+  module Prepared
     extend ::ActiveSupport::Concern
 
     included do

@@ -37,7 +37,7 @@ RSpec.describe Cassie::Queries::Pagination::Cursors, :only do
     it "adds a since_field setter" do
     end
     it "adds a where for the field with a > matcher" do
-      expect(klass.wheres).to include [:field, :gt]
+      expect(klass.wheres).to include [:field, :gt, :field]
     end
 
     describe "initiailize" do
