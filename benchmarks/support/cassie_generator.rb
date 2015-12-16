@@ -13,30 +13,27 @@ class CassieGenerator
 
   def generate
     query = BenchmarkQuery.new(@o1, @o2)
-    execution_params = [query.statement, query.bindings]
+    query.simulate_execution_start
   end
 end
 
 class BenchmarkQuery < Cassie::Query
 
-  cql %(
-    SELECT * FROM friendships_by_owner
-    WHERE owner_id = ? AND friend_id = ?;
-  )
+  select :friendships_by_owner
+
+  where :owner_id, :eq
+  where :friend_id, :eq
 
   self.prepare = false
 
-  attr_accessor :object_a, :object_b
-
   def initialize(object_a, object_b)
-    @object_a  = object_a
-    @object_b = object_b
+    owner_id = object_a.id
+    friend_id = object_b.id
   end
 
-  def bindings
-    [
-      object_a.id,
-      object_b.id
-    ]
+  def simulate_execution_start
+    # build Cassandra::Statement
+    # this is passed to session.execute
+    statement
   end
 end

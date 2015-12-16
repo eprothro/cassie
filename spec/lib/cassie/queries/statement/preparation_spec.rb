@@ -1,4 +1,4 @@
-RSpec.describe Cassie::Queries::Statement::Prepared do
+RSpec.describe Cassie::Queries::Statement::Preparation do
   let(:base_class){ Cassie::Query }
   let(:klass) do
     Class.new(base_class) do

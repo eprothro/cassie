@@ -112,7 +112,9 @@ set_1 = q.fetch([1, 2, 3])
 set_2 = q.fetch([7, 8, 9, 10, 11, 12])
 ```
 
-Unbound statements are not supported yet (if ever). Get your binding on, thug.
+### Unbound statements
+
+override `#statement`
 
 ### Cursored Paging
 
