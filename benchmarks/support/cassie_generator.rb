@@ -21,14 +21,22 @@ class BenchmarkQuery < Cassie::Query
 
   select :friendships_by_owner
 
-  where :owner_id, :eq
-  where :friend_id, :eq
+  where :owner_id, :eq, if: :dynamic1
+  where :friend_id, :eq, if: :dynamic2
 
   self.prepare = false
 
   def initialize(object_a, object_b)
     owner_id = object_a.id
     friend_id = object_b.id
+  end
+
+  def dynamic1
+    true
+  end
+
+  def dynamic2
+    true && true && true
   end
 
   def simulate_execution_start

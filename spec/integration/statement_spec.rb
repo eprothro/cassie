@@ -1,4 +1,4 @@
-RSpec.describe Cassie::Queries::Statement, :only do
+RSpec.describe Cassie::Queries::Statement do
   let(:klass) do
     Class.new(Cassie::Query) do
       self.prepare = false

@@ -65,6 +65,10 @@ RSpec.configure do |config|
   #   - http://rspec.info/blog/2014/05/notable-changes-in-rspec-3/#zero-monkey-patching-mode
   config.disable_monkey_patching!
 
+  # Full backtrace (into gems)
+  # or only show app portion of backtrace
+  # config.full_backtrace = true
+
   # This setting enables warnings. It's recommended, but in some cases may
   # be too noisy due to issues in dependencies.
   config.warnings = true

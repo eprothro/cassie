@@ -13,6 +13,7 @@ require_relative 'support/cassie_generator'
 #     baseline-query-generation: 752032.5 i/s - 1.00x slower
 #
 Benchmark.ips do |b|
+
   g = BaselineGenerator.new
 
   b.report("baseline-query-generation") do
