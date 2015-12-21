@@ -1,4 +1,4 @@
-RSpec.describe Cassie::Queries::Statement::Preparation, :only do
+RSpec.describe Cassie::Queries::Statement::Fetching do
   let(:base_class){ Cassie::Query }
   let(:klass) do
     Class.new(base_class) do
@@ -13,12 +13,12 @@ RSpec.describe Cassie::Queries::Statement::Preparation, :only do
       allow(o).to receive(:result){ double(rows: rows) }
       o
   end
-  let(:row){ {tag: 'some_tag'} }
+  let(:row){ {tag: 'tag'} }
   let(:rows){ [row] }
 
   describe "#fetch" do
     it "returns rows" do
-      expect(object.fetch).to include(row)
+      expect(object.fetch).to include(have_attributes(tag: row[:tag]))
     end
     it "assigns value if setter exists" do
       expect{
@@ -28,12 +28,12 @@ RSpec.describe Cassie::Queries::Statement::Preparation, :only do
   end
   describe "find" do
     it "returns a single row" do
-      expect(object.find).to eq(row)
+      expect(object.find[:tag]).to eq(row[:tag])
     end
   end
   describe "find!" do
     it "returns a single row" do
-      expect(object.find!).to eq(row)
+      expect(object.find![:tag]).to eq(row[:tag])
     end
     context "when no results" do
       let(:rows){ [] }

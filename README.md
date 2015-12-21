@@ -30,95 +30,93 @@ Cassie.insert(:users_by_username,
               username: some_username)
 ```
 
-Queries defined on the fly like this tend to not be good for an application in the long term. They:
+Queries defined on the fly like this tend to create debt for an application in the long term. They:
   * create gaps in test coverage
   * resist documentation
   * resist refactoring
 
-Your application queries represent behavior, `cassie-queries` is structured to help you create the classes that your queries deserve so you can sleep better at night.
+Your application queries represent behavior, `cassie-queries` is structured to help you create query classes that are reusable, testable and maintainable, so you can sleep better at night.
 
 ```ruby
+# Some PORO user model
 user = User.new(username: username)
-user.generate_id
 
 MyInsertionQuery.new.insert(user)
+<pre><b>
+(1.2ms) INSERT INTO users_by_username (id, username) VALUES (?, ?); [["uuid()", "eprothro"]]
+</b></pre>
 ```
 
 ```ruby
 class MyInsertionQuery < Cassie::Query
-  # some code to define a `MyInsertionQuery.session` class method
-  # that returns a valid Cassandra Session object
-  include CassandraSession
+  # Include some code that defines a `.session` class method
+  # that returns a valid Cassandra Session object for the
+  # keyspace that needs to be operated on
+  include MyCassandraSession
 
   insert :users_by_username do
-    :id,
+    :id
     :username
   end
 
-  attr_accessor :user
-
-  def insert(user)
-    @user = user
-    execute
-  end
-
   def id
-    user.id
-  end
-  def username
-    user.username
+    "uuid()"
   end
 end
 ```
 
-### Prepared statements
+CQL algebra is less complex than with SQL. So, rather than introducing a query abstraction layer (e.g. something like [arel](https://github.com/rails/arel)), `cassie-queries` provides a lightweight CQL DSL to codify your CQL queries.
 
-A `Cassie::Query` will prepare its statement, by default, reusing the prepared statement for all `execution` calls for all objects.
-
-### Unprepared, bound statement
-If you don't want to use a prepared statement, you may disable the `.prepare` class option.
-
-If you want to dynamically specify the statement, override the object's `#statement` method with your statement, and ensure the bindings will match the statement.
-
+```sql
+  SELECT *
+  FROM posts_by_author_category
+  WHERE author_id = ?
+  AND category = ?;
+```
 ```ruby
-class MySpecialQuery < Cassie::Query
-  include CassandraSession
-
-  select :users_by_some_value do
-    where :some_value, :in
-  end
-
-  self.prepare = false
-
-  attr_reader :some_values
-
-  def fetch(some_values)
-    @some_values = some_values
-    execute
-    result.rows.map { |r| build_user(r) }
-  end
-
-  private
-
-  def build_user(row_hash)
-    User.new(row_hash)
-  end
-end
+  select :posts_by_author_category
+  where :author_id, :eq
+  where :category, :eq
 ```
 
+This maintains the clarity of the CQL, but allows you to be expressive by using additional features and not having get crazy with string manipulation.
+
+#### Conditional relations
+
 ```ruby
-q = MySpecialQuery.new
-set_1 = q.fetch([1, 2, 3])
-set_2 = q.fetch([7, 8, 9, 10, 11, 12])
+  select :posts_by_author_category
+
+  where :author_id, :eq
+  where :category, :eq, if: "category.present?"
+```
+or
+```ruby
+  select :posts_by_author_category
+
+  where :author_id, :eq
+  where :category, :eq, if: :filter_by_category?
+
+  def filter_by_category?
+    #true or false, as makes sense
+  end
 ```
 
-### Unbound statements
-
-override `#statement`
-
-### Cursored Paging
+#### Cursored Paging
 
 Read about [cursored pagination](https://www.google.com/webhp?q=cursored%20paging#safe=off&q=cursor+paging) if unfamiliar with concept and how it optimizes paging through frequently updated data sets and I/O bandwidth.
+
+```ruby
+class MyPagedQuery < Cassie::Query
+  include CassandraSession
+
+  select :events_by_user
+
+  where :user_id, :eq
+
+  max_cursor :event_id
+  since_cursor :event_id
+end
+```
 
 ```ruby
 # Imagine a set of id's 100 decreasing to 1
@@ -137,34 +135,56 @@ q.next_max_id
 # => nil
 ```
 
+The `cursored_by` helper can be used as shorthand for defining the column for which you wish to use cursors.
 ```ruby
 class MyPagedQuery < Cassie::Query
   include CassandraSession
 
-  select :events_by_user do
-    where :user_id, :eq
+  select :events_by_user
 
-    max_cursor :event_id
-    since_cursor :event_id
-  end
+  where :user_id, :eq
 
-  def fetch(opts={})
-    self.max_event_id = opts[:max_event_id]
-    self.since_event_id = opts[:since_event_id]
-    execute
-    result.rows.map { |r| build_user(r) }
-  end
-
-  private
-
-  def build_user(row_hash)
-    User.new(row_hash)
-  end
+  cursored_by :event_id
 end
 ```
 
+#### Prepared statements
 
-### Logging
+A `Cassie::Query` will use prepared statements by default, cacheing prepared statements across all Cassie::Query objects, keyed by the bound CQL string.
+
+
+If you don't want to use a prepared statement, you may disable the `.prepare` class option.
+
+```ruby
+class MySpecialQuery < Cassie::Query
+  include CassandraSession
+
+  select :users_by_some_value do
+    where :bucket
+    where :some_value, :in
+  end
+
+  # the length of `some_values` that will be passed in
+  # is highly variable, so we don't want to incur the
+  # cost of preparing a statement for each unique length
+  self.prepare = false
+end
+```
+```
+query = MySpecialQuery.new
+
+# will not prepare statement
+set_1 = query.fetch([1, 2, 3])
+# will not prepare statement
+set_2 = query.fetch([7, 8, 9, 10, 11, 12])
+```
+
+#### Unbound statements
+
+override `#statement`
+
+
+#### Logging
 
 You may set the log level to debug to log execution to STDOUT (by default).
 

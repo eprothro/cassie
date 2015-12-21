@@ -1,4 +1,5 @@
 require_relative 'relation'
+require_relative 'loading'
 
 class Cassie::Queries::RecordNotFound < StandardError; end
 

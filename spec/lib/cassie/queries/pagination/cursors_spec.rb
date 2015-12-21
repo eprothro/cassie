@@ -46,8 +46,6 @@ RSpec.describe Cassie::Queries::Pagination::Cursors do
   describe "next_max_field" do
     context "when there is a next record" do
       it "returns field value of next record" do
-        query.max_id = nil
-        query.fetch
       end
     end
 
