@@ -42,10 +42,10 @@ Your application queries represent behavior, `cassie-queries` is structured to h
 user = User.new(username: username)
 
 MyInsertionQuery.new.insert(user)
+```
 <pre><b>
 (1.2ms) INSERT INTO users_by_username (id, username) VALUES (?, ?); [["uuid()", "eprothro"]]
 </b></pre>
-```
 
 ```ruby
 class MyInsertionQuery < Cassie::Query
@@ -54,9 +54,9 @@ class MyInsertionQuery < Cassie::Query
   # keyspace that needs to be operated on
   include MyCassandraSession
 
-  insert :users_by_username do
-    :id
-    :username
+  insert :users_by_username do |u|
+    u.id,
+    u.username
   end
 
   def id
@@ -97,7 +97,7 @@ or
   where :category, :eq, if: :filter_by_category?
 
   def filter_by_category?
-    #true or false, as makes sense
+    #true or false, as makes sense for your query
   end
 ```
 
@@ -135,7 +135,7 @@ q.next_max_id
 # => nil
 ```
 
-The `cursored_by` helper can be used as shorthand for defining the column for which you wish to use cursors.
+The `cursored_by` helper can be used as shorthand for defining these relations for which you wish to use cursors.
 ```ruby
 class MyPagedQuery < Cassie::Query
   include CassandraSession

@@ -7,8 +7,6 @@ module Cassie::Queries::Statement
       rows.map {|r| build_resource(r) }
     end
 
-    protected
-
     # When class doesn't override
     # simply return a struct with the row data
     def build_resource(row)

@@ -1,9 +1,9 @@
+require 'support/resource'
+
 RSpec.describe Cassie::Queries::Statement::Loading do
   let(:base_class){ Cassie::Query }
   let(:klass) do
     Class.new(base_class) do
-      attr_accessor :foo
-
       select :resources_by_tag
     end
   end
@@ -19,6 +19,23 @@ RSpec.describe Cassie::Queries::Statement::Loading do
   describe "#fetch" do
     it "returns an object with a fetcher method for row attributes" do
       expect(object.fetch.first.tag).to eq(row[:tag])
+    end
+  end
+
+  context "when overriding build_resource" do
+    let(:klass) do
+      Class.new(base_class) do
+
+        select :resources_by_tag
+
+        def build_resource(row)
+          Resource.new
+        end
+      end
+    end
+
+    it "returns expected class" do
+      expect(object.fetch).to include(a_kind_of Resource)
     end
   end
 end
