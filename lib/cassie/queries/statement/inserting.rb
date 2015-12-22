@@ -10,6 +10,7 @@ module Cassie::Queries::Statement
 
         self.table = table
         self.identifier = :insert
+
         yield(self) if block_given?
       end
     end

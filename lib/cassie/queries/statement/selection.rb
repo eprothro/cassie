@@ -21,6 +21,8 @@ module Cassie::Queries::Statement
 
         self.table = table
         self.identifier = :select
+
+        yield(self) if block_given?
       end
 
       # a select clause is built up of selectors

@@ -15,6 +15,8 @@ module Cassie::Queries::Statement
 
         self.table = table
         self.identifier = :delete
+
+        yield(self) if block_given?
       end
 
       # TODO rename to identifiers and extract
