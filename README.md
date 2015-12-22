@@ -101,7 +101,36 @@ or
   end
 ```
 
-#### Cursored  (WIP)
+#### Object Mapping
+For Data Modification Queries (`insert`, `update`, `delete`), mapping binding values from an object is supported.
+
+```ruby
+class UpdateUserQuery < Cassandra::Query
+  include CassandraSession
+
+  update :users_by_id do |q|
+    q.set :phone
+    q.set :email
+    q.set :address
+    q.set :username
+  end
+
+  where :id, :eq
+
+  map_from :user
+```
+Allowing you to pass an object to the modification method, and binding values will be retrieved from the object
+
+```ruby
+user
+=> #<User:0x007ff8895ce660 @id=6539, @phone="+15555555555", @email="etp@example.com", @address=nil, @username= "etp">
+UpdateUserQuery.new.update(user)
+```
+<pre><b>
+(1.2ms) UPDATE users_by_id (phone, email, address, username) VALUES (?, ?, ?, ?) WHERE id = ?; [["+15555555555", "etp@example.com", nil, "etp", 6539]]
+</b></pre>
+
+#### Cursored paging (WIP)
 
 Read about [cursored pagination](https://www.google.com/webhp?q=cursored%20paging#safe=off&q=cursor+paging) if unfamiliar with concept and how it optimizes paging through frequently updated data sets and I/O bandwidth.
 
