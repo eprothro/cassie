@@ -1,10 +1,9 @@
 module Cassie::Queries::Statement
   #
   #
-  #    relation "username = ?", :username
+  #    relation "username = ?", value: :username
   #    relation :username, :eq
-  #    relation :username, :eq, allow_blank: false
-  #    relation :username, :eq, source: :method
+  #    relation :username, :eq, value: :method
   #    relation :phone, :in
   class Relation
     # https://cassandra.apache.org/doc/cql3/CQL.html#selectStmt
@@ -20,32 +19,30 @@ module Cassie::Queries::Statement
     }
 
     attr_reader :identifier,
-                :operation
+                :op_type
 
     def initialize(identifier, op_type, opts={})
-      if String === identifier
+      if Hash === op_type
         #  custom relation is being defined:
-        #
-        #  `relation "username = ?", :username`
+        #  `relation "username = ?", value: :username`
+
+        # swap the 2nd arg that sucked in options hash
+        opts.merge!(op_type)
+
         @cql = identifier
-        @term_method = operation
+        @custom = true
       else
         @identifier = identifier
         @op_type = op_type.to_sym
-        @term_method = opts[:value] || identifier
       end
+    end
+
+    def custom?
+      !!@custom
     end
 
     def to_cql
       cql
-    end
-
-    def term(term_object)
-      term_object.send term_method
-    end
-
-    def term_method
-      @term_method
     end
 
     protected
@@ -58,6 +55,5 @@ module Cassie::Queries::Statement
     def op_type
       @op_type
     end
-
   end
 end

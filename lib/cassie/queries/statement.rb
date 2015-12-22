@@ -2,6 +2,9 @@ require 'active_support/core_ext/string/filters'
 require_relative 'statement/preparation'
 require_relative 'statement/selection'
 require_relative 'statement/deleting'
+require_relative 'statement/updating'
+require_relative 'statement/inserting'
+
 
 module Cassie::Queries
   module Statement
@@ -12,6 +15,8 @@ module Cassie::Queries
       include Preparation
       include Selection
       include Deleting
+      include Updating
+      include Inserting
 
       attr_reader :result
 

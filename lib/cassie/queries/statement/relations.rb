@@ -5,8 +5,12 @@ module Cassie::Queries::Statement
     extend ActiveSupport::Concern
 
     module ClassMethods
-      def relation(identifier, op, opts={})
+      #    where :username, :eq, value: :method
+      #    where :phone, :in
+      #    were "username = ?", value: :username
+      def where(identifier, op, opts={})
         relation = Relation.new(identifier, op, opts)
+
         opts[:value] ||= identifier.to_sym
 
         if Symbol === opts[:value]
@@ -14,10 +18,6 @@ module Cassie::Queries::Statement
         end
 
         relations[relation] = opts
-      end
-
-      def where(*args)
-        relation(*args)
       end
 
       # a where clause is built up of multiple 'relations'
