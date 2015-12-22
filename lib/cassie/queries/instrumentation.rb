@@ -9,7 +9,7 @@ module Cassie::Queries
     def instrument #:nodoc:
       instrumenter.instrument("cql.execute") do |payload|
         execution_val = yield # execution populates #result
-        payload[:execution_info] = result.try(:execution_info)
+        payload[:execution_info] = result.execution_info if result.respond_to?(:execution_info)
         execution_val
       end
     end
