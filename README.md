@@ -79,7 +79,7 @@ CQL algebra is less complex than with SQL. So, rather than introducing a query a
   where :category, :eq
 ```
 
-This maintains the clarity of the CQL, but allows you to be expressive by using additional features and not having get crazy with string manipulation.
+This maintains the clarity of your CQL, but allows you to be expressive by using additional features and not having get crazy with string manipulation.
 
 #### Conditional relations
 
@@ -102,6 +102,36 @@ or
 ```
 
 #### Object Mapping
+For Selection Queries, resources are returned as structs by default for manipulation using accessor methods.
+
+```ruby
+UsersByUsernameQuery.new.fetch(username: "eprothro")
+=> [#<Struct id=:123, username=:eprothro>]
+
+UsersByUsernameQuery.new.find(username: "eprothro").username
+=> "eprothro"
+```
+
+Override `build_resource` to construct more useful objects
+
+```
+class UsersByUsernameQuery < Cassie::Query
+  include CassandraSession
+
+  select :users_by_username
+
+  where :username, :eq
+
+  def build_resource(row)
+    User.new(row)
+  end
+end
+```
+```ruby
+UsersByUsernameQuery.new.find(username: "eprothro")
+=> #<User:0x007fedec219cd8 @id=123, @username="eprothro">
+```
+
 For Data Modification Queries (`insert`, `update`, `delete`), mapping binding values from an object is supported.
 
 ```ruby
@@ -182,7 +212,7 @@ end
 A `Cassie::Query` will use prepared statements by default, cacheing prepared statements across all Cassie::Query objects, keyed by the bound CQL string.
 
 
-If you don't want to use a prepared statement, you may disable the `.prepare` class option.
+To not use prepared statements for a particular query, disable the `.prepare` class option.
 
 ```ruby
 class MySpecialQuery < Cassie::Query
