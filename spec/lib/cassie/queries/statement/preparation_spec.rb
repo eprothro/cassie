@@ -32,7 +32,7 @@ RSpec.describe Cassie::Queries::Statement::Preparation do
     end
   end
   describe "#statement" do
-    let(:prepared_statement){ "some prepared bound statment" }
+    let(:prepared_statement){ double(bind: "some bound statement") }
     let(:result){ double(empty?: true) }
     let(:session){ double(execute: result, prepare: prepared_statement) }
     let(:object) do
@@ -51,6 +51,11 @@ RSpec.describe Cassie::Queries::Statement::Preparation do
       object.execute
       expect(session).to_not receive(:prepare)
       object.execute
+    end
+
+    context "when the statement is reused from the cache" do
+      it "is gets param bindings" do
+      end
     end
 
     context "when the statement changes" do

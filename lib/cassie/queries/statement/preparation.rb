@@ -29,9 +29,10 @@ module Cassie::Queries::Statement
         key = statement.cql if statement.respond_to?(:cql)
         key ||= statement.to_s
 
-        statement_cache.fetch(key) do
+        unbound = statement_cache.fetch(key) do
           session.prepare(statement)
         end
+        unbound.bind(statement.params)
       else
         statement
       end
