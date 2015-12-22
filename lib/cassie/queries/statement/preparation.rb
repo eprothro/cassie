@@ -1,3 +1,5 @@
+require_relative 'preparation/cache'
+
 module Cassie::Queries::Statement
   module Preparation
     extend ::ActiveSupport::Concern
@@ -18,24 +20,27 @@ module Cassie::Queries::Statement
       def prepare?
         !!prepare
       end
-
-      def prepared_statement
-        # use class instance variable to esnure only 1
-        # statement is prepared per process
-        # no mutex required in MRI because of GIL
-        #
-        # note: cassandra-driver handles the case
-        #       of executing a prepared statement
-        #       on a host where it has not been prepared
-        #       yet, by re-preparing.
-        @prepared_statement ||= begin
-          session.prepare(statement)
-        end
-      end
     end
 
     def statement
-      self.class.prepare? ? self.class.prepared_statement : super
+      statement = super
+
+      if self.class.prepare?
+        key = statement.cql if statement.respond_to?(:cql)
+        key ||= statement.to_s
+
+        statement_cache.fetch(key) do
+          session.prepare(statement)
+        end
+      else
+        statement
+      end
+    end
+
+    private
+
+    def statement_cache
+      Cassie::Queries::Statement::Preparation.cache
     end
   end
 end

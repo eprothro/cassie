@@ -101,7 +101,7 @@ or
   end
 ```
 
-#### Cursored Paging
+#### Cursored  (WIP)
 
 Read about [cursored pagination](https://www.google.com/webhp?q=cursored%20paging#safe=off&q=cursor+paging) if unfamiliar with concept and how it optimizes paging through frequently updated data sets and I/O bandwidth.
 
