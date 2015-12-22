@@ -1,6 +1,7 @@
 require 'active_support/core_ext/string/filters'
 require_relative 'statement/preparation'
 require_relative 'statement/selection'
+require_relative 'statement/deleting'
 
 module Cassie::Queries
   module Statement
@@ -10,11 +11,13 @@ module Cassie::Queries
     included do
       include Preparation
       include Selection
+      include Deleting
 
       attr_reader :result
 
       class << self
         attr_accessor :table
+        attr_accessor :identifier
       end
     end
 
@@ -38,10 +41,15 @@ module Cassie::Queries
     protected
 
     def build_cql_and_bindings
-      [cql, bindings]
+      if identifier
+        send "build_#{identifier}_cql_and_bindings"
+      else
+        [cql, bindings]
+      end
     end
 
     def execution_successful?
+      #TODO: rethink this, it knows too much
       raise "execution not complete, no results to parse" unless result
 
       # empty select
@@ -54,6 +62,10 @@ module Cassie::Queries
     end
 
     private
+
+    def identifier
+      self.class.identifier
+    end
 
     def eval_if_opt?(value)
       case value

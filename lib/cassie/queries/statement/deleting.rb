@@ -1,10 +1,7 @@
 require_relative 'relations'
-require_relative 'limiting'
-require_relative 'ordering'
-require_relative 'fetching'
 
 module Cassie::Queries::Statement
-  module Selection
+  module Deleting
     extend ::ActiveSupport::Concern
 
     module ClassMethods
@@ -13,33 +10,33 @@ module Cassie::Queries::Statement
       #        t.id
       #        t.name as: :username
       #      end
-      def select(table)
+      def delete(table)
         include Relations
-        include Limiting
-        include Ordering
-        include Fetching
 
         self.table = table
-        self.identifier = :select
+        self.identifier = :delete
       end
 
-      # a select clause is built up of selectors
+      # TODO rename to identifiers and extract
       def selectors
         @selectors ||= []
       end
     end
 
+    def delete(resource, opts={})
+      execute
+      execution_successful?
+    end
+
     protected
 
-    def build_select_cql_and_bindings
+    def build_delete_cql_and_bindings
       where_str, bindings = build_where_and_bindings
 
       cql = %(
-        SELECT #{build_select_clause}
+        DELETE #{build_delete_clause}
           FROM #{table}
           #{where_str}
-          #{build_order_str}
-          #{build_limit_str}
       ).squish + ";"
 
       [cql, bindings]
@@ -50,9 +47,9 @@ module Cassie::Queries::Statement
       self.class.selectors
     end
 
-    def build_select_clause
+    def build_delete_clause
       str = if selectors.empty?
-        '*'
+        ''
       else
         selectors.join(', ')
       end
