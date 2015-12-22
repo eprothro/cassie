@@ -16,7 +16,7 @@ module Cassie::Queries::Statement
       end
     end
 
-    def update(resource, opts={})
+    def update(opts={})
       execute
       execution_successful?
     end

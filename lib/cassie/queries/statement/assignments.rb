@@ -1,8 +1,13 @@
 require_relative 'assignment'
+require_relative 'mapping'
 
 module Cassie::Queries::Statement
   module Assignments
     extend ActiveSupport::Concern
+
+    included do
+      include Mapping
+    end
 
     module ClassMethods
       def set(identifier, opts={})
@@ -18,19 +23,6 @@ module Cassie::Queries::Statement
 
       def assignments
         @assignments ||= {}
-      end
-
-      private
-      # TODO: extract into module and mixin
-      def define_term_methods(name)
-        #TODO: this should probably only raise
-        #      if value option was nil and we
-        #      are implicilty creating getter/setters.
-        if method_defined?(name) || method_defined?("#{name}=")
-          raise "accessor or getter already defined for #{name}. Fix the collions by using the `:value` option."
-        else
-          attr_accessor name
-        end
       end
     end
 

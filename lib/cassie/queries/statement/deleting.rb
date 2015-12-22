@@ -25,7 +25,7 @@ module Cassie::Queries::Statement
       end
     end
 
-    def delete(resource, opts={})
+    def delete(opts={})
       execute
       execution_successful?
     end

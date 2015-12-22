@@ -15,7 +15,7 @@ module Cassie::Queries::Statement
       end
     end
 
-    def insert(resource, opts={})
+    def insert(opts={})
       execute
       execution_successful?
     end

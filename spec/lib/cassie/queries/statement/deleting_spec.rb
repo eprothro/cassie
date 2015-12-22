@@ -21,7 +21,7 @@ RSpec.describe Cassie::Queries::Statement::Deleting do
         Class.new(base_class) do
           delete :resources
 
-          def delete(resource, opts={})
+          def delete(opts={})
             super
             "foo"
           end
@@ -29,10 +29,10 @@ RSpec.describe Cassie::Queries::Statement::Deleting do
       end
       it "can call deleting's defintion with super" do
         expect(object).to receive(:execute)
-        object.delete(resource)
+        object.delete
       end
       it "can return its own value" do
-        expect(object.delete(resource)).to eq("foo")
+        expect(object.delete).to eq("foo")
       end
     end
   end
