@@ -1,6 +1,4 @@
 module Cassie::Queries::Statement
-  #
-  #
   #    set "username = ?", value: :username
   #    set "favs = favs + ?" value: "{ 'movie' : 'Cassablanca' }"
   #    set :username
@@ -22,11 +20,13 @@ module Cassie::Queries::Statement
     end
 
     def to_insert_cql
-      @cql || identifier
+      return @cql if defined?(@cql)
+      identifier
     end
 
     def to_update_cql
-      @cql || "#{identifier} = ?"
+      return @cql if defined?(@cql)
+      "#{identifier} = ?"
     end
 
     def custom?

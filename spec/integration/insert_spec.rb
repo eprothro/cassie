@@ -1,4 +1,4 @@
-RSpec.describe Cassie::Queries::Statement, :only do
+RSpec.describe Cassie::Queries::Statement do
   let(:klass) do
     Class.new(Cassie::Query) do
       self.prepare = false
@@ -9,14 +9,34 @@ RSpec.describe Cassie::Queries::Statement, :only do
     end
   end
   let(:object) { klass.new }
+  let(:some_id){ rand(100000)}
 
-  describe "deletion" do
-    it "generates delete cql" do
-      object.id = 12345
+  describe ".insert" do
+    let(:klass) do
+      Class.new(Cassie::Query) do
+        self.prepare = false
+        insert :resources do |q|
+          q.set :id
+          q.set :field
+        end
+      end
+    end
+
+    it "allows block style dsl" do
+      object.id = some_id
       object.field = 'value'
       statement = object.statement
       expect(statement.cql).to eq("INSERT INTO resources (id, field) VALUES (?, ?);")
-      expect(statement.params).to eq([12345, 'value'])
+      expect(statement.params).to eq([some_id, 'value'])
+    end
+  end
+  describe "deletion" do
+    it "generates delete cql" do
+      object.id = some_id
+      object.field = 'value'
+      statement = object.statement
+      expect(statement.cql).to eq("INSERT INTO resources (id, field) VALUES (?, ?);")
+      expect(statement.params).to eq([some_id, 'value'])
     end
 
     context "when there are no new events" do
