@@ -19,10 +19,14 @@ module Cassie::Queries::Logging
     end
 
     def statement
-      statement = execution_info.statement
-      str = statement.cql
-      str += " [#{statement.params}]" if statement.respond_to? :params
-      str
+      if execution_info
+        statement = execution_info.statement
+        str = statement.cql
+        str += " [#{statement.params}]" if statement.respond_to? :params
+        str
+      else
+        "CQL executed: (`execution_info` was not present?)"
+      end
     end
 
     def traced?

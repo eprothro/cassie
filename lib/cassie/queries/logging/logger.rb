@@ -10,7 +10,7 @@ module Cassie::Queries
     end
 
     def self.init_logger(target = STDOUT)
-      previous_logger = @logger
+      previous_logger = defined?(@logger) ? @logger : nil
 
       @logger = Logger.new(target)
       @logger.level = Logger::INFO

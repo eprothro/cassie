@@ -7,21 +7,16 @@ RSpec.describe Cassie::Queries::Logging do
 
   describe "subscription" do
     let(:statement){ "statement" }
-    let(:klass) do
-      Class.new(Cassie::Query) do
-        cql "statement"
-      end
-    end
     let(:execution_info){ double(trace: nil) }
 
     it "only subscribes once per application" do
       expect(ActiveSupport::Notifications).to receive(:subscribe).at_most(:once)
 
-      a = object.new.execute rescue nil
+      object.execute rescue nil #TODO: fixup so we're not trapping all
 
       class QueryB < Cassie::Query
       end
-      b = QueryB.new.execute rescue nil
+      QueryB.new.execute rescue nil #TODO: fixup so we're not trapping all
     end
     it "logs upon execution" do
       logger = double(:debug)
