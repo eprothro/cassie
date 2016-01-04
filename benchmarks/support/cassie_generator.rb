@@ -1,4 +1,4 @@
-require './lib/cassie-queries'
+require './queries/lib/cassie-queries'
 require_relative 'resource'
 
 # We're evaluating the time it takes to go from a
