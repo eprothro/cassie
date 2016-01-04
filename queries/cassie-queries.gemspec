@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'cassie-queries'
-  s.version     = '0.0.1.a5'
+  s.version     = '0.1.0.alpha.5'
   s.summary     = "Apache Cassandra query management"
   s.description = <<-EOS.strip.gsub(/\s+/, ' ')
     `cassie-queries` is a lightweight interface adapter allowing

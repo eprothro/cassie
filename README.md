@@ -2,11 +2,22 @@
 
 This is a work in progress. We're working quite incrementally to provide important features in a lightweight and loosely coupled way.
 
-The cassie gem combines the following features needed by most applications:
+This library aggregates the following features needed by most applications:
 
-* Database configuration and efficient session management via `cassie-configuration`
-* Versioned schema migrations via `cassie-migrations`
-* Query classes via `cassie-queries`
+* Database configuration and efficient session management
+* Versioned schema migrations
+* Query classes
+
+### Installation
+
+```ruby
+# Gemfile
+gem 'cassie', '~> 0.1.0.alpha'
+```
+or
+```bash
+$ gem install cassie --pre
+```
 
 ### Database Configuration
 
