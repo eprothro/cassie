@@ -1,8 +1,8 @@
 # cassie
 
-This is a work in progress. We're working quite incrementally to provide important features in a lightweight and loosely coupled way.
+This is in alpha stages. We're working quite incrementally to provide important features in a lightweight and loosely coupled way.
 
-This library aggregates the following features needed by most applications:
+Cassie provides support for the components most applications need to work with a Cassandra persistence layer:
 
 * Database configuration and efficient session management
 * Versioned schema migrations
@@ -23,22 +23,22 @@ $ gem install cassie --pre
 
 Essence of features/usage.
 
-Link to more info in the `cassie-configuration` README.
+Link to more info in the `configuration` README.
 
 ### Session Management
 
 Essence of features/usage.
 
-Link to more info in the `cassie-configuration` README.
+Link to more info in the `configuration` README.
 
 ### Versioned Migrations
 
 Essence of features/usage.
 
-Link to more info in the `cassie-migrations` README.
+Link to more info in the `migrations` README.
 
 ### Query Classes
 
 Essence of features/usage.
 
-For more details and examples, see the [`cassie-queries` README](queries/README.md).
+For more details and examples, read bout [queries](lib/cassie/queries#readme).

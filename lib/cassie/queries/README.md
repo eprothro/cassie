@@ -1,22 +1,11 @@
-# cassie-queries
+# Cassie Queries
 
-This is a work in progress. We're intentionally moving very incrementally, working to provide a library that is
+`cassie` query classes provide query interface that is
 
 * Easy to use
 * Easy to understand (and thus maintain)
 * Easy to test
-* Works well with a data mapper design pattern
-
-### Installation
-
-```ruby
-# Gemfile
-gem cassie-queries
-```
-or
-```ruby
-gem install cassie-queries --pre
-```
+* Works well with the data mapper design pattern
 
 ### Usage
 
@@ -33,7 +22,7 @@ Queries defined on the fly like this tend to create debt for an application in t
   * resist documentation
   * resist refactoring
 
-Your application queries represent behavior, `cassie-queries` is structured to help you create query classes that are reusable, testable and maintainable, so you can sleep better at night.
+Your application queries represent behavior, `cassie` queries are structured to help you create query classes that are reusable, testable and maintainable, so you can sleep better at night.
 
 ```ruby
 # Some PORO user model
@@ -63,7 +52,7 @@ class MyInsertionQuery < Cassie::Query
 end
 ```
 
-CQL algebra is less complex than with SQL. So, rather than introducing a query abstraction layer (e.g. something like [arel](https://github.com/rails/arel)), `cassie-queries` provides a lightweight CQL DSL to codify your CQL queries.
+CQL algebra is less complex than with SQL. So, rather than introducing a query abstraction layer (e.g. something like [arel](https://github.com/rails/arel)), `cassie` queries provide a lightweight CQL DSL to codify your CQL queries.
 
 ```sql
   SELECT *

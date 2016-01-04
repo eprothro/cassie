@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'cassie'
-  s.version     = '1.0.0.alpha.3'
+  s.version     = '1.0.0.alpha.4'
   s.summary     = "Apache Cassandra application support"
   s.description = <<-EOS.strip.gsub(/\s+/, ' ')
     Cassie provides database configration, versioned migrations,
@@ -14,7 +14,8 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/eprothro/cassie'
   s.license     = 'MIT'
 
-  s.add_runtime_dependency 'cassie-queries', '~> 1.0.0.alpha'
+  s.add_runtime_dependency 'cassandra-driver', '~> 2.0'
+  s.add_runtime_dependency 'activesupport', '~> 4.2'
 
   s.add_development_dependency 'rspec', '~> 3.4'
   s.add_development_dependency 'byebug'
