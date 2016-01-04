@@ -25,7 +25,7 @@ module Cassie::Queries::Statement
         @relations ||= {}
       end
 
-      private
+      protected
 
       def define_term_methods(name)
         #TODO: this should probably only raise

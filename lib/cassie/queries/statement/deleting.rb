@@ -12,6 +12,7 @@ module Cassie::Queries::Statement
       #      end
       def delete(table)
         include Relations
+        include Mapping
 
         self.table = table
         self.identifier = :delete
