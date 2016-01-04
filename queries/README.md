@@ -7,8 +7,6 @@ This is a work in progress. We're intentionally moving very incrementally, worki
 * Easy to test
 * Works well with a data mapper design pattern
 
-The current interface below, will almost certainly change drastically. Use at your own risk prior to 0.1.0 :).
-
 ### Installation
 
 ```ruby

@@ -12,7 +12,7 @@ This library aggregates the following features needed by most applications:
 
 ```ruby
 # Gemfile
-gem 'cassie', '~> 0.1.0.alpha'
+gem 'cassie', '~> 1.0.0.alpha'
 ```
 or
 ```bash
