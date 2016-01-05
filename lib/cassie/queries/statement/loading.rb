@@ -3,7 +3,15 @@ module Cassie::Queries::Statement
     extend ActiveSupport::Concern
 
     def fetch(args={})
-      rows = super(args)
+      build_resources(super(args))
+    end
+
+    protected
+
+    # Default implementation assumes
+    # 1 row per resource, clients
+    # may override if more complex
+    def build_resources(rows)
       rows.map {|r| build_resource(r) }
     end
 
