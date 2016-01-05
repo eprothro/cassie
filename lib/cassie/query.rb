@@ -24,13 +24,12 @@ module Cassie
     include Queries::Instrumentation
     include Queries::Logging
 
-    def initialize(*args)
-      value = super(*args)
-      after_initialize(*args)
-      value
-    end
+    def initialize(params={})
+      params.each do |attr, value|
+        self.public_send("#{attr}=", value)
+      end
 
-    def after_initialize(*args)
+      super()
     end
   end
 end

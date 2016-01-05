@@ -13,10 +13,10 @@ RSpec.describe Cassie::Queries::Statement::Mapping do
   let(:object) do
       o = klass.new
       allow(o).to receive(:execute)
-      allow(o).to receive(:execution_successful?){ succede? }
+      allow(o).to receive(:execution_successful?){ succeed? }
       o
   end
-  let(:succede?){ true }
+  let(:succeed?){ true }
   let(:user){ Resource.new(id: rand(10000)) }
 
   describe "#insert" do
@@ -28,7 +28,7 @@ RSpec.describe Cassie::Queries::Statement::Mapping do
       expect(object.insert(user)).to eq(user)
     end
     context "when execution fails" do
-      let(:succede?){ false }
+      let(:succeed?){ false }
       it "returns false" do
         expect(object.insert(user)).to eq(false)
       end
