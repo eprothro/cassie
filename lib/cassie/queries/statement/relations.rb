@@ -11,7 +11,7 @@ module Cassie::Queries::Statement
       def where(identifier, op, opts={})
         relation = Relation.new(identifier, op, opts)
 
-        opts[:value] ||= identifier.to_sym
+        opts[:value] ||= relation.implied_value_method
 
         if Symbol === opts[:value]
           define_term_methods(opts[:value])
@@ -43,6 +43,8 @@ module Cassie::Queries::Statement
     def relations
       self.class.relations
     end
+
+    protected
 
     def build_where_and_bindings
       cql = ""

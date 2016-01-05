@@ -1,3 +1,6 @@
+# for pluralization
+require 'active_support/core_ext/string'
+
 module Cassie::Queries::Statement
   #
   #
@@ -14,6 +17,7 @@ module Cassie::Queries::Statement
                   lteq: "<=",
                   gt: ">",
                   gteq: ">=",
+                  in: "IN",
                   contains: "CONTAINS",
                   contains_key: "CONTAINS KEY",
     }
@@ -27,6 +31,7 @@ module Cassie::Queries::Statement
         #  `relation "username = ?", value: :username`
 
         # swap the 2nd arg that sucked in options hash
+        # to keep consistent feeling interface
         opts.merge!(op_type)
 
         @cql = identifier
@@ -43,6 +48,20 @@ module Cassie::Queries::Statement
 
     def to_cql
       cql
+    end
+
+    def multiple_term?
+      op_type == :in
+    end
+
+    def implied_value_method
+      method = if multiple_term?
+        identifier.to_s.pluralize
+      else
+        identifier
+      end
+
+      method.to_sym
     end
 
     protected

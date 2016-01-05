@@ -1,26 +1,34 @@
 RSpec.describe Cassie::Queries::Statement::Relations do
-  let(:base_class){ Cassie::Query }
+  # let(:base_class){ Cassie::Query }
   let(:klass) do
-    Class.new(base_class) do
-      attr_accessor :foo
-
-      delete :resources_by_tag
+    Class.new do
+      include Cassie::Queries::Statement::Relations
     end
   end
   let(:object) do
       o = klass.new
-      allow(o).to receive(:execute)
-      allow(o).to receive(:result){ double(empty?: true, rows: []) }
-      o
   end
-  let(:resource){ double }
 
   describe "#where" do
     it "allows custom defintion" do
       #where "username = ?", :username
     end
-    it "allows dsl definition" do
+    it "supports eq dsl" do
       #where :username, :eq
+    end
+
+    context "with :in operation" do
+      let(:klass) do
+        Class.new(base_class) do
+          select :users_by_phone
+          where :phone, :in
+        end
+      end
+
+      it "adds a relation" do
+
+
+      end
     end
   end
 end
