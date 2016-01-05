@@ -68,6 +68,67 @@ CQL algebra is less complex than with SQL. So, rather than introducing a query a
 
 This maintains the clarity of your CQL, but allows you to be expressive by using additional features and not having get crazy with string manipulation.
 
+#### Dynamic term values
+
+```ruby
+select :posts_by_author
+
+where :user_id, :eq
+```
+
+Defining a CQL relation in a cassie query (the "where") creates a setter and getter for that relation. This allows the term value to be set for a particular query instance.
+
+```ruby
+query.user_id = 123
+query.fetch
+=> [#<Struct user_id=123, id="some post id">]
+```
+
+<pre><b>
+(2.9ms) SELECT * FROM posts_by_author WHERE user_id = ? LIMIT 1; [[123]]
+</pre></b>
+
+These methods are plain old attr_accessors, and may be overriden:
+
+```ruby
+select :posts_by_author
+
+where :user_id, :eq
+
+def author=(user)
+  @user_id = user.id
+end
+```
+
+```ruby
+query.author = User.new(id: 123)
+query.fetch
+=> [#<Struct user_id=123, id="some post id">]
+```
+
+<pre><b>
+(2.9ms) SELECT * FROM posts_by_author WHERE user_id = ? LIMIT 1; [[123]]
+</pre></b>
+```
+
+A specific name can be provided for the setter/getter:
+
+```ruby
+select :posts_by_author
+
+where :user_id, :eq, value: :author_id
+```
+
+```ruby
+query.author_id = 123
+query.fetch
+=> [#<Struct user_id=123, id="some post id">]
+```
+
+<pre><b>
+(2.9ms) SELECT * FROM posts_by_author WHERE user_id = ? LIMIT 1; [[123]]
+</pre></b>
+
 #### Conditional relations
 
 ```ruby
