@@ -9,13 +9,13 @@ module Cassie::Queries::Statement
         next unless method_defined?(method)
 
         define_method(method) do |resource=nil, opts={}|
-          # if resource hasn't already been set
-          # and isn't passed as argument, then
-          # no mapping is taking place, so previously
-          # defined behavior/return value is expected
-          return super(opts) if _resource.nil? && resource.nil?
-
-          self._resource = resource
+          if resource.nil?
+            # if no mapping is taking place, keep previously
+            # defined behavior/return value
+            return super(opts) if _resource.nil?
+          else
+            self._resource = resource
+          end
 
           if super(opts)
             _resource
