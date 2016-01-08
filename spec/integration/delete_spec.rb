@@ -5,6 +5,8 @@ RSpec.describe Cassie::Queries::Statement do
       delete :resources
 
       where :id, :eq
+
+      if_exists
     end
   end
   let(:object) { klass.new }
@@ -13,15 +15,12 @@ RSpec.describe Cassie::Queries::Statement do
     it "generates delete cql" do
       object.id = 12345
       statement = object.statement
-      expect(statement.cql).to eq("DELETE FROM resources WHERE id = ?;")
+      expect(statement.cql).to be_start_with("DELETE FROM resources WHERE id = ?")
       expect(statement.params).to eq([12345])
     end
 
-    context "when there are no new events" do
+    it "supports condition" do
+      expect(object.statement.cql).to be_end_with("IF EXISTS;")
     end
   end
-
-  describe "paging through all events" do
-  end
-
 end

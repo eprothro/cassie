@@ -1,4 +1,5 @@
 require_relative 'assignments'
+require_relative 'conditions'
 
 module Cassie::Queries::Statement
   module Inserting
@@ -7,6 +8,7 @@ module Cassie::Queries::Statement
     module ClassMethods
       def insert(table)
         include Assignments
+        include Conditions
 
         self.table = table
         self.identifier = :insert
@@ -23,15 +25,17 @@ module Cassie::Queries::Statement
     protected
 
     def build_insert_cql_and_bindings
-      identifiers_str, terms_str, bindings = build_insert_and_bindings
+      identifiers_str, terms_str, value_bindings = build_insert_and_bindings
+      condition_str, condition_bindings = build_condition_and_bindings
 
       cql = %(
         INSERT INTO #{table}
         (#{identifiers_str})
         VALUES (#{terms_str})
+        #{condition_str}
       ).squish + ";"
 
-      [cql, bindings]
+      [cql, value_bindings + condition_bindings]
     end
   end
 end

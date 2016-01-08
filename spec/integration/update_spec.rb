@@ -20,6 +20,8 @@ RSpec.describe Cassie::Queries::Statement do
           q.where :id, :eq
           q.set :field
         end
+
+        if_exists
       end
     end
 
@@ -27,24 +29,11 @@ RSpec.describe Cassie::Queries::Statement do
       object.id = some_id
       object.field = 'value'
       statement = object.statement
-      expect(statement.cql).to eq("UPDATE resources SET field = ? WHERE id = ?;")
+      expect(statement.cql).to be_start_with("UPDATE resources SET field = ? WHERE id = ?")
       expect(statement.params).to eq(['value', some_id])
     end
-  end
-  describe "deletion" do
-    it "generates delete cql" do
-      object.id = some_id
-      object.field = 'value'
-      statement = object.statement
-      expect(statement.cql).to eq("UPDATE resources SET field = ? WHERE id = ?;")
-      expect(statement.params).to eq(['value', some_id])
-    end
-
-    context "when there are no new events" do
+    it "supports condition" do
+      expect(object.statement.cql).to be_end_with("IF EXISTS;")
     end
   end
-
-  describe "paging through all events" do
-  end
-
 end

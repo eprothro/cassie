@@ -5,6 +5,8 @@ module Cassie::Queries::Statement
     MAPPED_METHODS = [:insert, :update, :delete].freeze
 
     included do
+      attr_accessor :_resource
+
       MAPPED_METHODS.each do |method|
         next unless method_defined?(method)
 

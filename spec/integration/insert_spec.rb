@@ -19,6 +19,8 @@ RSpec.describe Cassie::Queries::Statement do
           q.set :id
           q.set :field
         end
+
+        if_not_exists
       end
     end
 
@@ -26,8 +28,11 @@ RSpec.describe Cassie::Queries::Statement do
       object.id = some_id
       object.field = 'value'
       statement = object.statement
-      expect(statement.cql).to eq("INSERT INTO resources (id, field) VALUES (?, ?);")
+      expect(statement.cql).to be_start_with("INSERT INTO resources (id, field) VALUES (?, ?)")
       expect(statement.params).to eq([some_id, 'value'])
+    end
+    it "supports condition" do
+      expect(object.statement.cql).to be_end_with("IF NOT EXISTS;")
     end
   end
   describe "deletion" do

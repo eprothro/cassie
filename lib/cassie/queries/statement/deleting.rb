@@ -1,4 +1,6 @@
 require_relative 'relations'
+require_relative 'conditions'
+require_relative 'mapping'
 
 module Cassie::Queries::Statement
   module Deleting
@@ -12,6 +14,7 @@ module Cassie::Queries::Statement
       #      end
       def delete(table)
         include Relations
+        include Conditions
         include Mapping
 
         self.table = table
@@ -34,15 +37,17 @@ module Cassie::Queries::Statement
     protected
 
     def build_delete_cql_and_bindings
-      where_str, bindings = build_where_and_bindings
+      where_str, where_bindings = build_where_and_bindings
+      condition_str, condition_bindings = build_condition_and_bindings
 
       cql = %(
         DELETE #{build_delete_clause}
           FROM #{table}
           #{where_str}
+          #{condition_str}
       ).squish + ";"
 
-      [cql, bindings]
+      [cql, where_bindings + condition_bindings]
     end
 
     # a select clause is built up of selectors

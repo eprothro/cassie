@@ -86,9 +86,9 @@ query.fetch
 
 <pre><b>
 (2.9ms) SELECT * FROM posts_by_author WHERE user_id = ? LIMIT 1; [[123]]
-</pre></b>
+</b></pre>
 
-These methods are plain old attr_accessors, and may be overriden:
+These methods are plain old attr_accessors, and may be overriden
 
 ```ruby
 select :posts_by_author
@@ -108,8 +108,7 @@ query.fetch
 
 <pre><b>
 (2.9ms) SELECT * FROM posts_by_author WHERE user_id = ? LIMIT 1; [[123]]
-</pre></b>
-```
+</b></pre>
 
 A specific name can be provided for the setter/getter:
 
@@ -127,7 +126,7 @@ query.fetch
 
 <pre><b>
 (2.9ms) SELECT * FROM posts_by_author WHERE user_id = ? LIMIT 1; [[123]]
-</pre></b>
+</b></pre>
 
 #### Conditional relations
 
@@ -137,7 +136,9 @@ query.fetch
   where :author_id, :eq
   where :category, :eq, if: "category.present?"
 ```
+
 or
+
 ```ruby
   select :posts_by_author_category
 
@@ -175,6 +176,7 @@ class UsersByUsernameQuery < Cassie::Query
   end
 end
 ```
+
 ```ruby
 UsersByUsernameQuery.new.find(username: "eprothro")
 => #<User:0x007fedec219cd8 @id=123, @username="eprothro">
@@ -197,6 +199,7 @@ class UpdateUserQuery < Cassandra::Query
 
   map_from :user
 ```
+
 Allowing you to pass an object to the modification method, and binding values will be retrieved from the object
 
 ```ruby
@@ -204,6 +207,7 @@ user
 => #<User:0x007ff8895ce660 @id=6539, @phone="+15555555555", @email="etp@example.com", @address=nil, @username= "etp">
 UpdateUserQuery.new.update(user)
 ```
+
 <pre><b>
 (1.2ms) UPDATE users_by_id (phone, email, address, username) VALUES (?, ?, ?, ?) WHERE id = ?; [["+15555555555", "etp@example.com", nil, "etp", 6539]]
 </b></pre>
@@ -277,7 +281,8 @@ class MySpecialQuery < Cassie::Query
   self.prepare = false
 end
 ```
-```
+
+```ruby
 query = MySpecialQuery.new
 
 # will not prepare statement
@@ -298,6 +303,7 @@ You may set the log level to debug to log execution to STDOUT (by default).
 ```ruby
 Cassie::Queries::Logging.logger.level = Logger::DEBUG
 ```
+
 ```ruby
 SelectUserByUsernameQuery.new('some_user').execute
 (2.9ms) SELECT * FROM users_by_username WHERE username = ? LIMIT 1; [["some_user"]]
