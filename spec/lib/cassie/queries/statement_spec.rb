@@ -3,7 +3,12 @@ RSpec.describe Cassie::Queries::Statement do
     Class.new(Cassie::Query) do
     end
   end
-  let(:object) { klass.new }
+  let(:object) do
+    o = klass.new
+    allow(o).to receive(:execute)
+    allow(o).to receive(:execution_successful?){ succeed? }
+    o
+  end
 
   describe ".select" do
     let(:table_name){ :some_table }
@@ -15,5 +20,8 @@ RSpec.describe Cassie::Queries::Statement do
     it "sets the table name" do
       expect(klass.table).to eq(table_name)
     end
+  end
+
+  describe "#execute" do
   end
 end

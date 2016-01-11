@@ -1,5 +1,6 @@
 require 'active_support/core_ext/string/filters'
 require_relative 'statement/preparation'
+require_relative 'statement/callbacks'
 require_relative 'statement/selection'
 require_relative 'statement/deleting'
 require_relative 'statement/updating'
@@ -13,6 +14,7 @@ module Cassie::Queries
 
     included do
       include Preparation
+      include Callbacks
       include Selection
       include Deleting
       include Updating
@@ -49,7 +51,7 @@ module Cassie::Queries
       if identifier
         send "build_#{identifier}_cql_and_bindings"
       else
-        [cql, bindings]
+        ["", []]
       end
     end
 
