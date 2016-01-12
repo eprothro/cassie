@@ -35,7 +35,7 @@ RSpec.describe Cassie::Queries::Statement::Fetching do
     it "returns a single row" do
       expect(object.find![:tag]).to eq(row[:tag])
     end
-    context "when no results" do
+    context "when no rows" do
       let(:rows){ [] }
 
       it "raises an exception" do

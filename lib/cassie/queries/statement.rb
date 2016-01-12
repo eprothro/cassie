@@ -1,6 +1,8 @@
 require 'active_support/core_ext/string/filters'
 require_relative 'statement/preparation'
 require_relative 'statement/callbacks'
+require_relative 'statement/limiting'
+require_relative 'statement/pagination'
 require_relative 'statement/selection'
 require_relative 'statement/deleting'
 require_relative 'statement/updating'
@@ -15,6 +17,8 @@ module Cassie::Queries
     included do
       include Preparation
       include Callbacks
+      include Limiting
+      include Pagination
       include Selection
       include Deleting
       include Updating
@@ -24,7 +28,7 @@ module Cassie::Queries
 
       class << self
         attr_accessor :table
-        attr_accessor :identifier
+        attr_accessor :type
       end
     end
 
@@ -48,10 +52,10 @@ module Cassie::Queries
     protected
 
     def build_cql_and_bindings
-      if identifier
-        send "build_#{identifier}_cql_and_bindings"
+      if type
+        send "build_#{type}_cql_and_bindings"
       else
-        ["", []]
+        raise "No statement type has been declared. Call `.select`, `.update`, `.delete`, or `.insert` to set query type."
       end
     end
 
@@ -70,8 +74,8 @@ module Cassie::Queries
 
     private
 
-    def identifier
-      self.class.identifier
+    def type
+      self.class.type
     end
 
     def eval_if_opt?(value)

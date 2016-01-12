@@ -11,7 +11,7 @@ module Cassie::Queries::Statement
         include Conditions
 
         self.table = table
-        self.identifier = :insert
+        self.type = :insert
 
         yield(self) if block_given?
       end

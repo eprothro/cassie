@@ -32,7 +32,7 @@ module Cassie::Queries::Statement
         #      if value option was nil and we
         #      are implicilty creating getter/setters.
         if method_defined?(name) || method_defined?("#{name}=")
-          raise "accessor or getter already defined for #{name}. Fix the collions by using the `:value` option."
+          raise "accessor or getter already defined for #{name}. Fix the collisions by using the `:value` option."
         else
           attr_accessor name
         end

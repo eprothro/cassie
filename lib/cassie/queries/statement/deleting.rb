@@ -18,7 +18,7 @@ module Cassie::Queries::Statement
         include Mapping
 
         self.table = table
-        self.identifier = :delete
+        self.type = :delete
 
         yield(self) if block_given?
       end

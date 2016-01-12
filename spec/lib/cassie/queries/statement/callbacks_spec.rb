@@ -1,21 +1,3 @@
-#TODO: figure out a better way to do a test harness
-class FakeSession
-  class FakeBoundStatement
-    def bind(*args)
-    end
-  end
-  def execute(*args)
-  end
-  def prepare(*args)
-    FakeBoundStatement.new
-  end
-end
-class Cassie::Query
-  def self.session
-    FakeSession.new
-  end
-end
-
 RSpec.describe Cassie::Queries::Statement::Callbacks do
   let(:klass) do
     Class.new(Cassie::Query) do
@@ -28,9 +10,10 @@ RSpec.describe Cassie::Queries::Statement::Callbacks do
     o
   end
 
-  describe ".after_failure", :only do
+  describe ".after_failure" do
     let(:klass) do
       Class.new(Cassie::Query) do
+        insert :users
         after_failure :foo
         def foo
         end
