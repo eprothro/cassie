@@ -45,7 +45,7 @@ RSpec.describe Cassie::Queries::Statement::Mapping do
       object.user = user
       expect(object.id).to eq(user.id)
     end
-    context "when accessor overridden" do
+    context "when accessor overwritten" do
       let(:klass) do
         Class.new(base_class) do
           insert :users_by_username
@@ -54,13 +54,13 @@ RSpec.describe Cassie::Queries::Statement::Mapping do
           map_from :user
 
           def id
-            "override"
+            "overrwrite"
           end
         end
       end
       it "returns resource value" do
         object.user = user
-        expect(object.id).to eq("override")
+        expect(object.id).to eq("overrwrite")
       end
     end
   end

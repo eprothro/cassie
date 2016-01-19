@@ -12,7 +12,7 @@ module Cassie::Queries::Statement
         include Conditions
 
         self.table = table
-        self.identifier = :update
+        self.type = :update
 
         yield(self) if block_given?
       end

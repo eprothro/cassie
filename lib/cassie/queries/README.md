@@ -58,15 +58,17 @@ CQL algebra is less complex than with SQL. So, rather than introducing a query a
   SELECT *
   FROM posts_by_author_category
   WHERE author_id = ?
-  AND category = ?;
+  AND category = ?
+  LIMIT 30;
 ```
 ```ruby
   select :posts_by_author_category
   where :author_id, :eq
   where :category, :eq
+  limit 30
 ```
 
-This maintains the clarity of your CQL, but allows you to be expressive by using additional features and not having get crazy with string manipulation.
+This maintains the clarity of your CQL, allowing you to be expressive, but still use additional features without having get crazy with string manipulation.
 
 #### Dynamic term values
 
@@ -212,7 +214,7 @@ UpdateUserQuery.new.update(user)
 (1.2ms) UPDATE users_by_id (phone, email, address, username) VALUES (?, ?, ?, ?) WHERE id = ?; [["+15555555555", "etp@example.com", nil, "etp", 6539]]
 </b></pre>
 
-#### Cursored paging (WIP)
+#### Cursored paging
 
 Read about [cursored pagination](https://www.google.com/webhp?q=cursored%20paging#safe=off&q=cursor+paging) if unfamiliar with concept and how it optimizes paging through frequently updated data sets and I/O bandwidth.
 
@@ -246,7 +248,7 @@ q.next_max_id
 # => nil
 ```
 
-The `cursored_by` helper can be used as shorthand for defining these relations for which you wish to use cursors.
+The `cursor_by` helper can be used as shorthand for defining these relations for which you wish to use cursors.
 ```ruby
 class MyPagedQuery < Cassie::Query
   include CassandraSession
@@ -255,7 +257,7 @@ class MyPagedQuery < Cassie::Query
 
   where :user_id, :eq
 
-  cursored_by :event_id
+  cursor_by :event_id
 end
 ```
 
@@ -293,12 +295,19 @@ set_2 = query.fetch([7, 8, 9, 10, 11, 12])
 
 #### Unbound statements
 
-override `#statement`
+Cassie Query features are built around bound statements. However, we've tried to keep a simple ruby design in place to make custom behavior easier. If you want to override the assumption of bound statements, simply override `#statement`, returnign something that a `Cassandra::Session` can execute.
 
+```ruby
+class NotSureWhyIWouldDoThisButHereItIsQuery < Cassie::Query
+  def statement
+    "SELECT * FROM users WHERE id IN (1,2,3);"
+  end
+end
+```
 
 #### Logging
 
-You may set the log level to debug to log execution to STDOUT (by default).
+Set the log level to debug to log execution details.
 
 ```ruby
 Cassie::Queries::Logging.logger.level = Logger::DEBUG
@@ -307,4 +316,10 @@ Cassie::Queries::Logging.logger.level = Logger::DEBUG
 ```ruby
 SelectUserByUsernameQuery.new('some_user').execute
 (2.9ms) SELECT * FROM users_by_username WHERE username = ? LIMIT 1; [["some_user"]]
+```
+
+Logs to STDOUT by default. Set any log stream you wish.
+
+```ruby
+  Cassie::Queries::Logging.logger = my_app.config.logger
 ```

@@ -70,9 +70,5 @@ module Cassie::Queries::Statement
       # we always generate bound statements
       @cql ||= "#{identifier} #{OPERATIONS[op_type]} ?"
     end
-
-    def op_type
-      @op_type
-    end
   end
 end

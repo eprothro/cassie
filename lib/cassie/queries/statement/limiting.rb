@@ -3,15 +3,26 @@ module Cassie::Queries::Statement
     extend ActiveSupport::Concern
 
     included do
-      attr_accessor :limit
+      attr_writer :limit
+    end
 
-      class << self
-        attr_accessor :limit
+    module ClassMethods
+      def limit=(val)
+        @limit = val
+      end
+
+      def limit(val=:get)
+        if val == :get
+          @limit if defined?(@limit)
+        else
+          self.limit = val
+        end
       end
     end
 
     def limit
-      @limit || self.class.limit
+      return @limit if defined?(@limit)
+      self.class.limit
     end
 
     protected

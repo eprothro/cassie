@@ -5,9 +5,7 @@ RSpec.describe Cassie::Queries::Statement::Relations do
       include Cassie::Queries::Statement::Relations
     end
   end
-  let(:object) do
-      o = klass.new
-  end
+  let(:object){ klass.new }
 
   describe "#where" do
     it "allows custom defintion" do

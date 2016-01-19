@@ -1,5 +1,6 @@
 require_relative 'relations'
 require_relative 'limiting'
+require_relative 'pagination'
 require_relative 'ordering'
 require_relative 'fetching'
 
@@ -15,12 +16,11 @@ module Cassie::Queries::Statement
       #      end
       def select(table)
         include Relations
-        include Limiting
         include Ordering
         include Fetching
 
         self.table = table
-        self.identifier = :select
+        self.type = :select
 
         yield(self) if block_given?
       end
