@@ -9,7 +9,7 @@ RSpec.describe Cassie::Queries::Statement::Fetching do
   end
   let(:object) do
     object = klass.new
-    object.session.next_rows = rows
+    object.session.rows = rows
     object
   end
   let(:rows){ [row] }
@@ -25,6 +25,7 @@ RSpec.describe Cassie::Queries::Statement::Fetching do
       }.to change{object.foo}.to('bar')
     end
   end
+
   describe "find" do
     it "returns a single row" do
       expect(object.find[:tag]).to eq(row[:tag])
@@ -39,6 +40,7 @@ RSpec.describe Cassie::Queries::Statement::Fetching do
       expect{object.find}.not_to change{object.limit}
     end
   end
+
   describe "find!" do
     it "returns a single row" do
       expect(object.find![:tag]).to eq(row[:tag])
