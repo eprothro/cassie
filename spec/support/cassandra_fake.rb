@@ -1,6 +1,6 @@
 #TODO: figure out a better way to do a test harness
 module CassandraFake
-  class BoundStatement
+  class PreparedStatement
     attr_reader :statement
 
     def initialize(statement)
@@ -50,12 +50,16 @@ module CassandraFake
   end
 
   class Session
+    attr_reader :last_statement
+    attr_accessor :next_rows
+
     def execute(statement, *args)
-      Result.new(statement)
+      @last_statement = statement
+      Result.new(statement, rows: next_rows)
     end
 
     def prepare(statement)
-      BoundStatement.new(statement)
+      PreparedStatement.new(statement)
     end
   end
 end

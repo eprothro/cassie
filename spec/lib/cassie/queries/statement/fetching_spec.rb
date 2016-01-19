@@ -8,13 +8,12 @@ RSpec.describe Cassie::Queries::Statement::Fetching do
     end
   end
   let(:object) do
-      o = klass.new
-      allow(o).to receive(:execute)
-      allow(o).to receive(:result){ double(rows: rows) }
-      o
+    object = klass.new
+    object.session.next_rows = rows
+    object
   end
-  let(:row){ {tag: 'tag'} }
   let(:rows){ [row] }
+  let(:row){ {tag: 'tag'} }
 
   describe "#fetch" do
     it "returns rows" do
@@ -29,6 +28,15 @@ RSpec.describe Cassie::Queries::Statement::Fetching do
   describe "find" do
     it "returns a single row" do
       expect(object.find[:tag]).to eq(row[:tag])
+    end
+    it "limits the query results returned" do
+      object.find
+
+      expect(object.session.last_statement.cql).to match(/LIMIT 1/)
+    end
+    it "does not limit future queries" do
+      object.limit = 2
+      expect{object.find}.not_to change{object.limit}
     end
   end
   describe "find!" do

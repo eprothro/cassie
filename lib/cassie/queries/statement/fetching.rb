@@ -38,7 +38,11 @@ module Cassie::Queries::Statement
 
       fetch.first
     ensure
-      self.limit = old_limit
+      if old_limit
+        @limit = old_limit
+      else
+        remove_instance_variable(:@limit)
+      end
     end
 
     # Returns first result or raises RecordNotFound

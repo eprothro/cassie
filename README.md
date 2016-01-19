@@ -7,6 +7,7 @@ Cassie provides support for the components most applications need to work with a
 * Database configuration and efficient session management
 * Versioned schema migrations
 * Query classes
+* Test harnessing
 
 ### Installation
 
@@ -41,4 +42,8 @@ Link to more info in the `migrations` README.
 
 Essence of features/usage.
 
-For more details and examples, read bout [queries](lib/cassie/queries#readme).
+### Test Harnessing
+
+Essence of features/usage.
+
+Link to more info in the `testing` README.
