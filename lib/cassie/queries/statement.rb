@@ -52,8 +52,8 @@ module Cassie::Queries
     protected
 
     def build_cql_and_bindings
-      if type
-        send "build_#{type}_cql_and_bindings"
+      if self.class.type
+        send "build_#{self.class.type}_cql_and_bindings"
       else
         raise "No statement type has been declared. Call `.select`, `.update`, `.delete`, or `.insert` to set query type."
       end
@@ -73,10 +73,6 @@ module Cassie::Queries
     end
 
     private
-
-    def type
-      self.class.type
-    end
 
     def eval_if_opt?(value)
       case value
