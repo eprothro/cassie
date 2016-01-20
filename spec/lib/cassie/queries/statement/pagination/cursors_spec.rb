@@ -102,10 +102,9 @@ RSpec.describe Cassie::Queries::Pagination::Cursors do
     end
     context "when query has executed" do
       before(:each) do
-        allow(object.session).to receive(:execute){result}
+        object.session.rows = rows
         object.execute
       end
-      let(:result){ CassandraFake::Result.new(object.statement, rows: rows) }
       let(:rows){ [] }
 
       context "when there is a next record" do
