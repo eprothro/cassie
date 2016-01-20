@@ -1,5 +1,5 @@
 RSpec.describe Cassie::Queries::Statement::Preparation do
-  let(:base_class){ Cassie::Query }
+  let(:base_class){ Cassie::FakeQuery }
   let(:klass) do
     Class.new(base_class) do
       attr_accessor :add_constraint

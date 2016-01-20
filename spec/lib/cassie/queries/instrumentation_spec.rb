@@ -1,6 +1,6 @@
 RSpec.describe Cassie::Queries::Instrumentation do
   let(:klass) do
-    Class.new(Cassie::Query) do
+    Class.new(Cassie::FakeQuery) do
     end
   end
   let(:object) { klass.new }
@@ -8,7 +8,7 @@ RSpec.describe Cassie::Queries::Instrumentation do
   describe "#execute" do
     let(:statement){ "statement" }
     let(:klass) do
-      Class.new(Cassie::Query) do
+      Class.new(Cassie::FakeQuery) do
       end
     end
     it "instruments the execution as `cql.execute`" do

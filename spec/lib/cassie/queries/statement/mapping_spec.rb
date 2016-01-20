@@ -1,7 +1,7 @@
 require 'support/resource'
 
 RSpec.describe Cassie::Queries::Statement::Mapping do
-  let(:base_class){ Cassie::Query }
+  let(:base_class){ Cassie::FakeQuery }
   let(:klass) do
     Class.new(base_class) do
       insert :users_by_username

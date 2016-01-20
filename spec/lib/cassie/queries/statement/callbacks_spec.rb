@@ -1,6 +1,6 @@
 RSpec.describe Cassie::Queries::Statement::Callbacks do
   let(:klass) do
-    Class.new(Cassie::Query) do
+    Class.new(Cassie::FakeQuery) do
     end
   end
   let(:succeed?) { true }
@@ -12,7 +12,7 @@ RSpec.describe Cassie::Queries::Statement::Callbacks do
 
   describe ".after_failure" do
     let(:klass) do
-      Class.new(Cassie::Query) do
+      Class.new(Cassie::FakeQuery) do
         insert :users
         after_failure :foo
         def foo

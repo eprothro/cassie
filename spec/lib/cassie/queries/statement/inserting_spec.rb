@@ -1,5 +1,5 @@
 RSpec.describe Cassie::Queries::Statement::Inserting do
-  let(:base_class){ Cassie::Query }
+  let(:base_class){ Cassie::FakeQuery }
   let(:klass) do
     Class.new(base_class) do
       delete :resources_by_id

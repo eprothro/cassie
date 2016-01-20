@@ -1,6 +1,6 @@
 RSpec.describe Cassie::Queries::Pagination::Cursors do
   let(:klass) do
-    Class.new(Cassie::Query) do
+    Class.new(Cassie::FakeQuery) do
       select :users
     end
   end
@@ -11,7 +11,7 @@ RSpec.describe Cassie::Queries::Pagination::Cursors do
 
   describe ".max_cursor" do
     let(:klass) do
-      Class.new(Cassie::Query) do
+      Class.new(Cassie::FakeQuery) do
         select :users
         max_cursor :field
       end
@@ -28,7 +28,7 @@ RSpec.describe Cassie::Queries::Pagination::Cursors do
 
   describe ".since_cursor" do
     let(:klass) do
-      Class.new(Cassie::Query) do
+      Class.new(Cassie::FakeQuery) do
         select :users
         since_cursor :field
       end
@@ -56,7 +56,7 @@ RSpec.describe Cassie::Queries::Pagination::Cursors do
 
   describe "#statement" do
     let(:klass) do
-      Class.new(Cassie::Query) do
+      Class.new(Cassie::FakeQuery) do
         select :users
         cursor_by :field
       end
@@ -94,7 +94,7 @@ RSpec.describe Cassie::Queries::Pagination::Cursors do
 
   describe "#next_max_field" do
     let(:klass) do
-      Class.new(Cassie::Query) do
+      Class.new(Cassie::FakeQuery) do
         select :users
         cursor_by :id
         self.page_size = 1

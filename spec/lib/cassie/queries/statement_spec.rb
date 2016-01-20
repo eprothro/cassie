@@ -1,6 +1,6 @@
 RSpec.describe Cassie::Queries::Statement do
   let(:klass) do
-    Class.new(Cassie::Query) do
+    Class.new(Cassie::FakeQuery) do
     end
   end
   let(:object) do
@@ -13,7 +13,7 @@ RSpec.describe Cassie::Queries::Statement do
   describe ".select" do
     let(:table_name){ :some_table }
     let(:klass) do
-      Class.new(Cassie::Query) do
+      Class.new(Cassie::FakeQuery) do
         select :some_table
       end
     end

@@ -1,6 +1,6 @@
 RSpec.describe Cassie::Queries::Statement::Limiting do
   let(:klass) do
-    Class.new(Cassie::Query) do
+    Class.new(Cassie::FakeQuery) do
       select :users
     end
   end
@@ -15,7 +15,7 @@ RSpec.describe Cassie::Queries::Statement::Limiting do
     end
     context "when class has limit" do
       let(:klass) do
-        Class.new(Cassie::Query) do
+        Class.new(Cassie::FakeQuery) do
           select :users
 
           limit 1

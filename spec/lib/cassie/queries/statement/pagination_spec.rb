@@ -1,5 +1,5 @@
 RSpec.describe Cassie::Queries::Pagination do
-  let(:base_class){ Cassie::Query }
+  let(:base_class){ Cassie::FakeQuery }
   let(:subclass) do
     Class.new(base_class) do
       select :users
