@@ -1,0 +1,29 @@
+#! ruby
+require_relative '../lib/cassie/configuration/generator'
+
+def color(message)
+  "\e[1;31m#{message}\e[0m"
+end
+
+def generate_config
+  opts = {}
+  if ARGV[1]
+    opts[:destination_path] = if ARGV[1][0] == "/"
+      # cassie configuration:generate /usr/var/my_config_dir/cassandra_db.yml
+      ARGV[1]
+    else
+      # cassie configuration:generate my_config_dir/cassandra_db.yml
+      File.join(Dir.pwd, ARGV[1])
+    end
+  end
+  opts[:app_name]         = ARGV[2] if ARGV[2]
+
+  Cassie::Configuration::Generator.new(opts).save
+end
+
+case ARGV[0]
+when "configuration:generate"
+  generate_config
+else
+  puts color("`#{ARGV[0]}` is not a supported command. Did you mean `cassie configuration:generate`?")
+end
