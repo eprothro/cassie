@@ -1,4 +1,5 @@
 require 'active_support/core_ext/string/filters'
+require 'active_support/hash_with_indifferent_access'
 require_relative 'statement/preparation'
 require_relative 'statement/callbacks'
 require_relative 'statement/limiting'

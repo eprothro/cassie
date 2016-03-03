@@ -9,6 +9,8 @@ Cassie provides support for the components most applications need to work with a
 * Query classes
 * Test harnessing
 
+Each component attempts to adhere to a "take it or leave it" mindset. A given application may only use `Cassie::Connection` and nothing else -- `cassie` attempts to support use cases such as that in a lightweight and straightforward manner.
+
 ### Installation
 
 ```ruby
@@ -28,13 +30,71 @@ Cassie provies database connection configuration (e.g. cluster and session) per 
 cassie config:generate
 ```
 
-See the [`Cassie::Configuration` README](./lib/cassie/configuration/README.md#readme) for more on features and usage.
+`Cassie::configurations` are loaded from this file during runtime.
 
-### Session Management
+```ruby
+Cassie.confurations
+=> {"development"=>{"hosts"=>["127.0.0.1"], "port"=>9042, "keyspace"=>"my_app_development"}, "test"=>{"hosts"=>["127.0.0.1"], "port"=>9042, "idle_timeout"=>"nil", "keyspace"=>"my_app_test"}, "production"=>{"hosts"=>["cass1.my_app.biz", "cass2.my_app.biz", "cass3.my_app.biz"], "port"=>9042, "keyspace"=>"my_app_production"}}
+```
 
-Essence of features/usage.
+Setting `Cassie::env` results in the corresponding `Cassie::configuration` being used.
 
-Link to more info in the `configuration` README.
+```ruby
+Cassie.env = :production
+
+Cassie.configuration
+{"hosts"=>["cass1.my_app.biz", "cass2.my_app.biz", "cass3.my_app.biz"], "port"=>9042, "keyspace"=>"my_app_production"}
+
+Cassie.keyspace
+=> 'my_app_production'
+```
+
+See the [`Configuration` README](./lib/cassie/configuration/README.md#readme) for more on features and usage.
+
+
+### Connection Handling
+
+Cassie provides cluster and session connection creation according to `cassie-driver` [best practices](http://www.datastax.com/dev/blog/4-simple-rules-when-using-the-datastax-drivers-for-cassandra).
+
+##### Using global cluster and session objects
+
+`cluster` and `session` objects are created, cached in `sessions` and reused globally.
+
+```ruby
+# continuing from above 'production' configuration
+
+Cassie.cluster
+=> #<Cassandra::Cluster:0x3fc087f7f9b8> #<= configured with production options
+
+Cassie.session
+=> #<Cassandra::Session:0x3fc084caa344> #<= session scoped to 'my_app_production' keyspace
+
+Cassie.session(nil)
+=> #<Cassandra::Session:0x3fc084caa344> #<= session without scoped keyspace
+
+Cassie.session('my_other_keyspace')
+=> #<Cassandra::Session:0x3fc084caa344> #<= session scoped to 'my_other_keyspace' keyspace
+```
+
+If using Cassie Configuration as described above via `cassandra.yml`, cluster configuration will happen automatically. If not, assign a cluster options hash to `Cassie.configuration` before using a `cluster` or `session`.
+
+##### Using cluster and session objects in Classes
+
+Including `Cassie::Connection` in a class provides `session` (among others) class and instance convenience methods.
+
+```ruby
+class MyQuery
+  include Cassie::Connection
+
+  def find_user(id)
+    # session is a vanilla Cassandra::Session
+    session.execute('SELECT * FROM my_keyspace.users WHERE id = ?;', arguments: [id])
+  end
+end
+```
+
+See the [Connection README](./lib/cassie/connection_handler/README.md#readme) for more on features and usage.
+
 
 ### Versioned Migrations
 
@@ -42,10 +102,11 @@ Essence of features/usage.
 
 Link to more info in the `migrations` README.
 
+
 ### Query Classes
 
 Cassie provides Query Classes to manage interactions to the database. This approach offers easier testing as well as better clarity and maintainability.
-Inherit query classes from Cassie::Query and construct your query with a simple CQL DSL.
+Inherit query classes from Cassie::Query and construct queries with a simple CQL DSL.
 
 ```
 class UserByUsernameQuery < Cassie::Query
