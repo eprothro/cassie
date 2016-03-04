@@ -95,7 +95,7 @@ Cassie.keyspace
 object = Analytics::HelpfulCounter.new
 
 object.keyspace
-=> "analytics_keyspace"
+=> :analytics_keyspace
 
 object.user_count
 => 300715
@@ -104,7 +104,7 @@ object.user_count
 
 Or at the object level
 
-```
+```ruby
 Cassie.keyspace
 => "default_keyspace"
 

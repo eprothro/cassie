@@ -81,15 +81,17 @@ If using Cassie Configuration as described above via `cassandra.yml`, cluster co
 
 ##### Using cluster and session objects in Classes
 
-Including `Cassie::Connection` in a class provides `session` (among others) class and instance convenience methods.
+Include `Cassie::Connection` in a class for `session` and `keyspace` functionality in your objects.
 
 ```ruby
 class MyQuery
   include Cassie::Connection
 
+  keyspace :some_other_keyspace
+
   def find_user(id)
     # session is a vanilla Cassandra::Session
-    session.execute('SELECT * FROM my_keyspace.users WHERE id = ?;', arguments: [id])
+    session.execute('SELECT * FROM users WHERE id = ?;', arguments: [id])
   end
 end
 ```
