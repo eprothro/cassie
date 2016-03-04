@@ -23,13 +23,13 @@ $ gem install cassie --pre
 
 ### Database Configuration
 
-Cassie provies database connection configuration (e.g. cluster and session) per environment. A default YAML back-end is provided.
+Cassie provies database connection configuration (e.g. cluster and session) per environment. Support for a default YAML back-end is provided.
 
-```
-cassie config:generate
+```bash
+$ cassie config:generate
 ```
 
-`Cassie::configurations` are loaded from this file during runtime.
+`Cassie::configurations` are loaded from the generated file during runtime.
 
 ```ruby
 Cassie.confurations
@@ -39,7 +39,7 @@ Cassie.confurations
 Setting `Cassie::env` results in the corresponding `Cassie::configuration` being used.
 
 ```ruby
-Cassie.env = :production
+Cassie.env = "production"
 
 Cassie.configuration
 {"hosts"=>["cass1.my_app.biz", "cass2.my_app.biz", "cass3.my_app.biz"], "port"=>9042, "keyspace"=>"my_app_production"}
@@ -109,7 +109,7 @@ Link to more info in the `migrations` README.
 Cassie provides a base Query Class to manage interactions to the database.
 Create your own subclasses and construct queries with a simple CQL DSL.
 
-```
+```ruby
 class UserByUsernameQuery < Cassie::Query
 
   select :users_by_username
@@ -129,7 +129,7 @@ See the [Query README](./lib/cassie/queries/README.md#readme) for more on featur
 
 Avoid making queries into the persistnace layer when you can afford it.
 
-```
+```ruby
 some_query = SomeQuery.new
 some_query.extend(Cassie::Testing::Fake::Query)
 some_query.session
