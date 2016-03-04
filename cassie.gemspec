@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'cassie'
-  s.version     = '1.0.0.alpha.10'
+  s.version     = '1.0.0.alpha.15'
   s.summary     = "Apache Cassandra application support"
   s.description = <<-EOS.strip.gsub(/\s+/, ' ')
     Cassie provides database configration, versioned migrations,
@@ -10,15 +10,18 @@ Gem::Specification.new do |s|
   EOS
   s.authors     = ["Evan Prothro"]
   s.email       = 'evan.prothro@gmail.com'
-  s.files      += Dir['lib/**/*.rb']
+  s.files      += Dir['lib/**/*.*']
   s.homepage    = 'https://github.com/eprothro/cassie'
   s.license     = 'MIT'
 
   s.add_runtime_dependency 'cassandra-driver', '~> 2.0'
   s.add_runtime_dependency 'activesupport', '~> 4.2'
+  s.add_runtime_dependency 'rake', '~> 10.3'
+
+  s.executables << 'cassie'
 
   s.add_development_dependency 'rspec', '~> 3.4'
-  s.add_development_dependency 'byebug'
-  s.add_development_dependency 'pry'
-  s.add_development_dependency 'benchmark-ips'
+  s.add_development_dependency 'byebug', '>= 0'
+  s.add_development_dependency 'pry', '>= 0'
+  s.add_development_dependency 'benchmark-ips', '>= 0'
 end

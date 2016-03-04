@@ -5,6 +5,6 @@ module Cassie
   end
 
   class FakeQuery < Cassie::Query
-    extend Cassie::Testing::Fake::SessionMethods
+    include Cassie::Testing::Fake::SessionMethods
   end
 end

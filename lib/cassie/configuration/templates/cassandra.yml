@@ -1,0 +1,30 @@
+# Generated and used by Cassie::Configuration.
+#
+# Per-enviornment options are passed to `cassandra-driver` during
+# cluster creation and used to determine default keyspace for session creation.
+# See valid options and values for cluster configuration at:
+# http://datastax.github.io/ruby-driver/api/#cluster-class_method
+
+development:
+  hosts:
+    - 127.0.0.1
+  port: 9042
+  reconnection_policy: <%%= Cassandra::Reconnection::Policies::Exponential.new(0.5, 60, 2) %>
+  keyspace: <%=app_name%>_development
+
+test:
+  hosts:
+    - 127.0.0.1
+  port: 9042
+  idle_timeout: nil
+  keyspace: <%=app_name%>_test
+
+production:
+  hosts:
+    - cass1.<%=app_name%>.biz
+    - cass2.<%=app_name%>.biz
+    - cass3.<%=app_name%>.biz
+  port: 9042
+#  username: 'cassandra_web_server_user'
+#  password: 'cassandra_web_server_password'
+  keyspace: <%=app_name%>_production
