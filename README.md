@@ -1,6 +1,4 @@
-# cassie
-
-This is in alpha stages. We're iterating to provide important features in a lightweight and loosely coupled way.
+# Cassie
 
 Cassie provides support for the components most applications need to work with a Cassandra persistence layer:
 
@@ -9,7 +7,8 @@ Cassie provides support for the components most applications need to work with a
 * Query classes
 * Test harnessing
 
-Each component attempts to adhere to a "take it or leave it" mindset. A given application may only use `Cassie::Connection` and nothing else -- `cassie` attempts to support use cases such as that in a lightweight and straightforward manner.
+Each component attempts to adhere to a "take it or leave it" mindset. A given application may only use `Cassie::Connection` and nothing else.
+Cassie attempts to support use cases such as that in a lightweight and straightforward manner.
 
 ### Installation
 
@@ -50,6 +49,8 @@ Cassie.keyspace
 ```
 
 See the [`Configuration` README](./lib/cassie/configuration/README.md#readme) for more on features and usage.
+
+See [`cassie-rails`](https://github.com/eprothro/cassie-rails) for Rails integration with Cassie if you're using Rails.
 
 
 ### Connection Handling
@@ -105,8 +106,8 @@ Link to more info in the `migrations` README.
 
 ### Query Classes
 
-Cassie provides Query Classes to manage interactions to the database. This approach offers easier testing as well as better clarity and maintainability.
-Inherit query classes from Cassie::Query and construct queries with a simple CQL DSL.
+Cassie provides a base Query Class to manage interactions to the database.
+Create your own subclasses and construct queries with a simple CQL DSL.
 
 ```
 class UserByUsernameQuery < Cassie::Query
@@ -114,22 +115,30 @@ class UserByUsernameQuery < Cassie::Query
   select :users_by_username
 
   where :username, :eq
-
-  def build_resource(row)
-    User.new(row)
-  end
 end
 ```
 
 ```ruby
 UserByUsernameQuery.new.find(username: "eprothro")
-=> #<User:0x007fedec219cd8 @id=123, @username="eprothro">
+=> #<Struct user_id=123, username="eprothro">
 ```
 
-See the [`Cassie::Query` README](./lib/cassie/queries/README.md#readme) for more on features and usage.
+See the [Query README](./lib/cassie/queries/README.md#readme) for more on features and usage.
 
 ### Test Harnessing
 
-Essence of features/usage.
+Avoid making queries into the persistnace layer when you can afford it.
 
-Link to more info in the `testing` README.
+```
+some_query = SomeQuery.new
+some_query.extend(Cassie::Testing::Fake::Query)
+some_query.session
+=> #<Cassie::Testing::Fake::Session::Session:0x007fd03e29a688>
+
+some_query.execute
+
+some_query.session.last_statement
+=> #<Cassandra::Statements::Simple:0x3ffde09930b8 @cql="SELECT * FROM users LIMIT 1;" @params=[]>
+```
+
+See the [Testing README](./lib/cassie/testing/README.md#readme) for more on features and usage.

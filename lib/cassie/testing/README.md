@@ -21,11 +21,11 @@ another_query.session
 Stubbing a class will apply to all objects of that class.
 
 ```ruby
-SomeQuery.extend(Cassie::Testing::Fake::Query)
-SomeQuery.session
-=> #<Cassie::Testing::Fake::Session::Session:0x007fd03e29a688>
+SomeQuery.include(Cassie::Testing::Fake::Query)
 SomeQuery.new.session
 => #<Cassie::Testing::Fake::Session::Session:0x007fd03e29a688>
+SomeQuery.new.session
+=> #<Cassie::Testing::Fake::Session::Session:0x007fd03e3577a8>
 ```
 
 If you're testing query extensions you have created, it may be more DRY to use a `Cassie::FakeQuery`, which is simply a child of `Cassie::Query` that has already extended `Cassie::Testing::Fake::Query`.
@@ -33,7 +33,7 @@ If you're testing query extensions you have created, it may be more DRY to use a
 ```ruby
 class TestQuery < Cassie::FakeQuery
 end
-TestQuery.session
+TestQuery.new.session
 => #<Cassie::Testing::Fake::Session::Session:0x007fd03e29a688>
 ```
 

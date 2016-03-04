@@ -36,10 +36,6 @@ MyInsertionQuery.new.insert(user)
 
 ```ruby
 class MyInsertionQuery < Cassie::Query
-  # Include some code that defines a `.session` class method
-  # that returns a valid Cassandra Session object for the
-  # keyspace that needs to be operated on
-  include MyCassandraSession
 
   insert :users_by_username do |u|
     u.id,
@@ -167,7 +163,6 @@ Override `build_resource` to construct more useful objects
 
 ```
 class UsersByUsernameQuery < Cassie::Query
-  include CassandraSession
 
   select :users_by_username
 
@@ -188,7 +183,6 @@ For Data Modification Queries (`insert`, `update`, `delete`), mapping binding va
 
 ```ruby
 class UpdateUserQuery < Cassandra::Query
-  include CassandraSession
 
   update :users_by_id do |q|
     q.set :phone
@@ -220,7 +214,6 @@ Read about [cursored pagination](https://www.google.com/webhp?q=cursored%20pagin
 
 ```ruby
 class MyPagedQuery < Cassie::Query
-  include CassandraSession
 
   select :events_by_user
 
@@ -251,7 +244,6 @@ q.next_max_id
 The `cursor_by` helper can be used as shorthand for defining these relations for which you wish to use cursors.
 ```ruby
 class MyPagedQuery < Cassie::Query
-  include CassandraSession
 
   select :events_by_user
 
@@ -270,7 +262,6 @@ To not use prepared statements for a particular query, disable the `.prepare` cl
 
 ```ruby
 class MySpecialQuery < Cassie::Query
-  include CassandraSession
 
   select :users_by_some_value do
     where :bucket

@@ -5,28 +5,27 @@ RSpec.describe Cassie::Testing::Fake::SessionMethods do
   end
   let(:object) { klass.new }
 
-  context "when extending a query class" do
-    let(:klass){ super().extend(Cassie::Testing::Fake::SessionMethods) }
+  context "when appending a query class" do
+    let(:klass){ super().include(Cassie::Testing::Fake::SessionMethods) }
 
     describe ".session" do
       it "is a fake session" do
-        expect(object.class.session).to be_a(Cassie::Testing::Fake::Session)
+        expect(object.session).to be_a(Cassie::Testing::Fake::Session)
       end
       it "returns the same object on subsequent calls" do
-        expect(object.class.session).to equal(object.class.session)
+        # TODO: reworking test harnessing
+        # based on new Configuration and Connection architecture
+        expect(object.session).to equal(object.session)
       end
     end
   end
 
-  context "when extending a query object" do
+  context "when appending a query object" do
     let(:object){ super().extend(Cassie::Testing::Fake::SessionMethods) }
 
     describe "#session" do
       it "is a fake session" do
         expect(object.session).to be_a(Cassie::Testing::Fake::Session)
-      end
-      it "returns the same object as the class" do
-        expect(object.session).to equal(object.class.session)
       end
     end
     it "doesn't change the class session" do
