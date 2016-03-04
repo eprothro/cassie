@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'cassie'
-  s.version     = '1.0.0.alpha.15'
+  s.version     = '1.0.0.alpha.16'
   s.summary     = "Apache Cassandra application support"
   s.description = <<-EOS.strip.gsub(/\s+/, ' ')
     Cassie provides database configration, versioned migrations,
@@ -16,7 +16,6 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'cassandra-driver', '~> 2.0'
   s.add_runtime_dependency 'activesupport', '~> 4.2'
-  s.add_runtime_dependency 'rake', '~> 10.3'
 
   s.executables << 'cassie'
 
