@@ -20,7 +20,7 @@ module Cassie::ConnectionHandler
         _session = cluster.connect(_keyspace)
       end
 
-      logger.info "Session opened to Cassandra[#{_keyspace}] (#{sec.round(3)}s)"
+      logger.info "(#{(sec/1000.0).round(2)}ms) Session opened to Cassandra[#{_keyspace}]"
       @sessions[_keyspace] = _session
     end
   end

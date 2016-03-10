@@ -42,7 +42,7 @@ RSpec.describe Cassie::ConnectionHandler::Sessions do
         it "logs connection timing" do
           allow(cluster).to receive(:connect).with(keyspace)
 
-          expect(mod.logger).to receive(:info).with(/session.*(.*s)/i)
+          expect(mod.logger).to receive(:info).with(/(.*ms).*session/i)
 
           mod.session(keyspace)
         end

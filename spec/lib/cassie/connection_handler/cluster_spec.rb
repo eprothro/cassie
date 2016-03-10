@@ -32,7 +32,7 @@ RSpec.describe Cassie::ConnectionHandler::Cluster do
       it "logs connection timing" do
         allow(Cassandra).to receive(:cluster).with(config.symbolize_keys)
 
-        expect(mod.logger).to receive(:info).with(/cluster.*(.*s)/i)
+        expect(mod.logger).to receive(:info).with(/(.*ms).*cluster/i)
 
         mod.cluster
       end
