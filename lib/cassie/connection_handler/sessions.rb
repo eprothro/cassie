@@ -1,3 +1,5 @@
+require 'benchmark'
+
 module Cassie::ConnectionHandler
   module Sessions
 
@@ -12,7 +14,14 @@ module Cassie::ConnectionHandler
     protected
 
     def connect(_keyspace)
-      @sessions[_keyspace] = cluster.connect(_keyspace)
+      _session = nil
+
+      sec = Benchmark.realtime do
+        _session = cluster.connect(_keyspace)
+      end
+
+      logger.info "Session opened to Cassandra[#{_keyspace}] (#{sec.round(3)}s)"
+      @sessions[_keyspace] = _session
     end
   end
 end

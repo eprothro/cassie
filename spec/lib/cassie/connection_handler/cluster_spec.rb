@@ -5,6 +5,10 @@ RSpec.describe Cassie::ConnectionHandler::Cluster do
 
       def self.configuration
       end
+      def self.logger
+        @logger ||= Logger.new('/dev/null')
+        # @logger ||= Logger.new(STDOUT)
+      end
     end
   end
 
@@ -22,6 +26,13 @@ RSpec.describe Cassie::ConnectionHandler::Cluster do
       end
       it "passes symbols as configuration keys" do
         expect(Cassandra).to receive(:cluster).with(hash_including(config.symbolize_keys))
+
+        mod.cluster
+      end
+      it "logs connection timing" do
+        allow(Cassandra).to receive(:cluster).with(config.symbolize_keys)
+
+        expect(mod.logger).to receive(:info).with(/cluster.*(.*s)/i)
 
         mod.cluster
       end

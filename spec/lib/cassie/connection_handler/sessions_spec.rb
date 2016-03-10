@@ -8,6 +8,11 @@ RSpec.describe Cassie::ConnectionHandler::Sessions do
 
       def self.cluster
       end
+
+      def self.logger
+        @logger ||= Logger.new('/dev/null')
+        # @logger ||= Logger.new(STDOUT)
+      end
     end
   end
 
@@ -31,6 +36,13 @@ RSpec.describe Cassie::ConnectionHandler::Sessions do
       context "when no session exists for requested keyspace" do
         it "creates session for keyspace" do
           expect(cluster).to receive(:connect).with(keyspace)
+
+          mod.session(keyspace)
+        end
+        it "logs connection timing" do
+          allow(cluster).to receive(:connect).with(keyspace)
+
+          expect(mod.logger).to receive(:info).with(/session.*(.*s)/i)
 
           mod.session(keyspace)
         end

@@ -1,4 +1,3 @@
-require_relative 'logging/logger'
 require_relative 'logging/subscription'
 
 module Cassie::Queries
@@ -11,7 +10,7 @@ module Cassie::Queries
 
     module ClassMethods
       def logger
-        Cassie::Queries::Logging.logger
+        Cassie.logger
       end
     end
 

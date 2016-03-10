@@ -12,6 +12,7 @@ require 'active_support'
 require 'cassandra'
 
 module Cassie
+  require_relative 'cassie/logger'
   require_relative 'cassie/configuration'
   require_relative 'cassie/connection_handler'
   require_relative 'cassie/connection'
@@ -19,4 +20,12 @@ module Cassie
 
   extend Configuration::Core
   extend ConnectionHandler
+
+  def self.logger
+    Logger.logger
+  end
+
+  def self.logger=(logger)
+    Logger.logger = logger
+  end
 end
