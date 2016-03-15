@@ -29,7 +29,7 @@ Cassie provies database connection configuration (e.g. cluster and session) per 
 $ cassie config:generate
 ```
 
-`Cassie::configurations` are loaded from the generated file during runtime.
+`Cassie::configurations` are loaded from this configuration file at runtime.
 
 ```ruby
 Cassie.confurations
@@ -59,7 +59,7 @@ Cassie provides cluster and session connection creation according to `cassie-dri
 
 ##### Using global cluster and session objects
 
-`cluster` and `session` objects are created, cached in `sessions` and reused globally.
+`cluster` and `session` objects are created, cached, and reused globally.
 
 ```ruby
 # continuing from above 'production' configuration
@@ -77,7 +77,7 @@ Cassie.session('my_other_keyspace')
 => #<Cassandra::Session:0x3fc084caa344> #<= session scoped to 'my_other_keyspace' keyspace
 ```
 
-If using Cassie Configuration as described above via `cassandra.yml`, cluster configuration will happen automatically. If not, assign a cluster options hash to `Cassie.configuration` before using a `cluster` or `session`.
+If using Cassie Configuration as described above via `cassandra.yml`, cluster configuration will happen automatically. If not, assign a cluster options hash to `Cassie::configuration` before using a `cluster` or `session`.
 
 ##### Using cluster and session objects in Classes
 
@@ -87,10 +87,13 @@ Include `Cassie::Connection` in a class for `session` and `keyspace` functionali
 class MyQuery
   include Cassie::Connection
 
+  # An explicit keyspace that will determine the session used
+  # instead of falling back to the value in Cassie::keyspace
   keyspace :some_other_keyspace
 
   def find_user(id)
     # session is a vanilla Cassandra::Session
+    # connected to `some_other_keyspace`
     session.execute('SELECT * FROM users WHERE id = ?;', arguments: [id])
   end
 end
