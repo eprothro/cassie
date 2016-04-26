@@ -9,7 +9,7 @@ module Cassie::Queries::Logging
     end
 
     def message
-      color "(#{duration.round(1)}ms) #{statement}"
+      color "(#{duration.round(1)}ms) #{statement} [#{consistency}]"
     end
 
     protected
@@ -26,6 +26,14 @@ module Cassie::Queries::Logging
         str
       else
         "CQL executed: (`execution_info` was not present?)"
+      end
+    end
+
+    def consistency
+      if execution_info
+        execution_info.consistency
+      else
+        "consistency level unknown"
       end
     end
 

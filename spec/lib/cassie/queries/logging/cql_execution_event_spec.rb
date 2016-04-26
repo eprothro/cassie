@@ -16,9 +16,10 @@ RSpec.describe Cassie::Queries::Logging::CqlExecutionEvent do
   let(:duration_sec){ duration_ms / 1000.0 }
   let(:duration_ms){ 1.5 }
   let(:payload){ {execution_info: execution_info} }
-  let(:execution_info) { double(statement: statement, trace: nil) }
+  let(:execution_info) { double(statement: statement, consistency: consistency, trace: nil) }
   let(:statement){ Cassandra::Statements::Simple.new(cql) }
   let(:cql){ 'some CQL' }
+  let(:consistency){ 'some consistency level' }
 
   describe "#message" do
     it "includes the duration" do
@@ -26,6 +27,9 @@ RSpec.describe Cassie::Queries::Logging::CqlExecutionEvent do
     end
     it "includes the statement" do
       expect(object.message).to include(cql)
+    end
+    it "includes the consistency level" do
+      expect(object.message).to include(consistency)
     end
   end
 

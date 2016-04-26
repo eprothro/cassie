@@ -148,6 +148,62 @@ or
   end
 ```
 
+#### Consistency configuration
+
+The [consistency level](http://datastax.github.io/ruby-driver/v2.1.6/api/cassandra/#consistencies-constant) for a query is determined by your `Cassie::configuration` by default, falling to back to the `Cassandra` default if none is given.
+
+```ruby
+Cassie.configuration[:consistency]
+=> nil
+
+Cassie.cluster.instance_variable_get(:@execution_options).consistency
+=> :one
+```
+
+A Cassie::Query looks for a consistency level defined on the object, subclass, then base class levels. If one is found, it will override the `Cassandra` default when the query is executed.
+
+```ruby
+  select :posts_by_author_category
+
+  where :author_id, :eq
+  where :category, :eq, if: :filter_by_category?
+
+  def filter_by_category?
+    #true or false, as makes sense for your query
+  end
+
+  def consistency
+    #dynamically determine a query object's consistency level
+    if filter_by_category?
+      :quorum
+    else
+      super
+    end
+  end
+```
+
+```ruby
+  select :posts_by_author_category
+
+  where :author_id, :eq
+  where :category, :eq
+
+  consistency :quorum
+```
+
+```ruby
+# lib/tasks/interesting_task.rake
+require_relative "interesting_worker"
+
+task :interesting_task do
+  Cassandra::Query.consistency = :all
+
+  InterestingWorker.new.perform
+end
+
+
+```
+
 #### Object Mapping
 For Selection Queries, resources are returned as structs by default for manipulation using accessor methods.
 
