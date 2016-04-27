@@ -13,5 +13,9 @@ module Cassie::Testing::Fake
     def trace
       nil
     end
+
+    def consistency
+      :local_one
+    end
   end
 end

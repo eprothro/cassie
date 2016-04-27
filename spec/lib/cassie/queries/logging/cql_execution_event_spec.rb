@@ -17,19 +17,32 @@ RSpec.describe Cassie::Queries::Logging::CqlExecutionEvent do
   let(:duration_ms){ 1.5 }
   let(:payload){ {execution_info: execution_info} }
   let(:execution_info) { double(statement: statement, consistency: consistency, trace: nil) }
-  let(:statement){ Cassandra::Statements::Simple.new(cql) }
+  let(:statement){ Cassandra::Statements::Simple.new(cql, cql_args) }
   let(:cql){ 'some CQL' }
+  let(:cql_args){ nil }
   let(:consistency){ 'some consistency level' }
 
   describe "#message" do
     it "includes the duration" do
       expect(object.message).to include(duration_ms.to_s)
     end
-    it "includes the statement" do
-      expect(object.message).to include(cql)
+
+    describe "statement and arguments" do
+      it "includes the cql" do
+        expect(object.message).to include(cql)
+      end
+      context "when uuid arg included" do
+        let(:cql_args){ {id: uuid} }
+        let(:uuid){ Cassandra::TimeUuid::Generator.new.now }
+
+        it "includes the hex string of uuid" do
+          expect(object.message).to include(uuid.to_s)
+        end
+      end
     end
+
     it "includes the consistency level" do
-      expect(object.message).to include(consistency)
+      expect(object.message).to include(consistency.upcase)
     end
   end
 

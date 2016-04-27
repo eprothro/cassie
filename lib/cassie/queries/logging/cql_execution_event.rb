@@ -9,7 +9,7 @@ module Cassie::Queries::Logging
     end
 
     def message
-      color "(#{duration.round(1)}ms) #{statement} [#{consistency}]"
+      color "(#{duration.round(1)}ms) #{statement} [#{consistency.upcase}]"
     end
 
     protected
@@ -22,7 +22,7 @@ module Cassie::Queries::Logging
       if execution_info
         statement = execution_info.statement
         str = statement.cql
-        str += " [#{statement.params}]" if statement.respond_to? :params
+        str += " #{statement.params.map(&:to_s)}" if statement.respond_to? :params
         str
       else
         "CQL executed: (`execution_info` was not present?)"
