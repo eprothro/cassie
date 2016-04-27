@@ -1,5 +1,6 @@
 require 'active_support/core_ext/string/filters'
 require 'active_support/hash_with_indifferent_access'
+require_relative 'statement/execution'
 require_relative 'statement/preparation'
 require_relative 'statement/callbacks'
 require_relative 'statement/limiting'
@@ -16,6 +17,7 @@ module Cassie::Queries
     extend ::ActiveSupport::Concern
 
     included do
+      include Execution
       include Preparation
       include Callbacks
       include Limiting
@@ -37,13 +39,6 @@ module Cassie::Queries
       self.class.table
     end
 
-    # Executes the statment, populates result
-    # returns true or false indicating a successful execution or not
-    def execute
-      @result = session.execute(statement)
-      execution_successful?
-    end
-
     # returns a CQL string, or a Cassandra::Statement
     # that is ready for execution
     def statement
@@ -58,19 +53,6 @@ module Cassie::Queries
       else
         raise "No statement type has been declared. Call `.select`, `.update`, `.delete`, or `.insert` to set query type."
       end
-    end
-
-    def execution_successful?
-      #TODO: rethink this, it knows too much
-      raise "execution not complete, no results to parse" unless result
-
-      # empty select
-      return true if result.empty?
-
-      # failed upsert
-      return false if (!result.rows.first["[applied]"].nil?) && (result.rows.first["[applied]"] == false)
-
-      true
     end
 
     private

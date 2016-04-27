@@ -1,6 +1,12 @@
 require 'benchmark'
 
 module Cassie::ConnectionHandler
+  # ## Cassie::ConnectionHandler::Cluster
+  #
+  # Adds cluster instance configuration and memoization.
+  #
+  # Include in any class or module that responds to `configuration` with
+  # a cassandra cluster options hash.
   module Cluster
 
     def cluster

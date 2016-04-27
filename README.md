@@ -120,6 +120,8 @@ class UserByUsernameQuery < Cassie::Query
   select :users_by_username
 
   where :username, :eq
+
+  consistency :quorum
 end
 ```
 

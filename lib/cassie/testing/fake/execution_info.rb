@@ -1,6 +1,6 @@
 module Cassie::Testing::Fake
   class ExecutionInfo
-    attr_reader :statement
+    attr_reader :statement, :consistency
 
     def initialize(statement)
       @statement = statement
