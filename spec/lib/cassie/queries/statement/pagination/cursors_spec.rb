@@ -16,7 +16,7 @@ RSpec.describe Cassie::Queries::Pagination::Cursors do
         max_cursor :field
       end
     end
-    it "adds a since_field getter/setter" do
+    it "adds a max_field getter/setter" do
       expect do
         object.max_field = max_value
       end.to change{object.max_field}.to(max_value)
