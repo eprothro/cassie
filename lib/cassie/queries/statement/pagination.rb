@@ -1,4 +1,5 @@
 require_relative 'pagination/cursors'
+require_relative 'pagination/pages'
 require_relative 'pagination/page_size'
 
 module Cassie::Queries
@@ -7,6 +8,7 @@ module Cassie::Queries
 
     included do
       include Cursors
+      include Pages
     end
 
     module ClassMethods
