@@ -13,6 +13,8 @@ require_relative 'statement/inserting'
 
 module Cassie::Queries
   module Statement
+    class Invalid < StandardError; end
+
     # https://cassandra.apache.org/doc/cql3/CQL.html#selectStmt
     extend ::ActiveSupport::Concern
 

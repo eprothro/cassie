@@ -29,16 +29,16 @@ module Cassie::Queries::Statement
 
     # Returns first result or nil
     #
-    #   query.find(id: 1)
+    #   query.fetch_first(id: 1)
     #   => {id: 1, name: 'eprothro'}
     #
-    #   query.find(id: 2)
+    #   query.fetch_first(id: 2)
     #   => nil
-    def find(args={})
+    def fetch_first(args={})
       old_limit = defined?(@limit) ? @limit : nil
       self.limit = 1
 
-      fetch.first
+      fetch(args).first
     ensure
       if old_limit
         @limit = old_limit
@@ -49,13 +49,13 @@ module Cassie::Queries::Statement
 
     # Returns first result or raises RecordNotFound
     #
-    #   query.find!(id: 1)
+    #   query.fetch_first!(id: 1)
     #   => {id: 1, name: 'eprothro'}
     #
-    #   query.find!(id: 2)
+    #   query.fetch_first!(id: 2)
     #   RecordNotFound: RecordNotFound
-    def find!(args={})
-      find || raise(Cassie::Queries::RecordNotFound)
+    def fetch_first!(args={})
+      fetch_first || raise(Cassie::Queries::RecordNotFound.new('CQL row does not exist'))
     end
   end
 end

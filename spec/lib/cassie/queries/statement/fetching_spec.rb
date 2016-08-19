@@ -26,30 +26,35 @@ RSpec.describe Cassie::Queries::Statement::Fetching do
     end
   end
 
-  describe "find" do
+  describe "fetch_first" do
     it "returns a single row" do
-      expect(object.find[:tag]).to eq(row[:tag])
+      expect(object.fetch_first[:tag]).to eq(row[:tag])
+    end
+    it "assigns value if setter exists" do
+      expect{
+        object.fetch_first(foo: 'bar')
+      }.to change{object.foo}.to('bar')
     end
     it "limits the query results returned" do
-      object.find
+      object.fetch_first
 
       expect(object.session.last_statement.cql).to match(/LIMIT 1/)
     end
     it "does not limit future queries" do
       object.limit = 2
-      expect{object.find}.not_to change{object.limit}
+      expect{object.fetch_first}.not_to change{object.limit}
     end
   end
 
-  describe "find!" do
+  describe "fetch_first!" do
     it "returns a single row" do
-      expect(object.find![:tag]).to eq(row[:tag])
+      expect(object.fetch_first![:tag]).to eq(row[:tag])
     end
     context "when no rows" do
       let(:rows){ [] }
 
       it "raises an exception" do
-        expect{object.find!}.to raise_error(Cassie::Queries::RecordNotFound)
+        expect{object.fetch_first!}.to raise_error(Cassie::Queries::RecordNotFound)
       end
     end
   end
