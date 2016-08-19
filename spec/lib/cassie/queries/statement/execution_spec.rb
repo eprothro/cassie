@@ -2,6 +2,7 @@ RSpec.describe Cassie::Queries::Statement::Execution do
   let(:base_class){ Cassie::FakeQuery }
   let(:klass) do
     Class.new(base_class) do
+      select :test
     end
   end
   let(:object) do
@@ -10,6 +11,10 @@ RSpec.describe Cassie::Queries::Statement::Execution do
 
   describe "#execute" do
     it "passes the statment and execution_options to Cassandra" do
+    end
+
+    it "returns true" do
+      expect(object.execute).to be_truthy
     end
   end
 

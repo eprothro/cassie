@@ -1,5 +1,6 @@
 require_relative 'relation'
 require_relative 'loading'
+require_relative 'batches'
 
 class Cassie::Queries::RecordNotFound < StandardError; end
 
@@ -9,6 +10,7 @@ module Cassie::Queries::Statement
 
     included do
       include Loading
+      include Batches
     end
 
     # Returns array of rows or empty array

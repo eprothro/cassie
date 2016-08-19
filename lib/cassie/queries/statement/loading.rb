@@ -18,7 +18,7 @@ module Cassie::Queries::Statement
     # When class doesn't override
     # simply return a struct with the row data
     def build_resource(row)
-      Struct.new(*row.keys).new(*row.values)
+      Struct.new(*row.keys.map(&:to_sym)).new(*row.values)
     end
   end
 end

@@ -6,5 +6,6 @@ module Cassie
 
   class FakeQuery < Cassie::Query
     include Cassie::Testing::Fake::SessionMethods
+
   end
 end

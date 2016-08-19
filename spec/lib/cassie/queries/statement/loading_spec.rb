@@ -13,12 +13,12 @@ RSpec.describe Cassie::Queries::Statement::Loading do
       allow(o).to receive(:result){ double(rows: rows) }
       o
   end
-  let(:row){ {tag: 'some_tag'} }
+  let(:row){ {'tag' => 'some_tag'} }
   let(:rows){ [row] }
 
   describe "#fetch" do
     it "returns an object with a fetcher method for row attributes" do
-      expect(object.fetch.first.tag).to eq(row[:tag])
+      expect(object.fetch.first.tag).to eq(row['tag'])
     end
   end
 

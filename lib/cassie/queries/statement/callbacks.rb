@@ -14,7 +14,7 @@ module Cassie::Queries::Statement
     end
 
     def execute
-      run_callbacks :failure unless super
+      super || run_callbacks(:failure)
     end
   end
 end
