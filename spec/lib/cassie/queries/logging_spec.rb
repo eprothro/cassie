@@ -20,7 +20,7 @@ RSpec.describe Cassie::Queries::Logging do
     end
     it "logs upon execution" do
       expect(klass.logger).to receive(:debug)
-      .with(/#{Regexp.quote(object.statement.cql)}/)
+      .with(duck_type(:inspect))
 
       object.execute
     end
