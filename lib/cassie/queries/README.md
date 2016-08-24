@@ -1,6 +1,6 @@
 # Cassie Queries
 
-`cassie` query classes provide query interface that is
+`cassie` query classes aim to provide a query interface that is
 
 * Easy to use
 * Easy to understand (and thus maintain)
@@ -9,7 +9,7 @@
 
 ### Usage
 
-What you might expect to see:
+You might expect to see class methods allowing queries to be built like such:
 
 ```
 Cassie.insert(:users_by_username,
@@ -22,7 +22,7 @@ Queries defined on the fly like this tend to create debt for an application in t
   * resist documentation
   * resist refactoring
 
-Your application queries represent behavior, `cassie` queries are structured to help you create query classes that are reusable, testable and maintainable, so you can sleep better at night.
+Application queries represent distinct application behavior, `cassie` queries are designed to help create query classes that are reusable, testable and maintainable (so you can sleep better at night).
 
 ```ruby
 # Some PORO user model
@@ -200,8 +200,74 @@ task :interesting_task do
 
   InterestingWorker.new.perform
 end
+```
 
+#### Finders
 
+To avoid confusion with ruby `Enumerable#find` and Rails' specific `find` functionality, Cassie::Query opts to use `fetch` and explict `fetch_first` or `fetch_first!` methods.
+
+##### `fetch`
+
+Executes the query; returns array of results.
+
+```
+UsersByResourceQuery.new.fetch(resource: some_resource)
+=> [#<User id=:123, username=:eprothro>, #<User id=:456, username=:tenderlove>]
+```
+
+##### `fetch_first` and `fetch_first!`
+
+Executes the query, temporarily limited to 1 result; returns a single result. Bang version raises if no result is found.
+
+```
+UsersByUsernameQuery.new.fetch_first(username: "eprothro").username
+=> "eprothro"
+```
+
+```
+UsersByUsernameQuery.new.fetch_first(username: "active record").username
+Cassie::Queries::RecordNotFound: CQL row does not exist
+```
+
+##### Batching
+
+Similar to [Rails Batching](http://guides.rubyonrails.org/v4.2/active_record_querying.html#retrieving-multiple-objects-in-batches), Cassie allows efficient batching of `SELECT` queries.
+
+###### `fetch_each`
+```
+UsersQuery.new.fetch_each do |user|
+  # only 1000 queried and loaded at a time
+end
+```
+
+```
+UsersQuery.new.fetch_each(batch_size: 500) do |user|
+  # only 500 queried and loaded at a time
+end
+```
+
+```
+UsersQuery.new.fetch_each.with_index do |user, index|
+  # Enumerator chaining without a block
+end
+```
+###### `fetch_in_batches`
+```
+UsersQuery.new.fetch_in_batches do |users_array|
+  # only 1000 queried and at a time
+end
+```
+
+```
+UsersQuery.new.fetch_in_batches(batch_size: 500) do |users_array|
+  # only 500 queried and at a time
+end
+```
+
+```
+UsersQuery.new.fetch_in_batches.with_index do |group, index|
+  # Enumerator chaining without a block
+end
 ```
 
 #### Object Mapping
@@ -211,11 +277,11 @@ For Selection Queries, resources are returned as structs by default for manipula
 UsersByUsernameQuery.new.fetch(username: "eprothro")
 => [#<Struct id=:123, username=:eprothro>]
 
-UsersByUsernameQuery.new.find(username: "eprothro").username
+UsersByUsernameQuery.new.fetch_first(username: "eprothro").username
 => "eprothro"
 ```
 
-Override `build_resource` to construct more useful objects
+Most application will want to override `build_resource` to construct more useful domain objects
 
 ```
 class UsersByUsernameQuery < Cassie::Query
@@ -231,11 +297,11 @@ end
 ```
 
 ```ruby
-UsersByUsernameQuery.new.find(username: "eprothro")
+UsersByUsernameQuery.new.fetch_first(username: "eprothro")
 => #<User:0x007fedec219cd8 @id=123, @username="eprothro">
 ```
 
-For Data Modification Queries (`insert`, `update`, `delete`), mapping binding values from an object is supported.
+For Data Modification Queries (`insert`, `update`, `delete`), mapping binding values from a domain object is supported.
 
 ```ruby
 class UpdateUserQuery < Cassandra::Query
@@ -252,7 +318,7 @@ class UpdateUserQuery < Cassandra::Query
   map_from :user
 ```
 
-Allowing you to pass an object to the modification method, and binding values will be retrieved from the object
+This allows a domain object to be passed to the modification method, where binding values will be retrieved from the object
 
 ```ruby
 user
@@ -263,6 +329,7 @@ UpdateUserQuery.new.update(user)
 <pre><b>
 (1.2ms) UPDATE users_by_id (phone, email, address, username) VALUES (?, ?, ?, ?) WHERE id = ?; [["+15555555555", "etp@example.com", nil, "etp", 6539]]
 </b></pre>
+
 
 #### Cursored paging
 

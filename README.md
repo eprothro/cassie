@@ -126,7 +126,7 @@ end
 ```
 
 ```ruby
-UserByUsernameQuery.new.find(username: "eprothro")
+UserByUsernameQuery.new.fetch_first(username: "eprothro")
 => #<Struct user_id=123, username="eprothro">
 ```
 

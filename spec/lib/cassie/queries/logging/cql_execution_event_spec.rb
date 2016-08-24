@@ -23,26 +23,28 @@ RSpec.describe Cassie::Queries::Logging::CqlExecutionEvent do
   let(:consistency){ 'some consistency level' }
 
   describe "#message" do
-    it "includes the duration" do
-      expect(object.message).to include(duration_ms.to_s)
-    end
-
-    describe "statement and arguments" do
-      it "includes the cql" do
-        expect(object.message).to include(cql)
+    context "when inspected" do
+      it "includes the duration" do
+        expect(object.message.inspect).to include(duration_ms.to_s)
       end
-      context "when uuid arg included" do
-        let(:cql_args){ {id: uuid} }
-        let(:uuid){ Cassandra::TimeUuid::Generator.new.now }
 
-        it "includes the hex string of uuid" do
-          expect(object.message).to include(uuid.to_s)
+      describe "statement and arguments" do
+        it "includes the cql" do
+          expect(object.message.inspect).to include(cql)
+        end
+        context "when uuid arg included" do
+          let(:cql_args){ {id: uuid} }
+          let(:uuid){ Cassandra::TimeUuid::Generator.new.now }
+
+          it "includes the hex string of uuid" do
+            expect(object.message.inspect).to include(uuid.to_s)
+          end
         end
       end
-    end
 
-    it "includes the consistency level" do
-      expect(object.message).to include(consistency.upcase)
+      it "includes the consistency level" do
+        expect(object.message.inspect).to include(consistency.upcase)
+      end
     end
   end
 

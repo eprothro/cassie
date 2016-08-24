@@ -9,7 +9,11 @@ module Cassie::Queries::Logging
     end
 
     def message
-      color "(#{duration.round(1)}ms) #{statement} [#{consistency.upcase}]"
+      {
+        duration: duration.round(1),
+        query: statement,
+        consistency: consistency.upcase
+      }.extend(Inspector)
     end
 
     protected
@@ -45,8 +49,20 @@ module Cassie::Queries::Logging
       execution_info.trace
     end
 
-    def color(message)
-      "\e[1m\e[37m#{message}\e[0m\e[22m"
+    module Inspector
+      def inspect
+        color "(#{fetch(:duration).round(1)}ms) #{fetch(:query)} [#{fetch(:consistency).upcase}]"
+      end
+
+      def to_s
+        inspect
+      end
+
+      protected
+
+      def color(message)
+        "\e[1m\e[37m#{message}\e[0m\e[22m"
+      end
     end
   end
 end

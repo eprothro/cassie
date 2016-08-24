@@ -20,6 +20,8 @@ module Cassie::Queries::Statement
         #TODO: rework consistency module to be more
         #      abstract implementation for all execution options
         opts[:consistency] = consistency if consistency
+        opts[:paging_state] = paging_state if respond_to?(:paging_state) && paging_state
+        opts[:page_size] = stateless_page_size if respond_to?(:stateless_page_size) && stateless_page_size
       end
     end
 
