@@ -11,6 +11,9 @@ module Cassie::Queries::Statement
     included do
       include Loading
       include Batches
+      #TODO: should this be loaded from instrumentation
+      # by using notifications when fetching is loaded?
+      include Cassie::Queries::Instrumentation::Loading
     end
 
     # Returns array of rows or empty array

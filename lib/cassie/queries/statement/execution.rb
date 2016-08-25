@@ -5,6 +5,8 @@ module Cassie::Queries::Statement
     extend ActiveSupport::Concern
 
     included do
+      attr_reader :result
+
       include Consistency
     end
 

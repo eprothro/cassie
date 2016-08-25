@@ -5,7 +5,7 @@ RSpec.describe Cassie::Queries::Logging::CqlExecutionEvent do
   let(:object) { klass.new(*args) }
   let(:args) do
     [
-      'cql.execute',            #name
+      'cassie.cql.execution',            #name
       finish - duration_sec,    #start
       finish,                   #finish
       'some_event_id',          #id

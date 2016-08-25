@@ -10,6 +10,7 @@ module Cassie::Queries::Logging
 
     def message
       {
+        event: "cassie.cql.execution",
         duration: duration.round(1),
         query: statement,
         consistency: consistency.upcase

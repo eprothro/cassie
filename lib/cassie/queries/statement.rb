@@ -29,8 +29,6 @@ module Cassie::Queries
       include Updating
       include Inserting
 
-      attr_reader :result
-
       class << self
         attr_accessor :table
         attr_accessor :type

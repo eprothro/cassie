@@ -1,20 +1,22 @@
 require_relative 'cql_execution_event'
+require_relative 'building_resources_event'
 
 module Cassie::Queries::Logging
   module Subscription
     extend ::ActiveSupport::Concern
 
     included do
-      ActiveSupport::Notifications.subscribe('cql.execute') do |*args|
-        # args:
-        # name    # => String, name of the event (such as 'render' from above)
-        # start   # => Time, when the instrumented block started execution
-        # finish  # => Time, when the instrumented block ended execution
-        # id      # => String, unique ID for this notification
-        # payload # => Hash, the payload
-        #             [:exception] => if raised during event
+      ActiveSupport::Notifications.subscribe('cassie.cql.execution') do |*args|
+        # don't log if instrumentation failed
         unless args.last[:exception]
           logger.debug(CqlExecutionEvent.new(*args).message)
+        end
+      end
+
+      ActiveSupport::Notifications.subscribe('cassie.building_resources') do |*args|
+        # don't log if instrumentation failed
+        unless args.last[:exception]
+          logger.debug(BuildingResourcesEvent.new(*args).message)
         end
       end
     end
