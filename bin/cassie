@@ -1,11 +1,10 @@
 #! ruby
-require_relative '../lib/cassie/configuration/generator'
-
 def color(message)
   "\e[1;31m#{message}\e[0m"
 end
 
 def generate_config
+  require_relative '../lib/cassie'
   opts = {}
   if ARGV[1]
     opts[:destination_path] = if ARGV[1][0] == "/"
@@ -18,12 +17,49 @@ def generate_config
   end
   opts[:app_name]         = ARGV[2] if ARGV[2]
 
-  Cassie::Configuration::Generator.new(opts).save
+  generator = Cassie::Configuration::Generator.new(opts)
+  generator.save
+  puts "[✓] Cassandra configuration written to #{generator.destination_path}"
+end
+
+def dump_structure
+  require_relative '../lib/cassie'
+  opts = {}
+  opts[:destination_path] = Cassie.paths[:schema_structure]
+
+  args = ["-e", "'DESCRIBE SCHEMA'"]
+
+  runner = Cassie::Support::CommandRunner.new("cqlsh", args)
+  runner.run!
+
+  dir = File.dirname(opts[:destination_path])
+  Dir.mkdir(dir) unless File.directory?(dir)
+  File.open(opts[:destination_path], "w+") do |f|
+    f.write(runner.output)
+  end
+  puts "[✓] Cassandra schema written to #{opts[:destination_path]}"
+end
+
+def load_structure
+  require_relative '../lib/cassie'
+  opts = {}
+  opts[:source_path] = Cassie.paths[:schema_structure]
+
+  args = ["-f", opts[:source_path]]
+
+  runner = Cassie::Support::CommandRunner.new("cqlsh", args)
+  runner.run!
+
+  puts "[✓] Cassandra schema loaded from #{opts[:source_path]}"
 end
 
 case ARGV[0]
 when "configuration:generate"
   generate_config
+when "structure:dump"
+  dump_structure
+when "structure:load"
+  load_structure
 else
-  puts color("`#{ARGV[0]}` is not a supported command. Did you mean `cassie configuration:generate`?")
+  puts color("`#{ARGV[0]}` is not a supported command.")
 end
