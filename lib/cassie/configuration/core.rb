@@ -10,6 +10,7 @@ module Cassie::Configuration
 
     def self.extended(extender)
       extender.paths["cluster_configurations"] = "config/cassandra.yml"
+      extender.paths["schema_structure"] = "db/structure.cql"
     end
 
     def env

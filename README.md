@@ -104,10 +104,14 @@ See the [Connection README](./lib/cassie/connection_handler/README.md#readme) fo
 
 ### Versioned Migrations
 
-Essence of features/usage.
+Coming soon...
 
-Link to more info in the `migrations` README.
+#### Tasks
 
+| Task | Description |
+| --- | --- |
+| structure:dump | Dumps the schema for all non-system keyspaces in CQL format (`db/structure.cql` by default) |
+| structure:load | Creates the schema by executing the CQL schema in the structure file (`db/structure.cql` by default) |
 
 ### Query Classes
 

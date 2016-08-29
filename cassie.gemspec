@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'cassie'
-  s.version     = '1.0.0.beta.12'
+  s.version     = '1.0.0.beta.14'
   s.summary     = "Apache Cassandra application support"
   s.description = <<-EOS.strip.gsub(/\s+/, ' ')
     Cassie provides database configration, versioned migrations,
