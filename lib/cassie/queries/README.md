@@ -421,19 +421,38 @@ end
 
 #### Logging
 
-Set the log level to debug to log execution details.
+Cassie Query objects use the Cassie logger unless overridden. This logs to STDOUT by default. Set any log stream you wish.
 
 ```ruby
-Cassie::Queries::Logging.logger.level = Logger::DEBUG
+  Cassie.logger = my_app.config.logger
 ```
+
+Set the log level to `debug` in order to log execution details.
+
+```ruby
+Cassie::Query.logger.level = Logger::DEBUG
+```
+
+#### Execution Time
+
+Cassie Queries instrument execution time as `cassie.cql.execution` and logs a debug message.
 
 ```ruby
 SelectUserByUsernameQuery.new('some_user').execute
-(2.9ms) SELECT * FROM users_by_username WHERE username = ? LIMIT 1; [["some_user"]]
+(5.5ms) SELECT * FROM users_by_username WHERE username = ? LIMIT 1; ["some_user"] [LOCAL_ONE]
 ```
+This measures the time to build the CQL query (statement and bindings), transmit the query to the cassandra coordinator, receive the result from the cassandra coordinator, and have the cassandra ruby driver build the ruby representation of the results. It does not include the time it takes for the Cassie Query to build its resource objects.
 
-Logs to STDOUT by default. Set any log stream you wish.
+#### Resource Loading
+
+Cassie Queries instrument resource building as `cassie.building_resources` and logs a debug message.
 
 ```ruby
-  Cassie::Queries::Logging.logger = my_app.config.logger
+SelectUserByUsernameQuery.new('some_user').fetch
+(5.5ms) SELECT * FROM users_by_username WHERE username = ? LIMIT 1; ["some_user"] [LOCAL_ONE]
+(0.2ms) 1 resource object built from Cassandra query result
 ```
+
+This measures the time it takes Cassie to build the resource objects (e.g. your domain objects) and is in addition to the execution time.
+
+> fetch time = `cassie.cql.execution` time + `cassie.building_resources` time
