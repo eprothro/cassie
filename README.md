@@ -156,14 +156,26 @@ INFO  [main] 2016-09-23 11:18:05,407 CassandraDaemon.java:477 - Not starting RPC
 
 ### Versioned Migrations
 
-Coming soon...
+Cassie allows you to migrate between schema states using semantically versioned, incremental mutations.
+
+Schema Version information is stored in Cassandra persistence, in the `cassie_schema` keyspace, by default.
+
 
 #### Tasks
 
 | Task | Description |
 | --- | --- |
+| migration:create | Generates an empty migration file prefixed with the next semantic version number |
+| migrate | Migrates the schema by running the `up` methods in any migrations starting after the current schema version |
+| rollback | Rolls back the schema by running the `down` methods starting with the current schema version |
+| migration:initialize | Create an initial migration based on the current Cassandra non-system schema |
+| migration:import | Import existing `cassandra_migrations` migration files and convert to semantic versioning |
+| schema:version | Print the current schema version information for the Cassandra cluster |
+| schema:history | Print the the historical version information the current Cassandra cluster state |
 | structure:dump | Dumps the schema for all non-system keyspaces in CQL format (`db/structure.cql` by default) |
 | structure:load | Creates the schema by executing the CQL schema in the structure file (`db/structure.cql` by default) |
+
+See the [Migrations README](./lib/cassie/migration/README.md#readme) for more on features and usage.
 
 ### Query Classes
 

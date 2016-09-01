@@ -24,6 +24,13 @@ RSpec.describe Cassie::Statements::Execution::Fetching do
         object.fetch(foo: 'bar')
       }.to change{object.foo}.to('bar')
     end
+
+    context "when there are no results" do
+      let(:rows){ [].to_enum }
+      it "returns an empty enumerable" do
+        expect(object.fetch(foo: 'bar').count).to eq(0)
+      end
+    end
   end
 
   describe "fetch_first" do

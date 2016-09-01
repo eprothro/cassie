@@ -5,7 +5,7 @@ def start
   runner = Cassie::Support::CommandRunner.new("cassandra")
   puts("Starting Cassandra...")
   runner.run
-  runner.fail unless runner.finished?
+  runner.fail unless runner.completed?
 
   if runner.output =~ /state jump to NORMAL/
     puts "[#{green('✓')}] Cassandra Running"
@@ -17,8 +17,9 @@ end
 
 def stop(kill_all=false)
   runner = Cassie::Support::CommandRunner.new("ps", ["-awx"])
-  runner.run!
- # | grep cassandra | grep -v grep | awk '{print $1}'`
+  runner.run
+  fail runner.failure_message unless runner.success?
+
   cassandra_awx = runner.output.split("\n").grep(/cassandra/)
   pids = cassandra_awx.map{ |p| p.split(' ').first.to_i }
 
@@ -75,20 +76,23 @@ def generate_config
 end
 
 def dump_structure
-  opts = {}
-  opts[:destination_path] = Cassie.paths[:schema_structure]
+  dumper = Cassie::Migration::StructureDumper.new
+  dumper.dump
+  puts "[#{green("✓")}] Cassandra schema written to #{dumper.destination_path}"
 
-  args = ["-e", "'DESCRIBE SCHEMA'"]
+rescue => e
+  puts e.message
+  exit(1)
+end
 
-  runner = Cassie::Support::CommandRunner.new("cqlsh", args)
-  runner.run!
+def load_structure
+  loader = Cassie::Migration::StructureLoader.new
+  loader.load
+  puts "[#{green("✓")}] Cassandra schema loaded from #{loader.source_path}"
 
-  dir = File.dirname(opts[:destination_path])
-  Dir.mkdir(dir) unless File.directory?(dir)
-  File.open(opts[:destination_path], "w+") do |f|
-    f.write(runner.output)
-  end
-  puts "[✓] Cassandra schema written to #{opts[:destination_path]}"
+rescue => e
+  puts e.message
+  exit(1)
 end
 
 def tail_log
@@ -105,16 +109,44 @@ def tail_log
   runner.run!
 end
 
-def load_structure
-  opts = {}
-  opts[:source_path] = Cassie.paths[:schema_structure]
+# Use current schema to initialize versioned migrations
+#   * import current schema as initial migration
+#   * initialize cassie_schema keyspace and version table
+#   * insert initial version
+#   * dump structure
+def initialize_migrations
+  Cassie::Migration.initialize_versioning
+  puts "[#{green("✓")}] Versioned migrations initialized. Current version: #{Cassie::Migration.version_number}"
+rescue Cassie::Migration::AlreadyInitiailizedError
+  puts "[#{red('✘')}] Versioned migration metatdata already exists. Current version: #{Cassie::Migration.version_number}"
+rescue => e
+  puts e.message
+  exit(1)
+end
 
-  args = ["-f", opts[:source_path]]
+def schema_history
+  print_versions(Cassie::Migration.versions)
+rescue Cassie::Migration::UninitializedError => e
+  puts red(e.message)
+end
 
-  runner = Cassie::Support::CommandRunner.new("cqlsh", args)
-  runner.run!
+def schema_version
+  print_versions([Cassie::Migration.version])
+rescue Cassie::Migration::UninitializedError => e
+  puts red(e.message)
+end
 
-  puts "[✓] Cassandra schema loaded from #{opts[:source_path]}"
+def print_versions(versions)
+  require 'terminal-table'
+  members = [:version_number, :description, :migrator, :migrated_at]
+  titles  = ['Version', 'Description', 'Migrated by', 'Migrated at']
+  table = Terminal::Table.new(headings:  titles)
+  versions.each.with_index do |v, i|
+    v.version_number = "* #{v.version_number}" if i == 0
+    table.add_row(v.to_h.values_at(*members))
+  end
+  table.align_column(0, :right)
+  puts table
 end
 
 def white(message)
@@ -142,6 +174,12 @@ when "structure:dump"
   dump_structure
 when "structure:load"
   load_structure
+when /migrations?\:initialize/
+  initialize_migrations
+when "schema:history"
+  schema_history
+when "schema:version"
+  schema_version
 else
   puts red("`#{ARGV[0]}` is not a supported command.")
 end

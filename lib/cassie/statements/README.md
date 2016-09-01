@@ -742,6 +742,20 @@ end
 
 > Note: unbound queries can be vulnerable to injection attacks. Be careful.
 
+### Development and Debugging
+
+#### `to_cql`
+
+Cassie query objects have a `to_cql` method that handles positional argument interleaving and type conversion to provide CQL that is executable in `cqlsh`.
+
+Keep your queries as perpared/bound statements, but easily copy executable CQL elsewhere.
+
+```
+query = UpdateUserQuery.new(user: user)
+query.to_cql
+=> "UPDATE users_by_id SET phone = '+15555555555', email = 'eprothro@example.com', username = 'eprothro' WHERE id = d331f6b8-8b05-11e6-b61f-2774b0185e07;"
+```
+
 #### Logging
 
 Cassie Query objects use the Cassie logger unless overridden. This logs to STDOUT by default. Set any log stream you wish.
