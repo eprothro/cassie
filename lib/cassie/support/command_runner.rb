@@ -30,7 +30,11 @@ module Cassie::Support
 
     # Runs the command and raises if doesn't exit 0
     def run!
-      Kernel.fail error_message unless exitcode == 0
+      fail unless exitcode == 0
+    end
+
+    def fail
+      Kernel.fail error_message
     end
 
     # Returns false if the command hasn't been executed yet
@@ -59,14 +63,14 @@ module Cassie::Support
 
     def error_message
       msg = "\n"
-      msg << color(output)
+      msg << red(output)
       msg << "\n---------------------"
       msg << "\n\nfailed to execute `#{command}`.\n"
       msg << "Please check the output above for any errors and make sure that `#{binary}` is installed in your PATH with proper permissions.\n"
       msg
     end
 
-    def color(message)
+    def red(message)
       "\e[1m\e[31m#{message}\e[0m\e[22m"
     end
   end

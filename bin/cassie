@@ -1,10 +1,56 @@
 #! ruby
-def color(message)
-  "\e[1;31m#{message}\e[0m"
+require_relative '../lib/cassie'
+
+def start
+  runner = Cassie::Support::CommandRunner.new("cassandra")
+  puts("Starting Cassandra...")
+  runner.run
+  runner.fail unless runner.finished?
+
+  if runner.output =~ /state jump to NORMAL/
+    puts "[#{green('✓')}] Cassandra Running"
+  else
+    runner.output.split("\n").grep(/ERROR/).each{|e| puts red("  " + e.gsub("; nested exception is:", "")) }
+    puts "[#{red('✘')}] Cassandra Failed to Start"
+  end
+end
+
+def stop
+  runner = Cassie::Support::CommandRunner.new("ps", ["-awx"])
+  runner.run!
+ # | grep cassandra | grep -v grep | awk '{print $1}'`
+  cassandra_awx = runner.output.split("\n").grep(/cassandra/)
+  pid = case cassandra_awx.length
+  when 0
+    puts red("No Cassandra process was found. Is Cassandra running?")
+    exit(1)
+  when 1
+    cassandra_awx.first.split(' ').first.to_i
+  else
+    puts red("Couldn't single out a Cassandra process:\n#{cassandra_awx}")
+    exit(1)
+  end
+
+  puts("Stopping Cassandra...")
+  Process.kill("TERM", pid)
+  loop do
+    sleep(0.1)
+    begin
+      Process.getpgid( pid )
+    rescue Errno::ESRCH
+      break
+    end
+  end
+
+  puts "[#{green('✓')}] Cassandra Stopped"
+end
+
+def kick
+  stop
+  start
 end
 
 def generate_config
-  require_relative '../lib/cassie'
   opts = {}
   if ARGV[1]
     opts[:destination_path] = if ARGV[1][0] == "/"
@@ -23,7 +69,6 @@ def generate_config
 end
 
 def dump_structure
-  require_relative '../lib/cassie'
   opts = {}
   opts[:destination_path] = Cassie.paths[:schema_structure]
 
@@ -41,7 +86,6 @@ def dump_structure
 end
 
 def load_structure
-  require_relative '../lib/cassie'
   opts = {}
   opts[:source_path] = Cassie.paths[:schema_structure]
 
@@ -53,7 +97,20 @@ def load_structure
   puts "[✓] Cassandra schema loaded from #{opts[:source_path]}"
 end
 
+def red(message)
+  "\e[1;31m#{message}\e[0m"
+end
+def green(message)
+  "\e[1;32m#{message}\e[0m"
+end
+
 case ARGV[0]
+when "start"
+  start
+when "stop"
+  stop
+when /kick|restart/
+  kick
 when "configuration:generate"
   generate_config
 when "structure:dump"
@@ -61,5 +118,5 @@ when "structure:dump"
 when "structure:load"
   load_structure
 else
-  puts color("`#{ARGV[0]}` is not a supported command.")
+  puts red("`#{ARGV[0]}` is not a supported command.")
 end
