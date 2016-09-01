@@ -10,7 +10,6 @@ module Cassie::Configuration
 
     def self.extended(extender)
       extender.paths["cluster_configurations"] = "config/cassandra.yml"
-      extender.paths["schema_structure"] = "db/structure.cql"
     end
 
     def env
@@ -31,7 +30,7 @@ module Cassie::Configuration
 
     def configurations=(val)
       if val && defined?(@configuration)
-        puts "WARNING:\n `#{self}.configuration` as been set explicitly. Setting `configurations` will have no effect."
+        puts "WARNING: Setting `configurations` will have no effect on what config is used right now. `#{self}.configuration` has previously been set explicitly and will be used instead."
       end
       @configurations = val
     end
