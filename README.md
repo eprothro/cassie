@@ -101,6 +101,32 @@ end
 
 See the [Connection README](./lib/cassie/connection_handler/README.md#readme) for more on features and usage.
 
+### Cassandra Control
+
+Cassie provides simple commands to control Cassandra execution in *nix development. These simplify execution and reduce output to provide faster management of your Cassandra process.
+
+#### Start
+```
+$ cassie start
+Starting Cassandra...
+[✓] Cassandra Running
+```
+
+#### Stop
+```
+$ cassie stop
+Stopping Cassandra...
+[✓] Cassandra Stopped
+```
+
+#### Restart / Kick
+```
+$ cassie restart
+Stopping Cassandra...
+[✓] Cassandra Stopped
+Starting Cassandra...
+[✓] Cassandra Running
+```
 
 ### Versioned Migrations
 
