@@ -28,7 +28,7 @@ Application queries represent distinct application behavior, `cassie` queries ar
 # Some PORO user model
 user = User.new(username: username)
 
-MyInsertionQuery.new.insert(user)
+MyInsertionQuery.new(user: user).execute
 ```
 <pre><b>
 (1.2ms) INSERT INTO users_by_username (id, username) VALUES (?, ?); [["uuid()", "eprothro"]]
@@ -301,7 +301,7 @@ UsersByUsernameQuery.new.fetch_first(username: "eprothro")
 => #<User:0x007fedec219cd8 @id=123, @username="eprothro">
 ```
 
-For Data Modification Queries (`insert`, `update`, `delete`), mapping binding values from a domain object is supported.
+For Data Modification Queries (inserts, updates, deletes), mapping binding values from a domain object is supported.
 
 ```ruby
 class UpdateUserQuery < Cassandra::Query
@@ -323,7 +323,7 @@ This allows a domain object to be passed to the modification method, where bindi
 ```ruby
 user
 => #<User:0x007ff8895ce660 @id=6539, @phone="+15555555555", @email="etp@example.com", @address=nil, @username= "etp">
-UpdateUserQuery.new.update(user)
+UpdateUserQuery.new(user: user).execute
 ```
 
 <pre><b>

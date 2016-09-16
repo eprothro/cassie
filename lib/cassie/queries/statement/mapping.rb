@@ -2,36 +2,11 @@ module Cassie::Queries::Statement
   module Mapping
     extend ActiveSupport::Concern
 
-    MAPPED_METHODS = [:insert, :update, :delete].freeze
-
     included do
-      # We are mapping term values from a client object.
+      # We are mapping term values from a client provided resource.
       # store this object in `_resource` attribte
       # as they could reasonably want to name it `resource`
       attr_accessor :_resource
-
-      #TODO: consider simplifying by overriding
-      #      `execute` and aliasing via mapped methods
-      MAPPED_METHODS.each do |method|
-        # overwrite mapper methods that are defined (yuk)
-        next if !method_defined?(method)
-
-        define_method(method) do |value=nil, opts={}|
-          if value.nil?
-            # if no mapping is taking place, keep previously
-            # defined behavior/return value
-            return super(opts) if _resource.nil?
-          else
-            self._resource = value
-          end
-
-          if super(opts)
-            _resource
-          else
-            false
-          end
-        end
-      end
     end
 
     module ClassMethods
@@ -58,7 +33,7 @@ module Cassie::Queries::Statement
           raise "accessor or getter already defined for #{field}. Fix the collisions by using the `:value` option."
         else
           # Order of prefrence for finding term value
-          #  1. overriden getter instance method
+          #  1. overwritten getter instance method
           #    def id
           #      "some constant"
           #    end
@@ -71,7 +46,7 @@ module Cassie::Queries::Statement
           #    query.id
           #    => 105
           define_method getter do
-            # 1 is handled by definition
+            # 1 is handled by overwritten definition
 
             # 2: prefer instance value
             if instance_variable_defined?("@#{field}")
@@ -85,13 +60,14 @@ module Cassie::Queries::Statement
           end
 
           # query.id = 'some val'
-          # initializes underlying instance var
+          # initialize underlying instance var
           # which is preferred over resource object attribute
           #
           # Issue: if client defines value for attribute
           # they might assume later setting to nil would
           # revert to behavior of fetching from resource object attribute
           # but that is not the case since the variable is defined
+          # and we can't know they didn't want the value of 'nil' to be used
           attr_writer field
         end
       end

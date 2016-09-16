@@ -1,6 +1,6 @@
 require_relative '../relations'
 
-module Cassie::Queries::Pagination
+module Cassie::Queries::Statement::Pagination
   module Cursors
     extend ActiveSupport::Concern
 

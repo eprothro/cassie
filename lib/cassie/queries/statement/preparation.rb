@@ -26,8 +26,7 @@ module Cassie::Queries::Statement
       statement = super
 
       if self.class.prepare?
-        key = statement.cql if statement.respond_to?(:cql)
-        key ||= statement.to_s
+        key = statement.respond_to?(:cql) ? statement.cql : statement.to_s
 
         unbound = statement_cache.fetch(key) do
           session.prepare(statement)

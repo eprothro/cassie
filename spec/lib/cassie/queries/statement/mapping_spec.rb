@@ -10,32 +10,18 @@ RSpec.describe Cassie::Queries::Statement::Mapping do
       map_from :user
     end
   end
-  let(:object) do
-      o = klass.new
-      allow(o).to receive(:execute)
-      allow(o).to receive(:execution_successful?){ succeed? }
-      o
-  end
+  let(:object) { klass.new }
   let(:succeed?){ true }
   let(:user){ Resource.new(id: rand(10000)) }
 
-  describe "#insert" do
-    it "assigns the resource" do
-      expect(object.insert(user))
-      expect(object.user).to eq(user)
+  describe "field setter" do
+    it "assigns resource value" do
+      expect{ object.user = user }.to change{object.user}.to(user)
     end
-    it "returns the resource" do
-      expect(object.insert(user)).to eq(user)
-    end
-    context "when execution fails" do
-      let(:succeed?){ false }
-      it "returns false" do
-        expect(object.insert(user)).to eq(false)
-      end
-    end
-    context "when no resource is passed" do
-      it "returns true" do
-        expect(object.insert).to eq(true)
+    context "when set via initializer" do
+      let(:object) { klass.new(user: user) }
+      it "sets values" do
+        expect(object.user).to eq(user)
       end
     end
   end

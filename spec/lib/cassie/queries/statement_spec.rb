@@ -3,25 +3,22 @@ RSpec.describe Cassie::Queries::Statement do
     Class.new(Cassie::FakeQuery) do
     end
   end
-  let(:object) do
-    o = klass.new
-    allow(o).to receive(:execute)
-    allow(o).to receive(:execution_successful?){ succeed? }
-    o
-  end
+  let(:object){ klass.new }
 
-  describe ".select" do
-    let(:table_name){ :some_table }
-    let(:klass) do
-      Class.new(Cassie::FakeQuery) do
-        select :some_table
+
+  describe "statement" do
+    context "when overridden" do
+      let(:klass) do
+        Class.new(Cassie::FakeQuery) do
+          def statement
+            "some CQL"
+          end
+        end
+      end
+
+      it "returns the statement" do
+        expect(object.execute).to be_truthy
       end
     end
-    it "sets the table name" do
-      expect(klass.table).to eq(table_name)
-    end
-  end
-
-  describe "#execute" do
   end
 end

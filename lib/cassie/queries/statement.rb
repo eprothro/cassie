@@ -3,8 +3,6 @@ require 'active_support/hash_with_indifferent_access'
 require_relative 'statement/execution'
 require_relative 'statement/preparation'
 require_relative 'statement/callbacks'
-require_relative 'statement/limiting'
-require_relative 'statement/pagination'
 require_relative 'statement/selection'
 require_relative 'statement/deleting'
 require_relative 'statement/updating'
@@ -22,8 +20,6 @@ module Cassie::Queries
       include Execution
       include Preparation
       include Callbacks
-      include Limiting
-      include Pagination
       include Selection
       include Deleting
       include Updating

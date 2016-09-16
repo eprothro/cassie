@@ -9,19 +9,18 @@ RSpec.describe Cassie::Queries::Statement do
   end
   let(:object) { klass.new }
 
-  describe "querying with condition" do
+  describe ".where" do
     it "sets where clause" do
       object.id = 12345
       statement = object.statement
       expect(statement.cql).to eq("SELECT * FROM resources WHERE id = ?;")
       expect(statement.params).to eq([12345])
     end
+  end
 
-    context "when there are no new events" do
+  describe ".select" do
+    it "sets the table name" do
+      expect(klass.table).to eq(:resources)
     end
   end
-
-  describe "paging through all events" do
-  end
-
 end

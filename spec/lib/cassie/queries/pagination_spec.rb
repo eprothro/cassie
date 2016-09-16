@@ -1,5 +1,9 @@
-RSpec.describe Cassie::Queries::Pagination do
-  let(:base_class){ Cassie::FakeQuery }
+RSpec.describe Cassie::Queries::Statement::Pagination do
+  let(:base_class) do
+    Class.new(Cassie::FakeQuery) do
+      select :users
+    end
+  end
   let(:subclass) do
     Class.new(base_class) do
       select :users

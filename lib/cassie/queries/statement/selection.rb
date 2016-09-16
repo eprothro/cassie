@@ -1,12 +1,20 @@
-require_relative 'relations'
 require_relative 'limiting'
 require_relative 'pagination'
+require_relative 'relations'
 require_relative 'ordering'
 require_relative 'fetching'
 
 module Cassie::Queries::Statement
   module Selection
     extend ::ActiveSupport::Concern
+
+    included do
+      include Limiting
+      include Pagination
+      include Relations
+      include Ordering
+      include Fetching
+    end
 
     module ClassMethods
       #TODO: accept block to add specific selectors and aliases
@@ -15,10 +23,6 @@ module Cassie::Queries::Statement
       #        t.name as: :username
       #      end
       def select(table)
-        include Relations
-        include Ordering
-        include Fetching
-
         self.table = table
         self.type = :select
 

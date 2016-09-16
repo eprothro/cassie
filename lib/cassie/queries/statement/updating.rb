@@ -5,12 +5,14 @@ module Cassie::Queries::Statement
   module Updating
     extend ::ActiveSupport::Concern
 
+    included do
+      include Relations
+      include Assignments
+      include Conditions
+    end
+
     module ClassMethods
       def update(table)
-        include Relations
-        include Assignments
-        include Conditions
-
         self.table = table
         self.type = :update
 

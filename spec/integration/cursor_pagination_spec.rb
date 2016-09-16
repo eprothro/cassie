@@ -1,4 +1,4 @@
-RSpec.describe Cassie::Queries::Pagination::Cursors do
+RSpec.describe Cassie::Queries::Statement::Pagination::Cursors do
   let(:klass) do
     class Events < Cassie::Query
       cql %(

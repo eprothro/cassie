@@ -1,7 +1,7 @@
 require_relative 'pagination/cursors'
 require_relative 'pagination/page_size'
 
-module Cassie::Queries
+module Cassie::Queries::Statement
   module Pagination
     extend ActiveSupport::Concern
 
@@ -17,7 +17,7 @@ module Cassie::Queries
 
       def page_size
         return @page_size if defined?(@page_size)
-        Cassie::Queries::Pagination::PageSize.default
+        PageSize.default
       end
 
       def page_size=(val)
