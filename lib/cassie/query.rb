@@ -1,22 +1,10 @@
 module Cassie
-  module Queries
-  end
   class Query
-    require_relative 'queries/statement'
-    require_relative 'queries/instrumentation'
-    require_relative 'queries/logging'
+    require_relative 'statements'
 
     include Cassie::Connection
-    include Queries::Statement
-    include Queries::Instrumentation
-    include Queries::Logging
+    include Statements::Core
+    include Statements::Query
 
-    def initialize(params={})
-      params.each do |attr, value|
-        self.public_send("#{attr}=", value)
-      end
-
-      super()
-    end
   end
 end

@@ -1,8 +1,8 @@
-RSpec.describe Cassie::Queries::Statement do
+RSpec.describe Cassie do
   let(:klass) do
     Class.new(Cassie::Query) do
       self.prepare = false
-      select :resources
+      select_from :resources
 
       where :id, :eq
     end

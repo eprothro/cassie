@@ -1,8 +1,8 @@
-RSpec.describe Cassie::Queries::Statement do
+RSpec.describe Cassie do
   let(:klass) do
-    Class.new(Cassie::Query) do
+    Class.new(Cassie::Modification) do
       self.prepare = false
-      delete :resources
+      delete_from :resources
 
       where :id, :eq
 

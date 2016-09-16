@@ -9,7 +9,6 @@ development:
   hosts:
     - 127.0.0.1
   port: 9042
-  reconnection_policy: <%= Cassandra::Reconnection::Policies::Exponential.new(0.5, 60, 2) %>
   keyspace: my_app_development
 
 test:

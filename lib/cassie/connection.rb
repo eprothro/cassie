@@ -1,7 +1,7 @@
 module Cassie
-  #TODO: proper rdoc
-  # include to give #session and #keyspace
-  # convenience methods
+  # Include Cassie::Connection to add #session and #keyspace
+  # convenience methods that conform with object cacheing and reuse
+  # behavior in line with Cassandra best practices
   module Connection
 
     extend ActiveSupport::Concern
