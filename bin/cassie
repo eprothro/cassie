@@ -85,6 +85,20 @@ def dump_structure
   puts "[✓] Cassandra schema written to #{opts[:destination_path]}"
 end
 
+def tail_log
+  runner = Cassie::Support::CommandRunner.new("which", ["cassandra"])
+  runner.run!
+
+  bin_path = runner.output.gsub("\n", '')
+  log_path = bin_path.sub('bin/cassandra', 'logs/system.log')
+  puts white("Tailing Cassandra system log, Ctrl-C to stop...")
+  puts "  #{log_path}:\n\n"
+
+  args = ['-f', log_path, '>', '/dev/tty']
+  runner = Cassie::Support::CommandRunner.new("tail", args)
+  runner.run!
+end
+
 def load_structure
   opts = {}
   opts[:source_path] = Cassie.paths[:schema_structure]
@@ -97,6 +111,9 @@ def load_structure
   puts "[✓] Cassandra schema loaded from #{opts[:source_path]}"
 end
 
+def white(message)
+  "\e[1;37m#{message}\e[0m"
+end
 def red(message)
   "\e[1;31m#{message}\e[0m"
 end
@@ -111,6 +128,8 @@ when "stop"
   stop
 when /kick|restart/
   kick
+when /tail|log/
+  tail_log
 when "configuration:generate"
   generate_config
 when "structure:dump"

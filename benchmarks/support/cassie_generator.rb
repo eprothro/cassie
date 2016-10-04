@@ -1,4 +1,4 @@
-require './queries/lib/cassie-queries'
+require './lib/cassie'
 require_relative 'resource'
 
 # We're evaluating the time it takes to go from a
@@ -19,7 +19,7 @@ end
 
 class BenchmarkQuery < Cassie::Query
 
-  select :friendships_by_owner
+  select_from :friendships_by_owner
 
   where :owner_id, :eq, if: :dynamic1
   where :friend_id, :eq, if: :dynamic2

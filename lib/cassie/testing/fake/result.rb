@@ -2,6 +2,7 @@ require_relative 'execution_info'
 
 module Cassie::Testing::Fake
   class Result
+    include Enumerable
     attr_reader :rows, :statement, :opts
 
     def initialize(statement, execution_opts={})
@@ -14,7 +15,7 @@ module Cassie::Testing::Fake
       ExecutionInfo.new(statement)
     end
 
-    def rows
+    def each
       if paging_enabled?
         index = current_page - 1
         offset = index * page_size
@@ -23,6 +24,8 @@ module Cassie::Testing::Fake
         @data
       end
     end
+    alias rows each
+    alias each_row each
 
     def empty?
       rows.empty?

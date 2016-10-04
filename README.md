@@ -128,6 +128,19 @@ Starting Cassandra...
 [✓] Cassandra Running
 ```
 
+#### Tail / Log
+```
+$ cassie tail
+Tailing Cassandra system log, Ctrl-C to stop...
+  /usr/local/cassandra/logs/system.log:
+
+INFO  [main] 2016-09-23 11:18:05,073 StorageService.java:1902 - Node localhost/127.0.0.1 state jump to NORMAL
+INFO  [main] 2016-09-23 11:18:05,215 NativeTransportService.java:75 - Netty using Java NIO event loop
+INFO  [main] 2016-09-23 11:18:05,343 Server.java:159 - Using Netty Version: [netty-buffer=netty-buffer-4.0.23.Final.208198c, netty-codec=netty-codec-4.0.23.Final.208198c, netty-codec-http=netty-codec-http-4.0.23.Final.208198c, netty-codec-socks=netty-codec-socks-4.0.23.Final.208198c, netty-common=netty-common-4.0.23.Final.208198c, netty-handler=netty-handler-4.0.23.Final.208198c, netty-transport=netty-transport-4.0.23.Final.208198c, netty-transport-rxtx=netty-transport-rxtx-4.0.23.Final.208198c, netty-transport-sctp=netty-transport-sctp-4.0.23.Final.208198c, netty-transport-udt=netty-transport-udt-4.0.23.Final.208198c]
+INFO  [main] 2016-09-23 11:18:05,344 Server.java:160 - Starting listening for CQL clients on localhost/127.0.0.1:9042 (unencrypted)...
+INFO  [main] 2016-09-23 11:18:05,407 CassandraDaemon.java:477 - Not starting RPC server as requested. Use JMX (StorageService->startRPCServer()) or nodetool (enablethrift) to start it
+```
+
 ### Versioned Migrations
 
 Coming soon...
@@ -141,13 +154,13 @@ Coming soon...
 
 ### Query Classes
 
-Cassie provides a base Query Class to manage interactions to the database.
-Create your own subclasses and construct queries with a simple CQL DSL.
+Cassie provides base Query Classes to manage interactions to the database.
+Create application specific subclasses and construct queries with a simple CQL DSL.
 
 ```ruby
 class UserByUsernameQuery < Cassie::Query
 
-  select :users_by_username
+  select_from :users_by_username
 
   where :username, :eq
 
@@ -160,7 +173,7 @@ UserByUsernameQuery.new.fetch_first(username: "eprothro")
 => #<Struct user_id=123, username="eprothro">
 ```
 
-See the [Query README](./lib/cassie/queries/README.md#readme) for more on features and usage.
+See the [Queries README](./lib/cassie/statements/README.md#readme) for more on features and usage.
 
 ### Test Harnessing
 

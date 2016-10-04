@@ -1,8 +1,8 @@
-RSpec.describe Cassie::Queries::Statement do
+RSpec.describe Cassie::Statements::Statement do
   let(:klass) do
-    Class.new(Cassie::Query) do
+    Class.new(Cassie::Modification) do
       self.prepare = false
-      insert :resources
+      insert_into :resources
 
       set :id
       set :field
@@ -11,11 +11,11 @@ RSpec.describe Cassie::Queries::Statement do
   let(:object) { klass.new }
   let(:some_id){ rand(100000)}
 
-  describe ".insert" do
+  describe ".insert_into" do
     let(:klass) do
-      Class.new(Cassie::Query) do
+      Class.new(Cassie::Modification) do
         self.prepare = false
-        insert :resources do |q|
+        insert_into :resources do |q|
           q.set :id
           q.set :field
         end

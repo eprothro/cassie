@@ -1,6 +1,6 @@
-RSpec.describe Cassie::Queries::Statement do
+RSpec.describe Cassie::Statements::Statement do
   let(:klass) do
-    Class.new(Cassie::Query) do
+    Class.new(Cassie::Modification) do
       self.prepare = false
       update :resources
 
@@ -14,7 +14,7 @@ RSpec.describe Cassie::Queries::Statement do
 
   describe ".update" do
     let(:klass) do
-      Class.new(Cassie::Query) do
+      Class.new(Cassie::Modification) do
         self.prepare = false
         update :resources do |q|
           q.where :id, :eq
