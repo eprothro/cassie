@@ -6,9 +6,9 @@ module Cassie::Statements
     extend ActiveSupport::Concern
 
     included do
-      include Statement::Inserting
       include Statement::Updating
       include Statement::Deleting
+      include Statement::Inserting
     end
   end
 end
