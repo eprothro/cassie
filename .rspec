@@ -1,5 +1,6 @@
 --color
 --require spec_helper
 --tag only
+--exclude-pattern spec/integration/db/**/*_spec.rb
 #--format documentation
 --format progress

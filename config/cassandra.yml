@@ -9,21 +9,11 @@ development:
   hosts:
     - 127.0.0.1
   port: 9042
-  keyspace: my_app_development
+  keyspace: cassie_development
 
 test:
   hosts:
     - 127.0.0.1
   port: 9042
-  idle_timeout: nil
-  keyspace: my_app_test
-
-production:
-  hosts:
-    - cass1.my_app.biz
-    - cass2.my_app.biz
-    - cass3.my_app.biz
-  port: 9042
-#  username: 'cassandra_web_server_user'
-#  password: 'cassandra_web_server_password'
-  keyspace: my_app_production
+  idle_timeout: null
+  keyspace: cassie_test

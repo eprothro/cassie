@@ -1,6 +1,3 @@
-# for pluralization
-require 'active_support/core_ext/string'
-
 module Cassie::Statements::Statement
   #
   #
@@ -23,68 +20,46 @@ module Cassie::Statements::Statement
     }
 
     attr_reader :source,
-                :opts,
                 :identifier,
-                :op_type,
-                :value_method
+                :operation,
+                :value,
+                :enabled,
+                :term
 
-    def initialize(identifier, op_type, opts={})
-      @identifier = identifier
-      @op_type = op_type.to_sym
-      opts[:if] = opts.fetch(:if, true)
-      opts[:term] = opts.fetch(:term, "?")
-      opts[:value] = opts.fetch(:value, implied_value_method)
-      @opts = opts
-    end
 
-    def multiple_term?
-      op_type == :in
-    end
-
-    def implied_value_method
-      method = if multiple_term?
-        identifier.to_s.pluralize
-      else
-        identifier
-      end
-
-      method.to_sym
-    end
-
-    def value_method
-      opts[:value]
-    end
-
-    def bind(source)
+    def initialize(source, identifier, op_type, value_method, opts={})
       @source = source
+      @identifier = identifier
+      @operation = OPERATIONS[op_type.to_sym]
+      @value = source.send(value_method)
+      @enabled = opts.has_key?(:if) ? source_eval(opts[:if]) : true
+      @term = opts.has_key?(:term) ? source_eval(opts[:term]) : "?"
     end
 
     def enabled?
-      !!eval_opt(opts[:if])
-    end
-
-    def term
-      eval_opt(opts[:term])
-    end
-
-    def operation
-      OPERATIONS[op_type]
+      !!enabled
     end
 
     def argument
-      eval_opt(value_method)
+      return nil unless enabled? && positional?
+      value
     end
 
     def positional?
       term.to_s.include?("?")
     end
 
-    protected
+    def to_cql
+      return nil unless enabled?
+      "#{identifier} #{operation} #{term}"
+    end
 
-    def eval_opt(value)
+    private
+
+    def source_eval(value, _source=source)
       case value
       when Symbol
-        source.send(value)
+        _source.send(value)
       else
         value
       end

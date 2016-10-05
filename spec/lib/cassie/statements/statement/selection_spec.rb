@@ -1,5 +1,4 @@
 RSpec.describe Cassie::Statements::Statement::Selection do
-  # let(:base_class){ Cassie::FakeQuery }
   let(:klass) do
     Class.new do
       include Cassie::Statements::Statement::Selection
@@ -17,11 +16,10 @@ RSpec.describe Cassie::Statements::Statement::Selection do
       expect{klass.select(selector.to_sym)}.to change{klass.selectors}.to([selector])
     end
     it "has access to class level selection helpers" do
-      klass = Class.new do
-        include Cassie::Statements::Statement::Selection
+      subclass = Class.new(klass) do
         select writetime('some_column')
       end
-      expect(klass.selectors).to eq([klass.write_time(selector)])
+      expect(subclass.selectors).to eq([klass.write_time(selector)])
     end
 
     context "with :as option" do
@@ -30,10 +28,8 @@ RSpec.describe Cassie::Statements::Statement::Selection do
         expect(klass.selectors).to eq(["#{selector} AS #{alias_name}"])
       end
       it "works with helpers" do
-        klass = Class.new do
-          include Cassie::Statements::Statement::Selection
-          select writetime('some_column'), as: :test
-        end
+        klass.select klass.writetime('some_column'), as: :test
+
         expect(klass.selectors).to eq(["#{klass.write_time(selector)} AS test"])
       end
     end

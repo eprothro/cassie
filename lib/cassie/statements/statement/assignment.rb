@@ -5,43 +5,44 @@ module Cassie::Statements::Statement
   class Assignment
     # https://cassandra.apache.org/doc/cql3/CQL.html#updateStmt
 
-    attr_reader :opts
-    attr_reader :source
-    attr_reader :identifier
+    attr_reader :source,
+                :identifier,
+                :value,
+                :enabled,
+                :term
 
-    def initialize(identifier, opts={})
-      @identifier = identifier
-      opts[:if] = opts.fetch(:if, true)
-      opts[:term] = opts.fetch(:term, "?")
-      @opts = opts
-    end
-
-    def bind(source)
+    def initialize(source, identifier, value_method, opts={})
       @source = source
+      @identifier = identifier
+      @value = source.send(value_method)
+      @enabled = opts.has_key?(:if) ? source_eval(opts[:if]) : true
+      @term = opts.has_key?(:term) ? source_eval(opts[:term]) : "?"
     end
 
     def enabled?
-      !!eval_opt(opts[:if])
-    end
-
-    def term
-      eval_opt(opts[:term])
+      !!enabled
     end
 
     def argument
-      eval_opt(opts[:value])
+      return nil unless enabled? && positional?
+      value
     end
 
     def positional?
       term.to_s.include?("?")
     end
 
-    protected
+    def to_update_cql
+      return nil unless enabled?
+      "#{identifier} = #{term}"
+    end
 
-    def eval_opt(value)
+    private
+
+    def source_eval(value, _source=source)
       case value
       when Symbol
-        source.send(value)
+        _source.send(value)
       else
         value
       end

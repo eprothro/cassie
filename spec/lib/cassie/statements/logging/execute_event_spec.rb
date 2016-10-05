@@ -39,6 +39,9 @@ RSpec.describe Cassie::Statements::Logging::ExecuteEvent do
           it "includes the hex string of uuid" do
             expect(object.message.inspect).to include(uuid.to_s)
           end
+          it "doesn't affect the statement cql" do
+            expect{object.message.inspect}.not_to change{statement.cql}
+          end
         end
       end
 

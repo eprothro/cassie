@@ -6,6 +6,7 @@ module Cassie::Statements
     require_relative 'results/modification_result'
     require_relative 'results/query_result'
     require_relative 'results/peeking_result'
+    require_relative 'results/cursored_result'
 
   end
 end

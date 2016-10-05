@@ -1,6 +1,21 @@
+# for pluralization
+require 'active_support/core_ext/string'
 require_relative 'relation'
 
 module Cassie::Statements::Statement
+  # Provides support for a set of CQL relations
+  # and building the where clause and argument list
+  # for a cql statement
+  #
+  # CQL Relation terminology:
+  #
+  #   "SELECT * FROM table WHERE id = ?", [1]
+  #
+  # relation:   'WHERE'
+  # identifier: 'id'
+  # operation:  '='
+  # term:       '?'
+  # argument:   '1'
   module Relations
     extend ActiveSupport::Concern
 
@@ -9,25 +24,25 @@ module Cassie::Statements::Statement
       #    where :phone, :in
       #    relation :user_id, :gteq, term: "minTimeuuid('2013-02-02 10:00+0000')"
       def where(identifier, op, opts={})
-        relation = Relation.new(identifier, op, opts)
+        opts[:value] ||= implied_argument_method(identifier, op)
 
-        #TODO: does this conflict with mapping behavior
-        # in certain scenarios? Can we be more specific?
-        if Symbol === relation.value_method
-          define_term_methods(relation.value_method)
-        end
+        define_argument_accessor(opts[:value])
 
-        relations << relation
+        relations_args << [identifier, op, opts.delete(:value), opts]
       end
 
-      # a where clause is built up of multiple 'relations'
-      def relations
-        @relations ||= []
+      def relations_args
+        @relations_args ||= []
       end
 
       protected
 
-      def define_term_methods(name)
+      #TODO: extract argument accessor creation for
+      #      more DRY and clear usage. See mapping module.
+      def define_argument_accessor(name)
+        unless Symbol === name
+          raise ArgumentError, "A Symbol is required for the accessor methods for setting/getting a relation's value. #{name.class} (#{name}) given."
+        end
         #TODO: this should probably only raise
         #      if value option was nil and we
         #      are implicilty creating getter/setters.
@@ -37,11 +52,23 @@ module Cassie::Statements::Statement
           attr_accessor name
         end
       end
+
+      private
+
+      def implied_argument_method(identifier, op)
+        method = if op == :in
+          identifier.to_s.pluralize
+        else
+          identifier
+        end
+
+        method.to_sym
+      end
     end
 
     # a where clause is built up of multiple 'relations'
-    def relations
-      self.class.relations
+    def relations_args
+      self.class.relations_args
     end
 
     protected
@@ -51,12 +78,10 @@ module Cassie::Statements::Statement
       relation_strings = []
       arguments = []
 
-      relations.each do |r|
-        r.bind(self)
-        if r.enabled?
-          relation_strings << "#{r.identifier} #{r.operation} #{r.term}"
-          arguments << r.argument if r.positional?
-        end
+      relations_args.each do |args|
+        r = Relation.new(self, *args)
+        relation_strings += Array(r.to_cql)
+        arguments += Array(r.argument)
       end
 
       cql = "WHERE #{relation_strings.join(' AND ')}" unless relation_strings.empty?

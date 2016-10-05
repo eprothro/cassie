@@ -22,7 +22,7 @@ RSpec.describe Cassie::Statements::Statement::Pagination::Cursors do
       end.to change{object.max_field}.to(max_value)
     end
     it "adds a relation for the field with a <= matcher" do
-      expect(object.relations).to include(have_attributes(identifier: :field, op_type: :lteq))
+      expect(object.relations_args).to include([:field, :lteq, :max_field, if: :max_cursor_enabled?])
     end
   end
 
@@ -39,7 +39,7 @@ RSpec.describe Cassie::Statements::Statement::Pagination::Cursors do
       end.to change{object.since_field}.to(max_value)
     end
     it "adds a relation for the field with a > matcher" do
-      expect(object.relations).to include(have_attributes(identifier: :field, op_type: :gt))
+      expect(object.relations_args).to include([:field, :gt, :since_field, if: :since_cursor_enabled?])
     end
   end
 
@@ -88,39 +88,6 @@ RSpec.describe Cassie::Statements::Statement::Pagination::Cursors do
     context "when since_field not present" do
       it "doesn't add a binding marker for since_field" do
         expect(object.statement.cql).not_to match(/field > ?/)
-      end
-    end
-  end
-
-  describe "#next_max_field" do
-    let(:klass) do
-      Class.new(Cassie::FakeQuery) do
-        select_from :users
-        cursor_by :id
-        self.page_size = 1
-      end
-    end
-    context "when query has executed" do
-      before(:each) do
-        object.session.rows = rows
-        object.execute
-      end
-      let(:rows){ [] }
-
-      context "when there is a next record" do
-        let(:rows){ [{"id" => 1},{"id" => 2}] }
-
-        it "returns field value of next record" do
-          expect(object.next_max_id).to eq(2)
-        end
-      end
-
-      context "when there is no next record" do
-        let(:rows){ [{"id" => 1}] }
-
-        it "returns nil" do
-          expect(object.next_max_id).to be_nil
-        end
       end
     end
   end

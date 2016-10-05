@@ -15,30 +15,36 @@ def start
   end
 end
 
-def stop
+def stop(kill_all=false)
   runner = Cassie::Support::CommandRunner.new("ps", ["-awx"])
   runner.run!
  # | grep cassandra | grep -v grep | awk '{print $1}'`
   cassandra_awx = runner.output.split("\n").grep(/cassandra/)
-  pid = case cassandra_awx.length
-  when 0
+  pids = cassandra_awx.map{ |p| p.split(' ').first.to_i }
+
+  if pids.empty?
     puts red("No Cassandra process was found. Is Cassandra running?")
     exit(1)
-  when 1
-    cassandra_awx.first.split(' ').first.to_i
-  else
-    puts red("Couldn't single out a Cassandra process:\n#{cassandra_awx}")
+  elsif pids.length > 1 && !kill_all
+    puts red("Couldn't single out a Cassandra process.")
+    puts red("  - Is cqlsh running?")
+    puts red("  - Kill all cassandra processes with --all")
+    cassandra_awx.each do |p|
+      puts "    - #{p.split(' ').first.ljust(5,' ')} | #{p.split(' ').last}"
+    end
     exit(1)
   end
 
   puts("Stopping Cassandra...")
-  Process.kill("TERM", pid)
-  loop do
-    sleep(0.1)
-    begin
-      Process.getpgid( pid )
-    rescue Errno::ESRCH
-      break
+  pids.each do|pid|
+    Process.kill("TERM", pid)
+    loop do
+      sleep(0.1)
+      begin
+        Process.getpgid( pid )
+      rescue Errno::ESRCH
+        break
+      end
     end
   end
 
@@ -125,7 +131,7 @@ case ARGV[0]
 when "start"
   start
 when "stop"
-  stop
+  stop(ARGV.include?('--all'))
 when /kick|restart/
   kick
 when /tail|log/

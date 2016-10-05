@@ -15,7 +15,7 @@ test:
   hosts:
     - 127.0.0.1
   port: 9042
-  idle_timeout: nil
+  idle_timeout: null
   keyspace: <%=app_name%>_test
 
 production:

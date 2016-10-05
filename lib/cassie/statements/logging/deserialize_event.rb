@@ -15,7 +15,7 @@ module Cassie::Statements::Logging
 
     module Inspector
       def inspect
-        color("(#{fetch(:duration).round(1)}ms) #{fetch(:count)} #{'record'.pluralize(fetch(:count))} deserialized from Cassandra rows")
+        color("(#{fetch(:duration).round(1)}ms) #{fetch(:count)} #{'result'.pluralize(fetch(:count))} deserialized from Cassandra rows")
       end
 
       def to_s

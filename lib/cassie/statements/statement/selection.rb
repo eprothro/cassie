@@ -8,10 +8,12 @@ module Cassie::Statements::Statement
     extend ::ActiveSupport::Concern
 
     included do
-      include Limiting
       include Relations
       include Ordering
+      include Limiting
       include Pagination
+
+      @result_class = Cassie::Statements::Results::QueryResult
     end
 
     module ClassMethods
@@ -48,10 +50,6 @@ module Cassie::Statements::Statement
     end
 
     protected
-
-    def result_class
-      Cassie::Statements::Results::QueryResult
-    end
 
     def result_opts
       opts = {}
