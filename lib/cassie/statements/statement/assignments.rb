@@ -2,6 +2,23 @@ require_relative 'assignment'
 require_relative 'mapping'
 
 module Cassie::Statements::Statement
+  # Provides support for a set of CQL assignments
+  # and building the insert/update clause and argument list
+  # for a cql statement
+  #
+  # CQL Relation terminology:
+  #
+  #   "INSERT INTO table (id, username) VALUES (?, ?);", [1, 'eprothro']
+  #
+  # identifiers: ['id', 'username']
+  # terms:       ['?', '?']
+  # arguments:   [1, 'eprothro']
+  #
+  #   "UPDATE table SET id = ?, username = ? WHERE...;", [1, 'eprothro']
+  #
+  # identifiers: ['id', 'username']
+  # terms:       ['?', '?']
+  # arguments:   [1, 'eprothro']
   module Assignments
     extend ActiveSupport::Concern
 
@@ -13,20 +30,18 @@ module Cassie::Statements::Statement
       def set(identifier, opts={})
         opts[:value] ||= identifier.to_sym
 
-        if Symbol === opts[:value]
-          define_term_methods(opts[:value])
-        end
+        define_argument_accessor(opts[:value])
 
-        assignments << Assignment.new(identifier, opts)
+        assignments_args << [identifier, opts.delete(:value), opts]
       end
 
-      def assignments
-        @assignments ||= []
+      def assignments_args
+        @assignments_args ||= []
       end
     end
 
-    def assignments
-      self.class.assignments
+    def assignments_args
+      self.class.assignments_args
     end
 
     def build_update_and_bindings
@@ -34,19 +49,14 @@ module Cassie::Statements::Statement
       arguments = []
       assignment_strings = []
 
-      assignments.each do |a|
-        a.bind(self)
-        if a.enabled?
-          assignment_strings << "#{a.identifier} = #{a.term}"
-          arguments << a.argument if a.positional?
-        end
+      assignments_args.each do |args|
+        a = Assignment.new(self, *args)
+        assignment_strings += Array(a.to_update_cql)
+        arguments += Array(a.argument)
       end
 
       cql = assignment_strings.join(', ')
 
-      # set identifier = term,
-      #     identifier = term;
-      # set (update cql);
       [cql , arguments]
     end
 
@@ -55,13 +65,11 @@ module Cassie::Statements::Statement
       terms = []
       arguments = []
 
-      assignments.each do |a, opts|
-        a.bind(self)
-        if a.enabled?
-          identifiers << a.identifier
-          terms << a.term
-          arguments << a.argument if a.positional?
-        end
+      assignments_args.each do |args|
+        a = Assignment.new(self, *args)
+        identifiers += Array(a.identifier)
+        terms += Array(a.term)
+        arguments += Array(a.argument)
       end
 
       identifiers_cql = identifiers.join(", ")
@@ -71,7 +79,7 @@ module Cassie::Statements::Statement
       # VALUES
       # (term, term);
       # (identifiers_cql)
-      # VALUEES
+      # VALUES
       # (terms_cql);
       [identifiers_cql, terms_cql , arguments]
     end

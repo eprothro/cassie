@@ -19,7 +19,6 @@ RSpec.describe Cassie::Connection do
       object.session
     end
     it "passes nil keyspace to class session" do
-      Cassie.keyspace = 'not_nil'
       object.keyspace = nil
       expect(Cassie).to receive(:session).with(nil)
 

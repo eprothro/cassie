@@ -44,4 +44,14 @@ RSpec.describe Cassie::Statements::Execution do
       end
     end
   end
+
+  describe "clone" do
+    it "clears results" do
+      object.execute
+      object2 = nil
+
+      expect{object2 = object.clone}.not_to change{object.result.object_id}
+      expect(object2.result).to be_nil
+    end
+  end
 end

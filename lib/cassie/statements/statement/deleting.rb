@@ -10,6 +10,8 @@ module Cassie::Statements::Statement
       include Relations
       include Conditions
       include Mapping
+
+      @result_class = Cassie::Statements::Results::ModificationResult
     end
 
     module ClassMethods
@@ -36,10 +38,6 @@ module Cassie::Statements::Statement
     end
 
     protected
-
-    def result_class
-      Cassie::Statements::Results::ModificationResult
-    end
 
     def build_delete_cql_and_bindings
       where_str, where_bindings = build_where_and_bindings

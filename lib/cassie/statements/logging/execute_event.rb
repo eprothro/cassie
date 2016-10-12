@@ -27,7 +27,7 @@ module Cassie::Statements::Logging
       if execution_info
         statement = execution_info.statement
         if statement.respond_to? :cql
-          str = statement.cql
+          str = statement.cql.dup
           str << " #{statement.params.map(&:to_s)}" if statement.respond_to? :params
         else
           str = statement.to_s

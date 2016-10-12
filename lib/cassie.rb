@@ -17,6 +17,7 @@ module Cassie
   require_relative 'cassie/configuration'
   require_relative 'cassie/connection_handler'
   require_relative 'cassie/connection'
+  require_relative 'cassie/definition'
   require_relative 'cassie/query'
   require_relative 'cassie/modification'
 

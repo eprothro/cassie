@@ -22,15 +22,19 @@ module Cassie::Statements::Statement
 
       protected
 
-      # define getter and setter
-      # methods that look up term values
+      # override definition of getter and setter
+      # methods to look up argument values
       # from resource object
-      def define_term_methods(field)
-        getter = field
-        setter = "#{field}="
+      def define_argument_accessor(name)
+        unless Symbol === name
+          raise ArgumentError, "A Symbol is required for the accessor methods for setting/getting a relation's value. #{name.class} (#{name}) given."
+        end
+
+        getter = name
+        setter = "#{name}="
 
         if method_defined?(getter) || method_defined?(setter)
-          raise "accessor or getter already defined for #{field}. Fix the collisions by using the `:value` option."
+          raise "accessor or getter already defined for #{name}. Fix the collisions by using the `:value` option."
         else
           # Order of prefrence for finding term value
           #  1. overwritten getter instance method
@@ -49,13 +53,13 @@ module Cassie::Statements::Statement
             # 1 is handled by overwritten definition
 
             # 2: prefer instance value
-            if instance_variable_defined?("@#{field}")
-              return instance_variable_get("@#{field}")
+            if instance_variable_defined?("@#{name}")
+              return instance_variable_get("@#{name}")
             end
 
             # 3: fetch from resource
-            if _resource && _resource.respond_to?(field)
-              _resource.send(field)
+            if _resource && _resource.respond_to?(name)
+              _resource.send(name)
             end
           end
 
@@ -68,7 +72,7 @@ module Cassie::Statements::Statement
           # revert to behavior of fetching from resource object attribute
           # but that is not the case since the variable is defined
           # and we can't know they didn't want the value of 'nil' to be used
-          attr_writer field
+          attr_writer name
         end
       end
     end

@@ -3,6 +3,7 @@ module Cassie::Statements
     require_relative 'execution/consistency'
     require_relative 'execution/callbacks'
     require_relative 'execution/results'
+    require_relative 'execution/partition_linking'
     require_relative 'execution/instrumentation'
 
     extend ActiveSupport::Concern
@@ -11,7 +12,24 @@ module Cassie::Statements
 
       include Consistency
       include Callbacks
+      include PartitionLinking
       include Instrumentation
+    end
+
+    module ClassMethods
+      def inherited(subclass)
+        subclass.result_class = result_class if defined?(@result_class)
+        super
+      end
+
+      def result_class
+        return @result_class if defined?(@result_class)
+        Cassie::Statements::Results::Result
+      end
+
+      def result_class=(val)
+        @result_class = val
+      end
     end
 
     # Executes the statment, populates result
@@ -34,11 +52,18 @@ module Cassie::Statements
     protected
 
     def result_class
-      Cassie::Statements::Results::Result
+      self.class.result_class
     end
 
     def result_opts
       {}
+    end
+
+    private
+
+    def initialize_copy(other)
+      super
+      @result = nil
     end
   end
 end

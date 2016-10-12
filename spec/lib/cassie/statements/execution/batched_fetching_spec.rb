@@ -19,7 +19,7 @@ RSpec.describe Cassie::Statements::Execution::BatchedFetching do
     it "calls fetch" do
       fetch_data = object.fetch
 
-      expect(object.fetch_in_batches.first.rows).to eq(fetch_data.rows)
+      expect(object.fetch_in_batches.first.rows.to_a).to eq(fetch_data.rows.to_a)
     end
     it "isolates usage of object's stateless_page_size" do
       expect{

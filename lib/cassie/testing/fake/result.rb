@@ -16,19 +16,28 @@ module Cassie::Testing::Fake
     end
 
     def each
-      if paging_enabled?
+      _rows = if paging_enabled?
         index = current_page - 1
         offset = index * page_size
         @data.slice(offset, page_size) || []
       else
         @data
       end
+
+      if block_given?
+        _rows.each(&block)
+        self
+      else
+        _rows.each
+      end
     end
     alias rows each
     alias each_row each
 
     def empty?
-      rows.empty?
+      !!rows.peek
+    rescue StopIteration
+      true
     end
 
     def paging_enabled?

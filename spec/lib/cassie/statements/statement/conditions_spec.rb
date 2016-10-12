@@ -1,10 +1,6 @@
 RSpec.describe Cassie::Statements::Statement::Conditions do
-  let(:base_class){ Cassie::FakeQuery }
-  let(:klass) do
-    Class.new(base_class) do
-      include Cassie::Statements::Statement::Conditions
-    end
-  end
+  let(:base_class){ Cassie::FakeModification }
+  let(:klass) { base_class }
   let(:object) { klass.new }
 
   def condition_str
@@ -25,8 +21,6 @@ RSpec.describe Cassie::Statements::Statement::Conditions do
     context "when if_not_exists configured" do
       let(:klass) do
         Class.new(base_class) do
-          include Cassie::Statements::Statement::Conditions
-
           if_not_exists
         end
       end
@@ -42,16 +36,12 @@ RSpec.describe Cassie::Statements::Statement::Conditions do
     context "when if_exists configured" do
       let(:klass) do
         Class.new(base_class) do
-          include Cassie::Statements::Statement::Conditions
-
           if_exists
         end
       end
 
       it "returns IF EXISTS string" do
         expect(condition_str).to eq("IF EXISTS")
-      end
-      it "returns no binding" do
       end
     end
   end

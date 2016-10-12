@@ -24,11 +24,11 @@ module Cassie::Statements::Statement
 
     def statement
       statement = super
-
       if self.class.prepare?
         key = statement.respond_to?(:cql) ? statement.cql : statement.to_s
 
         unbound = statement_cache.fetch(key) do
+          statement.cql.freeze
           session.prepare(statement)
         end
         unbound.bind(statement.params)

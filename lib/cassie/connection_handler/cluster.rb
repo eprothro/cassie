@@ -21,7 +21,7 @@ module Cassie::ConnectionHandler
           _cluster = Cassandra.cluster(config)
         end
 
-        logger.info "(#{(sec/1000.0).round(2)}ms) Connected to Cassandra cluster #{config[:hosts]}"
+        logger.info "(#{(sec*1000).round(2)}ms) Connected to Cassandra cluster #{config[:hosts]}"
         _cluster
       end
     end

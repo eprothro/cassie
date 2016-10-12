@@ -6,9 +6,7 @@ RSpec.describe Cassie::Statements::Statement::Relations do
   end
   let(:object){ klass.new }
   let(:relation)do
-    relation = object.relations.first
-    relation.bind(object)
-    relation
+    Cassie::Statements::Statement::Relation.new(object, *object.relations_args.first)
   end
 
   describe "#where" do
@@ -48,6 +46,18 @@ RSpec.describe Cassie::Statements::Statement::Relations do
 
       it "extracts argument from pluralized getter" do
         expect(relation.argument).to eq([1,2])
+      end
+    end
+    context "when relation sets partition value inline" do
+      it "raises exception" do
+        expect do
+          Class.new(Cassie::FakeQuery) do
+            select_from :test
+            where :partition, :eq, value: 0
+
+            limit 2
+          end
+        end.to raise_error(ArgumentError)
       end
     end
   end

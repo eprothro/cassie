@@ -21,6 +21,7 @@ require 'byebug'
 require 'cassie'
 require 'cassie/testing'
 require 'cassie_helper'
+require 'lookup_path'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

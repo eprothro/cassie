@@ -1,5 +1,5 @@
 require_relative '../relations'
-require_relative 'peeking'
+require_relative '../../execution/peeking'
 
 module Cassie::Statements::Statement::Pagination
   module Cursors
@@ -11,7 +11,8 @@ module Cassie::Statements::Statement::Pagination
 
     module ClassMethods
       def max_cursor(key)
-        include Peeking
+        include Cassie::Statements::Execution::Peeking
+        self.partition_linker = Cassie::Statements::Execution::PartitionLinking::CursoringPolicy
 
         @max_cursor_key = key
 
@@ -20,11 +21,10 @@ module Cassie::Statements::Statement::Pagination
               if: :max_cursor_enabled?)
 
         define_max_accessors(key)
-        define_next_max_cursor_alias(key)
       end
 
       def since_cursor(key)
-        include Peeking
+        include Cassie::Statements::Execution::Peeking
 
         @max_cursor_key = key
 
@@ -33,7 +33,6 @@ module Cassie::Statements::Statement::Pagination
               if: :since_cursor_enabled?)
 
         define_since_accessors(key)
-        define_next_max_cursor_alias(key)
       end
 
       def cursor_by(key)
@@ -86,20 +85,28 @@ module Cassie::Statements::Statement::Pagination
           self.since_cursor = val
         end
       end
+    end
 
-      def define_next_max_cursor_alias(key)
-        method = "next_max_#{key}"
-
-        unless method_defined?(method)
-          define_method method do
-            next_max_cursor
-          end
-        end
+    def result_class
+      if cursored?
+        Cassie::Statements::Results::CursoredResult
+      else
+        super
       end
     end
 
-    def next_max_cursor
-      result.next_row[self.class.max_cursor_key] if result.next_row
+    def result_opts
+      if cursored?
+        super.merge({max_cursor_key: self.class.max_cursor_key})
+      else
+        super
+      end
+    end
+
+    protected
+
+    def cursored?
+      respond_to?(:max_cursor)
     end
   end
 end

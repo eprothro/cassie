@@ -34,15 +34,8 @@ module Cassie::Statements::Execution
     #   query.fetch_first(id: 2)
     #   => nil
     def fetch_first(args={})
-      old_limit = defined?(@limit) ? @limit : nil
-      self.limit = 1
-
-      fetch(args).first
-    ensure
-      if old_limit
-        @limit = old_limit
-      else
-        remove_instance_variable(:@limit)
+      with_limit(1) do
+        fetch(args).first
       end
     end
 

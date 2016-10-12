@@ -7,7 +7,7 @@ Cassie provides support for the components most applications need to work with a
 * Query classes
 * Test harnessing
 
-Each component attempts to adhere to a "take it or leave it" mindset. A given application may only use `Cassie::Connection` and nothing else.
+Each component is designed to be abstract. A given application may only use `Cassie::Connection` and nothing else.
 Cassie attempts to support use cases such as that in a lightweight and straightforward manner.
 
 ### Installation
@@ -57,7 +57,7 @@ See [`cassie-rails`](https://github.com/eprothro/cassie-rails) for Rails integra
 
 Cassie provides cluster and session connection creation according to `cassie-driver` [best practices](http://www.datastax.com/dev/blog/4-simple-rules-when-using-the-datastax-drivers-for-cassandra).
 
-##### Using global cluster and session objects
+##### Using cached cluster and session objects
 
 `cluster` and `session` objects are created, cached, and reused globally.
 
@@ -103,7 +103,7 @@ See the [Connection README](./lib/cassie/connection_handler/README.md#readme) fo
 
 ### Cassandra Control
 
-Cassie provides simple commands to control Cassandra execution in *nix development. These simplify execution and reduce output to provide faster management of your Cassandra process.
+Cassie provides simple commands to control Cassandra execution in *nix development. These simplify execution and reduce output to provide faster management of your Cassandra processes.
 
 #### Start
 ```
@@ -115,6 +115,19 @@ Starting Cassandra...
 #### Stop
 ```
 $ cassie stop
+Stopping Cassandra...
+[✓] Cassandra Stopped
+```
+
+```
+$ cassie stop
+Couldn't single out a Cassandra process.
+  - Is cqlsh running?
+  - Kill all cassandra processes with --all
+    - 9542  | /usr/local/apache-cassandra-3.0.8/bin/cqlsh.py
+    - 2832  | org.apache.cassandra.service.CassandraDaemon
+
+$ cassie stop --all
 Stopping Cassandra...
 [✓] Cassandra Stopped
 ```
@@ -192,3 +205,19 @@ some_query.session.last_statement
 ```
 
 See the [Testing README](./lib/cassie/testing/README.md#readme) for more on features and usage.
+
+### Contributing
+
+Pull requests and issues are welcome.
+
+#### Unit tests
+
+Unit tests should provide complete coverage of features and should not depend on an available Cassandra server.
+
+Run the unit suite with `rspec`, no dependencies outside of `bundle`.
+
+#### `Integration/db` tests
+
+Integration tests that rely on a Cassandra server exist as an extra 'sanity check' layer. Please don't use them as an excuse to not write solid unit tests. Please add them if they seem like a good idea!
+
+Run the full suite with Cassandra-based specs using `rspec --options .rspec-with-db`.

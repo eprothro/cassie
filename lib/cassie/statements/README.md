@@ -5,27 +5,33 @@
 * Easy to use
 * Easy to understand (and thus maintain)
 * Easy to test
-* Works well with a data mapper and/or repository design pattern
+* Compatible with a data mapper and/or repository design pattern
 
 ### Usage
 
 You might expect to see class methods allowing queries to be built like such:
 
-```
+```ruby
 Cassie.insert(:users_by_username,
               "id = #{some_id}",
               username: some_username)
 ```
+or
+```
+Cassie.select_from(:table)
+      .where(id: some_id)
+      .where(username: some_username)
+```
 
 Queries defined on the fly like this tend to create debt for an application in the long term. They:
   * create gaps in test coverage
-  * resist documentation
+  * lack clear documentation
   * resist refactoring
 
 Application queries represent distinct application behavior, `cassie` queries are designed to help create query classes that are reusable, testable and maintainable (so you can sleep better at night).
 
 ```ruby
-# Some PORO user model
+# Some user model
 user = User.new(username: username)
 
 MyInsertionQuery.new(user: user).execute
@@ -37,13 +43,13 @@ MyInsertionQuery.new(user: user).execute
 ```ruby
 class MyInsertionQuery < Cassie::Modification
 
-  insert_into :users_by_username do |u|
-    u.set :id,
-    u.set :username
-  end
+  insert_into :users_by_username
+
+  set :id
+  set :username
 
   def id
-    "uuid()"
+    Cassandra::TimeUuid::Generator.new.now
   end
 end
 ```
@@ -64,7 +70,7 @@ CQL algebra is less complex than with SQL. So, rather than introducing a query a
   limit 30
 ```
 
-This maintains the clarity of your CQL, allowing you to be expressive, but still use additional features without having get crazy with string manipulation.
+This maintains the clarity of CQL, allowing code to be expressive, but still use additional features without having get crazy with string manipulation.
 
 #### Query Classes
 
@@ -75,8 +81,32 @@ CQL statements are used for 3 different kinds of queries:
 
 Cassie provides 3 base classes for these 3 kinds of queries. Subclass `Cassie::Definition`, `Cassie::Modification`, and `Cassie::Query` to define your applicaiton query classes.
 
+##### `Cassie::Definition`
+  Only includes the core functionality for statement execution:
+    * connection methods (`session`, `keyspace`)
+    * `execute` method
+    * `result` attribute, populated by execution
+    * instrumentation and logging of execution
 
-#### Dynamic term values
+  Typical use of a `Definition` subclass would be for a static DDL query. Override the `statement` method, returning a CQL statement (`String` or `Cassandra::Statements`) that will be executed with the `Cassandra` driver.
+
+##### `Cassie::Modification`
+  Includes core functionality for prepared statement execution.
+
+  * Adds DSL for `insert_into`, `update`, and `delete_from` statement types
+  * Adds support for automatically mapping values for assignments from a domain object
+
+##### `Query`
+  Includes core functionality for prepared statement execution.
+
+  * Adds DSL for `select_from` statement type
+  * Adds `fetch` and `fetch_first` methods for executing and getting results in combination
+  * Adds support for deserializing domain objects from Cassandra rows
+  * Adds support for paging through results with cursors
+  * Adds support for fetching large data sets in memory-efficient batches
+
+
+#### Relations (`where` clauses)
 
 ```ruby
 select_from :posts_by_author
@@ -84,7 +114,7 @@ select_from :posts_by_author
 where :user_id, :eq
 ```
 
-Defining a CQL relation in a cassie query (the "where") creates a setter and getter for that relation. This allows the term value to be set for a particular query instance.
+Defining a CQL relation (the `where`) in a cassie query class creates a setter and getter for that relation. This allows the value for the term to be set for a particular query instance.
 
 ```ruby
 query.user_id = 123
@@ -96,7 +126,7 @@ query.fetch
 (2.9ms) SELECT * FROM posts_by_author WHERE user_id = ? LIMIT 1; [[123]]
 </b></pre>
 
-These methods are defined as attr_accessors. The underlying instance values can be treated as such.
+These methods are defined as simple attr_accessors. The underlying instance values can be treated as such.
 
 ```ruby
 select_from :posts_by_author
@@ -118,7 +148,7 @@ query.fetch
 (2.9ms) SELECT * FROM posts_by_author WHERE user_id = ? LIMIT 1; [[123]]
 </b></pre>
 
-A different name can be defined for the setter/getter:
+A different name can be defined for the value's setter/getter:
 
 ```ruby
 select_from :posts_by_author
@@ -136,16 +166,7 @@ query.fetch
 (2.9ms) SELECT * FROM posts_by_author WHERE user_id = ? LIMIT 1; [[123]]
 </b></pre>
 
-#### Conditional relations
-
-```ruby
-  select_from :posts_by_author_category
-
-  where :author_id, :eq
-  where :category, :eq, if: "category.present?"
-```
-
-or
+Relations can be conditionally evaluated:
 
 ```ruby
   select_from :posts_by_author_category
@@ -157,8 +178,10 @@ or
     #true or false, as makes sense for your query
   end
 ```
+This can be overdone; it's recommended that one query class be in charge of one kind of query. Avoid query classes that can do too much!
 
-#### Column Selection
+
+#### Column Selection (`select`)
 
 ```ruby
   select_from :posts_by_author do |t|
@@ -194,9 +217,98 @@ which is the same as
 ```
 => SELECT id, TTL(popular), WRITETIME(popular) AS created_at FROM posts_by_author;
 ```
-#### Custom terms
 
-Set custom assignments and relations with the same DSL.
+#### Values and Assignments (`set`)
+
+Set values (for inserts) and assignments (for updates) with the same `set` method. Similar to relations defined with `where`, assignments provide simple getters and setters.
+
+```ruby
+class InsertUserQuery < Cassandra::Modification
+
+  insert :users_by_id
+
+  set :id
+  set :username
+end
+```
+
+```ruby
+class UpdateUsernameQuery < Cassandra::Modification
+
+  insert :users_by_id
+
+  set :username
+
+  where :id, :eq
+end
+```
+```ruby
+query = UpdateUserQuery.new(id: current_user.id)
+query.username = 'eprothro'
+query.execute
+=> true
+```
+
+Mapping assignemtnt values from a domain object is supported.
+
+```ruby
+class UpdateUserQuery < Cassandra::Modification
+
+  update :users_by_id do |q|
+    q.set :phone
+    q.set :email
+    q.set :address
+    q.set :username
+  end
+
+  where :id, :eq
+
+  map_from :user
+```
+
+This allows a domain object to be set for the modification object and have assignment values retrieved from that object.
+
+```ruby
+user
+=> #<User:0x007ff8895ce660 @id=6539, @phone="+15555555555", @email="etp@example.com", @address=nil, @username= "etp">
+UpdateUserQuery.new(user: user).execute
+```
+
+<pre><b>
+(1.2ms) UPDATE users_by_id (phone, email, address, username) VALUES (?, ?, ?, ?) WHERE id = ?; [["+15555555555", "etp@example.com", nil, "etp", 6539]]
+</b></pre>
+
+This mapping is done in a way akin to delegation, so the behavior can be changed easily for one or more accessors by overriding the getter.
+
+```
+class UpdateUserQuery < Cassandra::Modification
+
+  update :users_by_id do |q|
+    q.set :phone
+    q.set :email
+    q.set :address
+    q.set :username
+  end
+
+  where :id, :eq
+
+  map_from :user
+
+  def username
+    user.username.downcase
+  end
+```
+```ruby
+user
+=> #<User:0x007ff8895ce660 @id=6539, @phone="+15555555555", @email="etp@example.com", @address=nil, @username= "ETP">
+UpdateUserQuery.new(user: user).execute
+```
+
+<pre><b>
+(1.2ms) UPDATE users_by_id (phone, email, address, username) VALUES (?, ?, ?, ?) WHERE id = ?; [["+15555555555", "etp@example.com", nil, "etp", 6539]]
+</b></pre>
+
+The above examples use positional terms (e.g. the term is '?' in the statement). The assignement's term can be defined explicitly.
 
 ```ruby
 insert_into :posts
@@ -210,6 +322,8 @@ insert_into :posts
 set :published_at, "toTimestamp(now())"
 ```
 
+A value will be fetched and placed as an argument in the statement if the provided term includes a positional marker ('?').
+
 ```ruby
 select :posts
 
@@ -219,6 +333,8 @@ def window_min_timestamp
   '2013-02-02 10:00+0000'
 end
 ```
+
+> Note: The `term` option should be used with care. Using it innapropriately could result in inefficient use of prepared statements, and/or leave you potentially vulnerable to injection attacks.
 
 #### Consistency configuration
 
@@ -382,67 +498,7 @@ UsersByUsernameQuery.new.fetch_first(username: "eprothro")
 => #<User:0x007fedec219cd8 @id=123, @username="eprothro">
 ```
 
-#### Object Mapping
-
-For Data Modification Queries (inserts, updates, deletes), mapping binding values from a domain object is supported.
-
-```ruby
-class UpdateUserQuery < Cassandra::Modification
-
-  update :users_by_id do |q|
-    q.set :phone
-    q.set :email
-    q.set :address
-    q.set :username
-  end
-
-  where :id, :eq
-
-  map_from :user
-```
-
-This allows a domain object to be passed to the modification object and have binding values retrieved from the object.
-
-```ruby
-user
-=> #<User:0x007ff8895ce660 @id=6539, @phone="+15555555555", @email="etp@example.com", @address=nil, @username= "etp">
-UpdateUserQuery.new(user: user).execute
-```
-
-<pre><b>
-(1.2ms) UPDATE users_by_id (phone, email, address, username) VALUES (?, ?, ?, ?) WHERE id = ?; [["+15555555555", "etp@example.com", nil, "etp", 6539]]
-</b></pre>
-
-This mapping is done in a way akin to delegation, so the behavior can be changed easily for one or more accessors.
-
-```
-class UpdateUserQuery < Cassandra::Modification
-
-  update :users_by_id do |q|
-    q.set :phone
-    q.set :email
-    q.set :address
-    q.set :username
-  end
-
-  where :id, :eq
-
-  map_from :user
-
-  def username
-    user.username.downcase
-  end
-```
-```ruby
-user
-=> #<User:0x007ff8895ce660 @id=6539, @phone="+15555555555", @email="etp@example.com", @address=nil, @username= "ETP">
-UpdateUserQuery.new(user: user).execute
-```
-
-<pre><b>
-(1.2ms) UPDATE users_by_id (phone, email, address, username) VALUES (?, ?, ?, ?) WHERE id = ?; [["+15555555555", "etp@example.com", nil, "etp", 6539]]
-</b></pre>
-
+`build_results` may be overridden as well to define completely custom processing of the rows that come back from Cassandra.
 
 #### Cursored paging
 
@@ -477,7 +533,7 @@ q.next_max_id
 # => nil
 ```
 
-The `cursor_by` helper can be used as shorthand for defining these relations for which you wish to use cursors.
+The `cursor_by` helper can be used as shorthand for defining these relations for which you wish to use cursors. The page size can be defined on the class
 ```ruby
 class MyPagedQuery < Cassie::Query
 
@@ -486,13 +542,94 @@ class MyPagedQuery < Cassie::Query
   where :user_id, :eq
 
   cursor_by :event_id
+
+  page_size 25
 end
 ```
+
+> Note: the `page_size` class and instance setters are simply convenience aliases for associated `limit` methods.
+
+#### Synthetic partitioning
+
+Managing partition size is critical with a Cassandra physical layer.
+
+When a partition defined by the conventional partition key may grow larger than [recommended](https://docs.datastax.com/en/landing_page/doc/landing_page/planning/planningPartitionSize.html), adding a synthetic partition key is one viable strategy to implment.
+This synthetic partition key splits the entire conceptual partition into multiple logical / physical partitions.
+
+A logical model with synthetic partitioning:
+```
++------------------+
+| records_by_owner |
++------------------+
+| owner_id      K  |
+| bucket        K  |
+| record        C↑ |
+| ...              |
++------------------+
+```
+
+Visualizing partitions with synthetic partitioning:
+```
++------------------------------------------------------+
+|| owner_id_1 || record  | record  |   ...   | record  |
+||   bucket 0 || 1       | 2       |         | 100,000 |
++------------------------------------------------------+
+
++------------------------------------------------------+
+|| owner_id_1 || record  | record  |   ...   | record  |
+||   bucket 1 || 100,001 | 100,002 |         | 200,000 |
++------------------------------------------------------+
+```
+
+Cassie Queries provides support for selecting data sets that span these physical partitions (e.g. {99,990..100,090}).
+
+Set up partition linking to accomplish this:
+
+```ruby
+class RecordsByOwnerQuery < Cassie::Query
+  attr_accessor :min_record, :owner
+
+  select_from :records_by_owner
+
+  where :owner_id, :eq
+  where :bucket, :eq
+  where :record, :gteq, value: :min_record
+
+  limit 100
+
+  link_partitions :bucket, :ascending, [0, :last_bucket]
+
+  def owner_id
+    owner.id
+  end
+
+  def bucket
+    1
+  end
+
+  protected
+
+  def last_bucket
+    owner.buckets
+  end
+end
+```
+```
+RecordsByOwnerQuery.new(owner: owner, min_record: 99,990).fetch.map(&:record)
+(2.9ms) SELECT * FROM records_by_owner WHERE owner_id = ? AND bucket = ? AND record >= ? LIMIT 100; [123, 0, 99990]
+(2.9ms) SELECT * FROM records_by_owner WHERE owner_id = ? AND bucket = ? AND record >= ? LIMIT 100; [123, 1, 99990]
+=> [99990, 99991, ..., 100089, 100090]
+```
+
+The first partition queried is defined within the query class (bucket 0). The linking policy handles recognizing the end of the first partition has been reached, issuing the second query that switches to the second partition (bucket 1), and combining the results from both queries.
+
+By default, this works for ascending and descending orderings when paging in the same order as the clustering order; it also works with cursoring.
+
+Custom policies can be defined by setting `Query.partition_linker` for more complex schemas. See the `SimplePolicy` source for an example.
 
 #### Prepared statements
 
 A `Cassie::Query` will use prepared statements by default, cacheing prepared statements across all Cassie::Query objects, keyed by the bound CQL string.
-
 
 To not use prepared statements for a particular query, disable the `.prepare` class option.
 
@@ -522,17 +659,17 @@ set_2 = query.fetch([7, 8, 9, 10, 11, 12])
 
 #### Unbound statements
 
-Cassie Query features are built around bound statements. However, we've tried to keep a simple ruby design in place to make custom behavior easier. If you want to override the assumption of bound statements, simply override `#statement`, returnign something that a `Cassandra::Session` can execute.
+Cassie Query features are built around bound statements. However, overriding `#statement`, returning something that a `Cassandra::Session` can execute an unbound statement.
 
 ```ruby
-class NotSureWhyIWouldDoThisButHereItIsQuery < Cassie::Query
+class MySafeQuery < Cassie::Definition
   def statement
-    "SELECT * FROM users WHERE id IN (1,2,3);"
+    "ALTER TABLE foo ADD some_column timeuuid static;"
   end
 end
 ```
 
-> Note: unbound queries like this are vulnerable againt injection attacks.
+> Note: unbound queries may be vulnerable to injection attacks.
 
 #### Logging
 
@@ -558,16 +695,16 @@ SelectUserByUsernameQuery.new('some_user').execute
 ```
 This measures the time to build the CQL query (statement and bindings), transmit the query to the cassandra coordinator, receive the result from the cassandra coordinator, and have the cassandra ruby driver build the ruby representation of the results. It does not include the time it takes for the Cassie Query to build its resource objects.
 
-#### Record Loading
+#### Result Deserialization
 
-Cassie Queries instrument record building as `cassie.deserialize` and logs a debug message.
+Cassie Queries instrument row deserialization as `cassie.deserialize` and logs a debug message.
 
 ```ruby
-SelectUserByUsernameQuery.new('some_user').fetch
+SelectUserByUsernameQuery.new('some_user').fetch_first
 (5.5ms) SELECT * FROM users_by_username WHERE username = ? LIMIT 1; ["some_user"] [LOCAL_ONE]
-(0.2ms) 1 record built from Cassandra query result
+(0.2ms) 1 result deserialized from Cassandra rows
 ```
 
-This measures the time it takes Cassie to build the records (e.g. your domain objects) and is in addition to the execution time.
+This measures the time it takes Cassie to build the results (e.g. your domain objects) and is in addition to the execution time.
 
 > total fetch time = `cassie.cql.execution` time + `cassie.deserialize` time

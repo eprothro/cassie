@@ -50,10 +50,10 @@ module Cassie::Statements::Execution
     def fetch_in_batches(opts={})
       opts[:batch_size] ||= 1000
 
-      # clone the query as soon as the enumerable is created
-      # rather than waiting until the firt iteration is executed
-      # as the client could mutate the object between these states.
-      # However we don't want to clone twice if a block isn't passed
+      # spawn the new query as soon as the enumerable is created
+      # rather than waiting until the firt iteration is executed.
+      # The client could mutate the object between these moments,
+      # however we don't want to spawn twice if a block isn't passed.
       paged_query = opts.delete(:_paged_query) || self.clone
 
       return to_enum(:fetch_in_batches, opts.merge(_paged_query: paged_query)) unless block_given?

@@ -18,12 +18,11 @@ module Cassie::Statements::Results
       attr_reader :each_deserializer
     end
 
-    def initialize(obj, opts={})
+    def after_initialize(opts)
+      super
       @each_deserializer = opts[:each_deserializer]
       @deserializer = opts[:deserializer]
       ensure_deserialization
-
-      super(obj)
     end
 
     # Deserialize each row into domain objects

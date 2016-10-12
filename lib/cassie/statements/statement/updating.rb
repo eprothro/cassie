@@ -9,6 +9,8 @@ module Cassie::Statements::Statement
       include Relations
       include Assignments
       include Conditions
+
+      @result_class = Cassie::Statements::Results::ModificationResult
     end
 
     module ClassMethods
@@ -21,10 +23,6 @@ module Cassie::Statements::Statement
     end
 
     protected
-
-    def result_class
-      Cassie::Statements::Results::ModificationResult
-    end
 
     def build_update_cql_and_bindings
       assignment_str, update_bindings = build_update_and_bindings

@@ -1,12 +1,20 @@
-RSpec.describe Cassie::Statements::Statement::Conditions do
+RSpec.describe Cassie::Statements::Statement::Assignments do
   let(:base_class){ Cassie::FakeModification }
   let(:klass) do
     Class.new(base_class) do
+      set :foo
     end
   end
   let(:object) { klass.new }
 
   describe "set"  do
+    it "provides a getter" do
+      expect(object.foo).to be_nil
+    end
+    it "provides a setter" do
+      expect{object.foo = 2}.to change{object.foo}.to 2
+    end
+
     context "with simple assignment" do
       let(:klass) do
         Class.new(base_class) do
