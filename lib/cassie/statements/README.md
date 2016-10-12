@@ -96,11 +96,11 @@ Cassie provides 3 base classes for these 3 kinds of queries. Subclass `Cassie::D
   * Adds DSL for `insert_into`, `update`, and `delete_from` statement types
   * Adds support for automatically mapping values for assignments from a domain object
 
-##### `Query`
+##### `Cassie::Query`
   Includes core functionality for prepared statement execution.
 
   * Adds DSL for `select_from` statement type
-  * Adds `fetch` and `fetch_first` methods for executing and getting results in combination
+  * Adds `fetch` and `fetch_first` methods for executing and getting results with a single method call
   * Adds support for deserializing domain objects from Cassandra rows
   * Adds support for paging through results with cursors
   * Adds support for fetching large data sets in memory-efficient batches
@@ -180,43 +180,6 @@ Relations can be conditionally evaluated:
 ```
 This can be overdone; it's recommended that one query class be in charge of one kind of query. Avoid query classes that can do too much!
 
-
-#### Column Selection (`select`)
-
-```ruby
-  select_from :posts_by_author do |t|
-    t.select :post_id
-    t.select writetime(:post_id)
-  end
-```
-which is the same as
-```ruby
-  select_from :posts_by_author
-
-  select :post_id
-  select writetime(:post_id)
-```
-
-`count`, `write_time` (also aliased as `writetime`), and `ttl` selector helpers are available.
-
-```ruby
-  select_from :posts_by_author
-
-  select count
-```
-```
-=> SELECT COUNT(*) FROM posts_by_author;
-```
-```ruby
-  select_from :posts_by_author
-
-  select :id
-  select ttl(:popular)
-  select writetime(:popular), as: :created_at
-```
-```
-=> SELECT id, TTL(popular), WRITETIME(popular) AS created_at FROM posts_by_author;
-```
 
 #### Values and Assignments (`set`)
 
@@ -335,6 +298,47 @@ end
 ```
 
 > Note: The `term` option should be used with care. Using it innapropriately could result in inefficient use of prepared statements, and/or leave you potentially vulnerable to injection attacks.
+
+
+#### Column Selection (`select`)
+
+By default, all columns will be selected (e.g. '*'). Specify a column for selection with `select`.
+
+```ruby
+  select_from :posts_by_author do |t|
+    t.select :post_id
+    t.select writetime(:post_id)
+  end
+```
+which is the same as
+```ruby
+  select_from :posts_by_author
+
+  select :post_id
+  select writetime(:post_id)
+```
+
+`count`, `write_time` (also aliased as `writetime`), and `ttl` selector helpers are available.
+
+```ruby
+  select_from :posts_by_author
+
+  select count
+```
+```
+=> SELECT COUNT(*) FROM posts_by_author;
+```
+```ruby
+  select_from :posts_by_author
+
+  select :id
+  select ttl(:popular)
+  select writetime(:popular), as: :created_at
+```
+```
+=> SELECT id, TTL(popular), WRITETIME(popular) AS created_at FROM posts_by_author;
+```
+
 
 #### Consistency configuration
 
