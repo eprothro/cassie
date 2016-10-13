@@ -1,3 +1,8 @@
+## 1.0.0.beta.22
+
+Added:
+  - `Cassie::Statements.default_consistency`, fallback for query classes
+
 ## 1.0.0.beta.21
 
 Added:

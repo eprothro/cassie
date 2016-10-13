@@ -7,11 +7,10 @@ RSpec.describe Cassie::Statements::Execution::Consistency do
   let(:subclass){ Class.new(base_class) }
   let(:object) { subclass.new }
   let(:consistency){ Cassandra::CONSISTENCIES.sample }
-  # let(:alt_consistency){ (Cassandra::CONSISTENCIES - [alt_consistency]).sample }
   let(:default_consistency){ nil }
 
-  # before(:each){ @original = base_class.consistency }
-  # after(:each){ base_class.consistency = @original }
+  before(:each){ @original = Cassie::Statements.default_consistency }
+  after(:each){ Cassie::Statements.default_consistency = @original }
   describe "BaseClass" do
     describe ".consistency" do
       it "defaults to nil" do
@@ -115,6 +114,19 @@ RSpec.describe Cassie::Statements::Execution::Consistency do
           end
         end
       end
+    end
+  end
+
+  describe "Cassie::Statements::default_consistency" do
+    it "is nil" do
+      expect(Cassie::Statements.default_consistency).to be_nil
+    end
+    it "can be set" do
+      expect{Cassie::Statements.default_consistency = consistency}.to change{Cassie::Statements.default_consistency}.to(consistency)
+    end
+    it "is fallback for class including consistency" do
+      Cassie::Statements.default_consistency = consistency
+      expect(base_class.consistency).to eq(consistency)
     end
   end
 end

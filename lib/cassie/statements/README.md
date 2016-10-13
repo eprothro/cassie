@@ -119,7 +119,7 @@ Defining a CQL relation (the `where`) in a cassie query class creates a setter a
 ```ruby
 query.user_id = 123
 query.fetch
-=> [#<Struct user_id=123, id="some post id">]
+#=> [#<Struct user_id=123, id="some post id">]
 ```
 
 <pre><b>
@@ -141,7 +141,7 @@ end
 ```ruby
 query.author = User.new(id: 123)
 query.fetch
-=> [#<Struct user_id=123, id="some post id">]
+#=> [#<Struct user_id=123, id="some post id">]
 ```
 
 <pre><b>
@@ -159,7 +159,7 @@ where :user_id, :eq, value: :author_id
 ```ruby
 query.author_id = 123
 query.fetch
-=> [#<Struct user_id=123, id="some post id">]
+#=> [#<Struct user_id=123, id="some post id">]
 ```
 
 <pre><b>
@@ -209,7 +209,7 @@ end
 query = UpdateUserQuery.new(id: current_user.id)
 query.username = 'eprothro'
 query.execute
-=> true
+#=> true
 ```
 
 Mapping assignemtnt values from a domain object is supported.
@@ -233,7 +233,7 @@ This allows a domain object to be set for the modification object and have assig
 
 ```ruby
 user
-=> #<User:0x007ff8895ce660 @id=6539, @phone="+15555555555", @email="etp@example.com", @address=nil, @username= "etp">
+#=> #<User:0x007ff8895ce660 @id=6539, @phone="+15555555555", @email="etp@example.com", @address=nil, @username= "etp">
 UpdateUserQuery.new(user: user).execute
 ```
 
@@ -263,7 +263,7 @@ class UpdateUserQuery < Cassandra::Modification
 ```
 ```ruby
 user
-=> #<User:0x007ff8895ce660 @id=6539, @phone="+15555555555", @email="etp@example.com", @address=nil, @username= "ETP">
+#=> #<User:0x007ff8895ce660 @id=6539, @phone="+15555555555", @email="etp@example.com", @address=nil, @username= "ETP">
 UpdateUserQuery.new(user: user).execute
 ```
 
@@ -326,8 +326,10 @@ which is the same as
   select count
 ```
 ```
-=> SELECT COUNT(*) FROM posts_by_author;
+#=> SELECT COUNT(*) FROM posts_by_author;
 ```
+
+Aliasing is supported with the `as` option.
 ```ruby
   select_from :posts_by_author
 
@@ -336,9 +338,18 @@ which is the same as
   select writetime(:popular), as: :created_at
 ```
 ```
-=> SELECT id, TTL(popular), WRITETIME(popular) AS created_at FROM posts_by_author;
+#=> SELECT id, TTL(popular), WRITETIME(popular) AS created_at FROM posts_by_author;
 ```
+Arbitrary strings are supported as well in case the DSL gets in the way.
 
+```ruby
+  select_from :posts_by_author
+
+  select 'cowboy, coder'
+```
+```
+#=> SELECT cowboy, coder FROM posts_by_author;
+```
 
 #### Consistency configuration
 
@@ -346,14 +357,21 @@ The [consistency level](http://datastax.github.io/ruby-driver/v2.1.6/api/cassand
 
 ```ruby
 Cassie.configuration[:consistency]
-=> nil
+#=> nil
 
 Cassie.cluster.instance_variable_get(:@execution_options).consistency
-=> :one
+#=> :one
 ```
 
-Cassie queries allow for a consistency level defined on the object, subclass, then base class levels. If one is found, it will override the `Cassandra` default when the query is executed.
+Cassie queries allow for a consistency level to be defined on the object, subclass, base class, and global levels. If none is found, it will default to the `cluster` default when the query is executed.
 
+Object writer:
+```ruby
+  query = MyQuery.new
+  query.consistency = :all
+  query.execute
+```
+Override Object reader:
 ```ruby
   select_from :posts_by_author_category
 
@@ -374,6 +392,7 @@ Cassie queries allow for a consistency level defined on the object, subclass, th
   end
 ```
 
+Class writer
 ```ruby
   select_from :posts_by_author_category
 
@@ -383,15 +402,55 @@ Cassie queries allow for a consistency level defined on the object, subclass, th
   consistency :quorum
 ```
 
+Cassie query classes
 ```ruby
 # lib/tasks/interesting_task.rake
 require_relative "interesting_worker"
 
 task :interesting_task do
-  Cassandra::Query.consistency = :all
+  Cassie::Modification.consistency = :all
 
   InterestingWorker.new.perform
 end
+```
+
+Cassie global default
+```ruby
+# lib/tasks/interesting_task.rake
+require_relative "interesting_worker"
+
+task :interesting_task do
+  Cassie::Statements.default_consistency = :all
+
+  InterestingWorker.new.perform
+end
+```
+
+#### Execution and Result
+
+Executing a `Cassie::Query` populates the `result` attribute.
+
+```ruby
+query.execute
+# => true
+query.result.class
+# => Cassie::Statements::Results::QueryResult
+```
+
+The result lazily enumerates domain objects
+```ruby
+query.execute
+#=> true
+query.result.each
+#=> #<[#< Struct id=:123, username=:eprothro >]>
+```
+
+The result also delegates to the `Cassandra::Result`.
+```ruby
+query.result.execution_info
+#=> #<Cassandra::Execution::Info:0x007fb404b51390 @payload=nil, @warnings=nil, @keyspace="cassie_test", @statement=#<Cassandra::Statements::Bound:0x3fda0258dee8 @cql="SELECT * FROM users_by_username LIMIT 500;" @params=[]>, @options=#<Cassandra::Execution::Options:0x007fb404b1b880 @consistency=:local_one, @page_size=10000, @trace=false, @timeout=12, @serial_consistency=nil, @arguments=[], @type_hints=[], @paging_state=nil, @idempotent=false, @payload=nil>, @hosts=[#<Cassandra::Host:0x3fda02541390 @ip=127.0.0.1>], @consistency=:local_one, @retries=0, @trace=nil>
+query.result.rows
+#=> #<Enumerator: [{"id"=>123, "username"=>"eprothro"}]>
 ```
 
 #### Finders
@@ -400,28 +459,28 @@ To avoid confusion with ruby `Enumerable#find` and Rails' specific `find` functi
 
 ##### `fetch`
 
-Executes the query; returns an enumeration of results.
+Calls setters for any opts passed, executes the query, and returns the result.
 
-```
+```ruby
 UsersByResourceQuery.new.fetch(resource: some_resource).to_a
-=> [#<User id=:123, username=:eprothro>, #<User id=:456, username=:tenderlove>]
+#=> [#<User id=:123, username=:eprothro>, #<User id=:456, username=:tenderlove>]
 ```
 
 ##### `fetch_first` and `fetch_first!`
 
-Executes the query, temporarily limited to 1 result; returns a single result. Bang version raises if no result is found.
+Temporarily limits the query to 1 result; returns a single domain object. Bang version raises if no row is found.
 
-```
-UsersByUsernameQuery.new.fetch_first(username: "eprothro").username
-=> "eprothro"
+```ruby
+UsersByUsernameQuery.new.fetch_first(username: "eprothro")
+#=> #<User id=:123, username=:eprothro>
 ```
 
-```
+```ruby
 UsersByUsernameQuery.new.fetch_first(username: "ActiveRecord")
-=> nil
+#=> nil
 ```
 
-```
+```ruby
 UsersByUsernameQuery.new.fetch_first!(username: "active record").username
 Cassie::Statements::RecordNotFound: CQL row does not exist
 ```
@@ -432,19 +491,19 @@ Similar to [Rails BatchedFetching](http://guides.rubyonrails.org/v4.2/active_rec
 
 ###### `fetch_each`
 
-```
+```ruby
 UsersQuery.new.fetch_each do |user|
   # only 1000 queried and loaded at a time
 end
 ```
 
-```
+```ruby
 UsersQuery.new.fetch_each(batch_size: 500) do |user|
   # only 500 queried and loaded at a time
 end
 ```
 
-```
+```ruby
 UsersQuery.new.fetch_each.with_index do |user, index|
   # Enumerator chaining without a block
 end
@@ -452,19 +511,19 @@ end
 
 ###### `fetch_in_batches`
 
-```
+```ruby
 UsersQuery.new.fetch_in_batches do |users_array|
   # only 1000 queried and at a time
 end
 ```
 
-```
+```ruby
 UsersQuery.new.fetch_in_batches(batch_size: 500) do |users_array|
   # only 500 queried and at a time
 end
 ```
 
-```
+```ruby
 UsersQuery.new.fetch_in_batches.with_index do |group, index|
   # Enumerator chaining without a block
 end
@@ -472,19 +531,19 @@ end
 
 #### Deserialization
 
-For Selection Queries, records are deserialized as anonymous structs by default. Each field returned from the database will have an accessor.
+For `Cassie::Query` classes, records are deserialized as anonymous structs by default. Each field returned from the database will have an accessor.
 
 ```ruby
 UsersByUsernameQuery.new.fetch(username: "eprothro")
 #=> [#<Struct id=:123, username=:eprothro>]
 
-UsersByUsernameQuery.new.fetch_first(username: "eprothro").username
-=> "eprothro"
+UsersByUsernameQuery.new.fetch_first!(username: "eprothro").username
+#=> "eprothro"
 ```
 
 Most applications will want to override `build_result` to construct more useful domain objects
 
-```
+```ruby
 class UsersByUsernameQuery < Cassie::Query
 
   select_from :users_by_username
@@ -499,10 +558,10 @@ end
 
 ```ruby
 UsersByUsernameQuery.new.fetch_first(username: "eprothro")
-=> #<User:0x007fedec219cd8 @id=123, @username="eprothro">
+#=> #<User:0x007fedec219cd8 @id=123, @username="eprothro">
 ```
 
-`build_results` may be overridden as well to define completely custom processing of the rows that come back from Cassandra.
+`build_results` may be overridden as well to define custom definition of the enumeration of rows returned from Cassandra.
 
 #### Cursored paging
 
@@ -618,14 +677,14 @@ class RecordsByOwnerQuery < Cassie::Query
   end
 end
 ```
-```
+```ruby
 RecordsByOwnerQuery.new(owner: owner, min_record: 99,990).fetch.map(&:record)
 (2.9ms) SELECT * FROM records_by_owner WHERE owner_id = ? AND bucket = ? AND record >= ? LIMIT 100; [123, 0, 99990]
 (2.9ms) SELECT * FROM records_by_owner WHERE owner_id = ? AND bucket = ? AND record >= ? LIMIT 100; [123, 1, 99990]
-=> [99990, 99991, ..., 100089, 100090]
+#=> [99990, 99991, ..., 100089, 100090]
 ```
 
-The first partition queried is defined within the query class (bucket 0). The linking policy handles recognizing the end of the first partition has been reached, issuing the second query that switches to the second partition (bucket 1), and combining the results from both queries.
+The first partition queried is defined within the query class (bucket 0). The linking policy handles recognizing the end of the first partition has been reached, issuing the second query for the second partition (bucket 1), and combining the results from both queries.
 
 By default, this works for ascending and descending orderings when paging in the same order as the clustering order; it also works with cursoring.
 
@@ -633,9 +692,9 @@ Custom policies can be defined by setting `Query.partition_linker` for more comp
 
 #### Prepared statements
 
-A `Cassie::Query` will use prepared statements by default, cacheing prepared statements across all Cassie::Query objects, keyed by the bound CQL string.
+A `Cassie::Query` will use prepared statements by default, cacheing prepared statements across all `Query`, `Modification`, and `Definition` objects, keyed by the unbound CQL string.
 
-To not use prepared statements for a particular query, disable the `.prepare` class option.
+To disable prepared statements for a particular query, disable the `.prepare` class option.
 
 ```ruby
 class MySpecialQuery < Cassie::Query
@@ -661,9 +720,9 @@ set_1 = query.fetch([1, 2, 3])
 set_2 = query.fetch([7, 8, 9, 10, 11, 12])
 ```
 
-#### Unbound statements
+#### Non-positional (unbound) statements
 
-Cassie Query features are built around bound statements. However, overriding `#statement`, returning something that a `Cassandra::Session` can execute an unbound statement.
+Cassie Query features are built around using bound statements with positional arguments. However, overriding `#statement`, returning something that a `Cassandra::Session` can execute, will result in an unbound, unprepared statement.
 
 ```ruby
 class MySafeQuery < Cassie::Definition
@@ -673,7 +732,7 @@ class MySafeQuery < Cassie::Definition
 end
 ```
 
-> Note: unbound queries may be vulnerable to injection attacks.
+> Note: unbound queries can be vulnerable to injection attacks. Be careful.
 
 #### Logging
 
