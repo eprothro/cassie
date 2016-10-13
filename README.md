@@ -214,10 +214,10 @@ Pull requests and issues are welcome.
 
 Unit tests should provide complete coverage of features and should not depend on an available Cassandra server.
 
-Run the unit suite with `rspec`, no dependencies outside of `bundle`.
+Run the unit suite with `rake spec` or `rspec` after running `bundle`.
 
 #### `Integration/db` tests
 
 Integration tests that rely on a Cassandra server exist as an extra 'sanity check' layer. Please don't use them as an excuse to not write solid unit tests. Please add them if they seem like a good idea!
 
-Run the full suite with Cassandra-based specs using `rspec --options .rspec-with-db`.
+Run the full suite with Cassandra-based specs using `rake specs[all]` or `rspec --options .rspec-with-db`.
