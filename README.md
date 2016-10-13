@@ -208,7 +208,7 @@ See the [Testing README](./lib/cassie/testing/README.md#readme) for more on feat
 
 ### Contributing
 
-Pull requests and issues are welcome.
+Pull requests and issues are welcome. Please include updates to the CHANGELOG as needed.
 
 #### Unit tests
 
@@ -221,3 +221,11 @@ Run the unit suite with `rake spec` or `rspec` after running `bundle`.
 Integration tests that rely on a Cassandra server exist as an extra 'sanity check' layer. Please don't use them as an excuse to not write solid unit tests. Please add them if they seem like a good idea!
 
 Run the full suite with Cassandra-based specs using `rake full_spec` or `rspec --options .rspec-with-db`.
+
+#### Releasing (maintainers only)
+
+Run `rake release` to test (Cassandra running locally requried), build, and publish gem. Followed by an automatic version bump (patch).
+
+Bump version minor / major with `gem bump --version <minor|major>`.
+
+Test, build, and install into local gems with `rake install`.
