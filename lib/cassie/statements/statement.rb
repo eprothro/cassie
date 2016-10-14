@@ -47,25 +47,10 @@ module Cassie::Statements
 
     private
 
-    def eval_if_opt?(value)
-      case value
-      when nil
-        true # if is true by default
-      when Symbol
-        !!send(value)
-      when String
-        !!eval(value)
-      else
-        !!value
-      end
-    end
-
-    def eval_value_opt(value)
+    def source_eval(value, src=self)
       case value
       when Symbol
-        send(value)
-      when String
-        eval(value)
+        src.send(value)
       else
         value
       end

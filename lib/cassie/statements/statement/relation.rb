@@ -56,10 +56,10 @@ module Cassie::Statements::Statement
 
     private
 
-    def source_eval(value, _source=source)
+    def source_eval(value, src=source)
       case value
       when Symbol
-        _source.send(value)
+        src.send(value)
       else
         value
       end

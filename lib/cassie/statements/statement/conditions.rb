@@ -6,6 +6,7 @@ module Cassie::Statements::Statement
       def if_not_exists(opts={})
         condition = "NOT EXISTS"
         opts.delete(:value)
+        opts[:if] = true unless opts.has_key?(:if)
 
         conditions[condition] = opts
       end
@@ -13,6 +14,7 @@ module Cassie::Statements::Statement
       def if_exists(opts={})
         condition = "EXISTS"
         opts.delete(:value)
+        opts[:if] = true unless opts.has_key?(:if)
 
         conditions[condition] = opts
       end
@@ -31,9 +33,9 @@ module Cassie::Statements::Statement
       bindings = []
 
       conditions.each do |condition, opts|
-        if eval_if_opt?(opts[:if])
+        if !!source_eval(opts[:if])
           condition_strings << condition.to_s
-          bindings << eval_value_opt(opts[:value]) if opts.has_key?(:value)
+          bindings << source_eval(opts[:value]) if opts.has_key?(:value)
         end
       end
 

@@ -116,10 +116,10 @@ module Cassie::Statements::Execution::PartitionLinking
       Cassie::Statements.logger
     end
 
-    def eval_opt(value, _source=source)
+    def eval_opt(value, src=source)
       case value
       when Symbol
-        _source.send(value)
+        src.send(value)
       else
         value
       end
