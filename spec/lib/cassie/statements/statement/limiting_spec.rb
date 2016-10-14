@@ -203,13 +203,6 @@ RSpec.describe Cassie::Statements::Statement::Limiting do
     end
 
     context "when object is cloned during block execution" do
-      let(:cloned_object) do
-        cloned_object = nil
-        object.with_limit(alt_limit) do
-          cloned_object = object.clone
-        end
-        cloned_object
-      end
       it "clones with original limit" do
         cloned_object = nil
         object.with_limit(alt_limit) do

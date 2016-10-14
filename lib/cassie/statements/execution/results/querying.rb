@@ -38,6 +38,10 @@ module Cassie::Statements::Results
       end
     end
 
+    def first!
+      first || (raise Cassie::Statements::RecordNotFound, 'CQL row does not exist')
+    end
+
     def success?
       # an empty query is still successful
       return true if __getobj__.empty?

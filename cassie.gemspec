@@ -23,10 +23,4 @@ Gem::Specification.new do |s|
 
   s.executables << 'cassie'
 
-  s.add_development_dependency 'rspec', '~> 3.4'
-  s.add_development_dependency 'rake', '~> 11.3'
-  s.add_development_dependency 'gem-release', '~> 0.7.4'
-  s.add_development_dependency 'byebug', '>= 0'
-  s.add_development_dependency 'pry', '>= 0'
-  s.add_development_dependency 'benchmark-ips', '>= 0'
 end

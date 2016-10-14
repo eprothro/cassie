@@ -445,7 +445,15 @@ query.result.each
 #=> #<[#< Struct id=:123, username=:eprothro >]>
 ```
 
-The result also delegates to the `Cassandra::Result`.
+The result has a `first!` method that raises if no result is available
+```ruby
+query.execute
+#=> true
+query.result.first!
+Cassie::Statements::RecordNotFound: CQL row does not exist
+```
+
+The result delegates to the `Cassandra::Result`.
 ```ruby
 query.result.execution_info
 #=> #<Cassandra::Execution::Info:0x007fb404b51390 @payload=nil, @warnings=nil, @keyspace="cassie_test", @statement=#<Cassandra::Statements::Bound:0x3fda0258dee8 @cql="SELECT * FROM users_by_username LIMIT 500;" @params=[]>, @options=#<Cassandra::Execution::Options:0x007fb404b1b880 @consistency=:local_one, @page_size=10000, @trace=false, @timeout=12, @serial_consistency=nil, @arguments=[], @type_hints=[], @paging_state=nil, @idempotent=false, @payload=nil>, @hosts=[#<Cassandra::Host:0x3fda02541390 @ip=127.0.0.1>], @consistency=:local_one, @retries=0, @trace=nil>

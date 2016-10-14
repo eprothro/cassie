@@ -1,12 +1,18 @@
 RSpec.describe Cassie::Testing::Fake::SessionMethods do
   let(:klass) do
-    Class.new(Cassie::Query) do
+    Class.new do
+      include Cassie::Connection
     end
   end
   let(:object) { klass.new }
 
-  context "when appending a query class" do
-    let(:klass){ super().include(Cassie::Testing::Fake::SessionMethods) }
+  context "when appending a class with a keyspace" do
+    let(:klass) do
+      Class.new(Cassie::Query) do
+        include Cassie::Connection
+        include Cassie::Testing::Fake::SessionMethods
+      end
+    end
 
     describe ".session" do
       it "is a fake session" do
@@ -20,7 +26,7 @@ RSpec.describe Cassie::Testing::Fake::SessionMethods do
     end
   end
 
-  context "when appending a query object" do
+  context "when appending an object with a keyspace" do
     let(:object){ super().extend(Cassie::Testing::Fake::SessionMethods) }
 
     describe "#session" do

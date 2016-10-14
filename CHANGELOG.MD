@@ -1,3 +1,8 @@
+## 1.0.0.beta.23
+
+Added:
+  - `Cassie::Result::QueryResult.first!`
+
 ## 1.0.0.beta.22
 
 Added:
