@@ -6,14 +6,6 @@ if RUBY_PLATFORM != "java" && RUBY_VERSION >= "2"
   rescue LoadError
     puts "=> Debugging tools not available. `bundle --with optional` if you need them."
   end
-else
-  begin
-    require 'rubygems'
-    require 'ruby-debug'
-    puts "=> Debugging tools loaded."
-  rescue LoadError
-    puts "=> Debugging tools not available. `bundle --with optional` if you need them."
-  end
 end
 
 def show(args)

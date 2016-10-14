@@ -18,14 +18,11 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 require 'debugging'
+require 'code_coverage'
 require 'cassie'
 require 'cassie/testing'
 require 'cassie_helper'
 require 'lookup_path'
-
-if ENV['CODECLIMATE_REPO_TOKEN']
-  CodeClimate::TestReporter.start
-end
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
