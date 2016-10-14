@@ -1,0 +1,11 @@
+language: ruby
+install: bundle install --jobs=3 --retry=3 --without optional
+rvm:
+  - 2.0
+  - 2.1
+  - 2.2
+  - 2.3
+  - jruby-9.1
+os:
+  - linux
+  - osx

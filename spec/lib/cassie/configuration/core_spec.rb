@@ -45,7 +45,7 @@ RSpec.describe Cassie::Configuration::Core do
   describe ".configuration" do
     context "when configuration has not been set" do
       it "returns config for the current env" do
-        expect(mod.configuration).to eq(configurations[:development])
+        expect(mod.configuration).to eq(configurations[mod.env])
       end
       context "when env is not set" do
         it "returns nil" do
@@ -69,6 +69,8 @@ RSpec.describe Cassie::Configuration::Core do
 
   describe ".env" do
     it "defaults to development" do
+      allow(ENV).to receive(:[]).with('CASSANDRA_ENV'){nil}
+      allow(ENV).to receive(:[]).with('RACK_ENV'){nil}
       expect(mod.env).to eq("development")
     end
     it "prefers CASSANDRA_ENV over RACK_ENV" do
