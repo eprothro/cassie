@@ -1,4 +1,8 @@
 # Cassie
+[![Code Health](https://codeclimate.com/github/eprothro/cassie/badges/gpa.svg)](https://codeclimate.com/github/eprothro/cassie)
+[![Test Coverage](https://codeclimate.com/github/eprothro/cassie/badges/coverage.svg)](https://codeclimate.com/github/eprothro/cassie/coverage)
+[![Build Status](https://travis-ci.org/eprothro/cassie.svg?branch=master)](https://travis-ci.org/eprothro/cassie)
+
 
 Cassie provides support for the components most applications need to work with a Cassandra persistence layer:
 
@@ -20,6 +24,11 @@ or
 ```bash
 $ gem install cassie --pre
 ```
+
+Tested against:
+
+* Ruby: MRI 2.0, 2.1, 2.2, 2.3, and JRuby 1.9
+* `cassandra-driver` 3.0
 
 ### Database Configuration
 
