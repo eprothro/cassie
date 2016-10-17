@@ -1,7 +1,7 @@
-require 'bundler/gem_tasks'
+require "bundler/gem_tasks"
 
 begin
-  require 'rspec/core/rake_task'
+  require "rspec/core/rake_task"
   RSpec::Core::RakeTask.new(:spec)
 
   RSpec::Core::RakeTask.new(:full_spec) do |t|
@@ -10,11 +10,11 @@ begin
 
   task :default => :spec
 
-  Rake::Task[:build].enhance ['full_spec']
+  Rake::Task[:build].enhance ["full_spec"]
 
   Rake::Task[:release].enhance do
-    require_relative 'lib/cassie/support/command_runner'
-    cmd = Cassie::Support::CommandRunner.new('gem', ['bump'])
+    require_relative "lib/cassie/support/command_runner"
+    cmd = Cassie::Support::CommandRunner.new("gem", ["bump"])
     cmd.run!
     put cmd.output
   end
