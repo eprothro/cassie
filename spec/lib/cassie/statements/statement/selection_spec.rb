@@ -1,12 +1,17 @@
 RSpec.describe Cassie::Statements::Statement::Selection do
   let(:klass) do
     Class.new do
+      include Cassie::Statements::Statement
       include Cassie::Statements::Statement::Selection
     end
   end
   let(:object){ klass.new }
   let(:selector){ 'some_column' }
   let(:alias_name){ selector + "_alias" }
+  
+  it "sets idempotency to true" do
+    expect(klass.idempotent?).to eq(true)
+  end
 
   describe "#select" do
     it "adds string selector" do

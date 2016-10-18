@@ -44,7 +44,7 @@ module Cassie::Statements::Statement
       self.class.assignments_args
     end
 
-    def build_update_and_bindings
+    def build_update_and_params
       cql = ""
       arguments = []
       assignment_strings = []
@@ -60,7 +60,7 @@ module Cassie::Statements::Statement
       [cql , arguments]
     end
 
-    def build_insert_and_bindings
+    def build_insert_and_params
       identifiers = []
       terms = []
       arguments = []

@@ -73,7 +73,7 @@ module Cassie::Statements::Statement
 
     protected
 
-    def build_where_and_bindings
+    def build_where_and_params
       cql = ""
       relation_strings = []
       arguments = []

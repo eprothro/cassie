@@ -39,18 +39,18 @@ module Cassie::Statements::Statement
 
     protected
 
-    def build_delete_cql_and_bindings
-      where_str, where_bindings = build_where_and_bindings
-      condition_str, condition_bindings = build_condition_and_bindings
+    def build_delete_cql_and_params
+      where_str, where_params = build_where_and_params
+      condition_str, condition_params = build_condition_and_params
 
-      cql = %(
+      @cql = %(
         DELETE #{build_delete_clause}
           FROM #{table}
           #{where_str}
           #{condition_str}
       ).squish + ";"
 
-      [cql, where_bindings + condition_bindings]
+      @params = where_params + condition_params
     end
 
     # a select clause is built up of selectors

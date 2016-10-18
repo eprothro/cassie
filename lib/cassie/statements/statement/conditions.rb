@@ -28,7 +28,7 @@ module Cassie::Statements::Statement
       self.class.conditions
     end
 
-    def build_condition_and_bindings
+    def build_condition_and_params
       condition_strings = []
       bindings = []
 

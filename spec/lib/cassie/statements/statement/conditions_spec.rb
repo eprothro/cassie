@@ -4,13 +4,13 @@ RSpec.describe Cassie::Statements::Statement::Conditions do
   let(:object) { klass.new }
 
   def condition_str
-    object.send(:build_condition_and_bindings).first
+    object.send(:build_condition_and_params).first
   end
   def condition_bindings
-    object.send(:build_condition_and_bindings).last
+    object.send(:build_condition_and_params).last
   end
 
-  describe "build_condition_and_bindings" do
+  describe "build_condition_and_params" do
     context "when no conditions set up" do
       it "builds nothing" do
         expect(condition_str).to be_blank

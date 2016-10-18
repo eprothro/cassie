@@ -14,6 +14,7 @@ module Cassie::Statements::Statement
       include Pagination
 
       @result_class = Cassie::Statements::Results::QueryResult
+      @idempotent = true
     end
 
     module ClassMethods
@@ -58,18 +59,16 @@ module Cassie::Statements::Statement
       super.merge(opts)
     end
 
-    def build_select_cql_and_bindings
-      where_str, bindings = build_where_and_bindings
+    def build_select_cql_and_params
+      where_str, @params = build_where_and_params
 
-      cql = %(
+      @cql = %(
         SELECT #{build_select_clause}
           FROM #{table}
           #{where_str}
           #{build_order_str}
           #{build_limit_str}
       ).squish + ";"
-
-      [cql, bindings]
     end
 
     # a select clause is built up of selectors

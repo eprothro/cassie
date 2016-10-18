@@ -24,19 +24,19 @@ module Cassie::Statements::Statement
 
     protected
 
-    def build_update_cql_and_bindings
-      assignment_str, update_bindings = build_update_and_bindings
-      where_str, where_bindings = build_where_and_bindings
-      condition_str, condition_bindings = build_condition_and_bindings
+    def build_update_cql_and_params
+      assignment_str, update_params = build_update_and_params
+      where_str, where_params = build_where_and_params
+      condition_str, condition_params = build_condition_and_params
 
-      cql = %(
+      @cql = %(
         UPDATE #{table}
         SET #{assignment_str}
         #{where_str}
         #{condition_str}
       ).squish + ";"
 
-      [cql, update_bindings + where_bindings + condition_bindings]
+      @params = update_params + where_params + condition_params
     end
   end
 end

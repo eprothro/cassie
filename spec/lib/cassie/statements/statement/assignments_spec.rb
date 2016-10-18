@@ -26,10 +26,10 @@ RSpec.describe Cassie::Statements::Statement::Assignments do
         end
       end
       it "generates update cql" do
-        expect(object.send(:build_update_and_bindings).first).to eq('foo = ?')
+        expect(object.send(:build_update_and_params).first).to eq('foo = ?')
       end
       it "generates positional binding from getter method" do
-        expect(object.send(:build_update_and_bindings).last).to eq(['foo_val'])
+        expect(object.send(:build_update_and_params).last).to eq(['foo_val'])
       end
     end
 
@@ -40,10 +40,10 @@ RSpec.describe Cassie::Statements::Statement::Assignments do
         end
       end
       it "generates update cql" do
-        expect(object.send(:build_update_and_bindings).first).to eq('foo = now()')
+        expect(object.send(:build_update_and_params).first).to eq('foo = now()')
       end
       it "generates no positional binding from getter method" do
-        expect(object.send(:build_update_and_bindings).last).to eq([])
+        expect(object.send(:build_update_and_params).last).to eq([])
       end
     end
   end

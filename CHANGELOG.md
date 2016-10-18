@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - `Cassie::Support::CommandRunner#run!`
+- support for statement idempotency and type hinting (Selections default to idempotent)
 
 ## 1.0.0.beta.24
 

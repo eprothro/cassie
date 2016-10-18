@@ -11,6 +11,8 @@ module Cassie::Statements
   # cql and bindings for different statement types.
   module Statement
     require_relative 'statement/preparation'
+    require_relative 'statement/type_hinting'
+    require_relative 'statement/idempotency'
 
     class Invalid < StandardError; end
 
@@ -18,6 +20,8 @@ module Cassie::Statements
 
     included do
       include Preparation
+      include TypeHinting
+      include Idempotency
 
       class << self
         attr_accessor :table
@@ -32,11 +36,11 @@ module Cassie::Statements
     # returns a CQL string, or a Cassandra::Statement
     # that is ready for execution
     def statement
-      Cassandra::Statements::Simple.new(*build_cql_and_bindings)
+      Cassandra::Statements::Simple.new(*build_cql_and_params, type_hints, idempotent?)
     end
 
     # returns a CQL string with inline parameters, that
-    # is representative of what would be executed in a CQL shell
+    # is representative of what could be executed in a CQL shell
     def to_cql
       if statement.respond_to?(:cql) && statement.respond_to?(:params)
         Cassie::Support::StatementParser.new(statement).to_cql
@@ -44,15 +48,28 @@ module Cassie::Statements
         statement.to_s
       end
     end
+    
+    def logger
+      Cassie::Statements.logger
+    end
+    
+    def cql
+      return @cql if defined?(@cql)
+      ""
+    end
+    
+    def params
+      return @params if defined?(@params)
+      nil
+    end
 
     protected
 
-    def build_cql_and_bindings
+    def build_cql_and_params
       if self.class.type
-        send "build_#{self.class.type}_cql_and_bindings"
-      else
-        raise "No statement type has been declared. Call `.select`, `.update`, `.delete`, or `.insert` to set query type."
+        send "build_#{self.class.type}_cql_and_params"
       end
+      [cql, params]
     end
 
     private

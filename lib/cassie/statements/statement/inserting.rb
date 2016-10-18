@@ -27,18 +27,18 @@ module Cassie::Statements::Statement
 
     protected
 
-    def build_insert_cql_and_bindings
-      identifiers_str, terms_str, value_bindings = build_insert_and_bindings
-      condition_str, condition_bindings = build_condition_and_bindings
+    def build_insert_cql_and_params
+      identifiers_str, terms_str, value_params = build_insert_and_params
+      condition_str, condition_params = build_condition_and_params
 
-      cql = %(
+      @cql = %(
         INSERT INTO #{table}
         (#{identifiers_str})
         VALUES (#{terms_str})
         #{condition_str}
       ).squish + ";"
 
-      [cql, value_bindings + condition_bindings]
+      @params = value_params + condition_params
     end
   end
 end
