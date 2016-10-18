@@ -15,11 +15,17 @@ Gem::Specification.new do |s|
   s.email       = "evan.prothro@gmail.com"
   s.files      += Dir["lib/**/*.*"]
   s.homepage    = "https://github.com/eprothro/cassie"
-  s.platform    = Gem::Platform::RUBY
   s.license     = "MIT"
 
-  s.add_runtime_dependency "cassandra-driver", "~> 3.0", ">= 2.1.1"
-  s.add_runtime_dependency "activesupport", "~> 4.2"
+  if defined?(JRUBY_VERSION)
+    s.platform = 'java'
+  else
+    s.platform    = Gem::Platform::RUBY
+  end
+
+  s.add_runtime_dependency 'cassandra-driver',  '~> 3.0', '>= 2.1.1'
+  s.add_runtime_dependency 'activesupport',     '~> 4.2'
+  s.add_runtime_dependency 'terminal-table',    '~> 1.4', '>= 1.4.0'
 
   s.executables << "cassie"
 

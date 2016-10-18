@@ -2,6 +2,7 @@
 
 Added:
   - `Cassie::Result::QueryResult.first!`
+  - `to_cql` method to Statements, providing CQL strings that are executable in `cqlsh`
 
 ## 1.0.0.beta.22
 

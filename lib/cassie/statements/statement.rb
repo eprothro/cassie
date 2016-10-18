@@ -35,6 +35,16 @@ module Cassie::Statements
       Cassandra::Statements::Simple.new(*build_cql_and_bindings)
     end
 
+    # returns a CQL string with inline parameters, that
+    # is representative of what would be executed in a CQL shell
+    def to_cql
+      if statement.respond_to?(:cql) && statement.respond_to?(:params)
+        Cassie::Support::StatementParser.new(statement).to_cql
+      else
+        statement.to_s
+      end
+    end
+
     protected
 
     def build_cql_and_bindings

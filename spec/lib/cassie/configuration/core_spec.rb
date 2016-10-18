@@ -87,7 +87,7 @@ RSpec.describe Cassie::Configuration::Core do
 
   describe ".env=" do
     it "doesn't allow symbol assignment" do
-      expect{mod.env = :development}.to raise_error
+      expect{mod.env = :development}.to raise_error(StandardError)
     end
     it "overrides CASSANDRA_ENV and RACK_ENV" do
       allow(ENV).to receive(:[]).with('CASSANDRA_ENV'){'a'}

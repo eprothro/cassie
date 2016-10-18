@@ -20,6 +20,7 @@ module Cassie
   require_relative 'cassie/definition'
   require_relative 'cassie/query'
   require_relative 'cassie/modification'
+  require_relative 'cassie/migration'
 
   extend Configuration::Core
   extend ConnectionHandler

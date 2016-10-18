@@ -16,7 +16,8 @@ module Cassie::Statements::Execution
       end
 
       def partition_linker
-        @partition_linker || SimplePolicy
+        return @partition_linker if defined?(@partition_linker)
+        SimplePolicy
       end
 
       def partition_linker_args=(val)
