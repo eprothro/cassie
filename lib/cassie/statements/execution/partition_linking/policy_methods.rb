@@ -73,7 +73,7 @@ module Cassie::Statements::Execution::PartitionLinking
         previous_key(current_key)
       end
       if _partition < first_key || _partition > last_key
-        logger.warn("[WARN] linking to partition that is outside of ranges defined. #{_partition} outside of (#{first_key}..#{last_key}). This could result in unexpected records being returned.")
+        logger.warn("warning: linking to partition that is outside of ranges defined. #{_partition} outside of (#{first_key}..#{last_key}). This could result in unexpected records being returned.")
       end
 
       # define object singleton method to

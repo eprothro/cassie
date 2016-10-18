@@ -5,7 +5,7 @@ def red(message)
 end
 
 RSpec.configure do |config|
-  # Ione is incredibly noisy :/
+  # Hush ione until 1.2.4 is released
   config.warnings = false
 end
 

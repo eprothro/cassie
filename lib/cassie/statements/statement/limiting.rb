@@ -69,7 +69,7 @@ module Cassie::Statements
     def define_limit_singleton(temp_limit)
       assert_no_limit_singleton
       define_singleton_method(:limit) do
-        return super() if @jruby_issue_4228
+        return super() if jruby_issue_4228?
         temp_limit
       end
     end
@@ -86,8 +86,12 @@ module Cassie::Statements
 
     def assert_no_limit_singleton
       if singleton_methods.include?(:limit)
-        raise NameError.new("A singleton method has already been defined for `limit`. `with_limit` can't be implemented.", :limit) unless @jruby_issue_4228
+        raise NameError.new("A singleton method has already been defined for `limit`. `with_limit` can't be implemented.", :limit) unless jruby_issue_4228?
       end
+    end
+
+    def jruby_issue_4228?
+      defined?(@jruby_issue_4228) && @jruby_issue_4228
     end
   end
 end
