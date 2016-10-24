@@ -53,12 +53,6 @@ RSpec.describe Cassie::Statements::Execution::PartitionLinking::PolicyMethods do
         expect(object.partition_available?).to be false
       end
     end
-    context "when prior to first partition" do
-      let(:partition){ -1 }
-      it "is false" do
-        expect(object.partition_available?).to be false
-      end
-    end
     context "when single partition range" do
       let(:object){ klass.new(executed, :partition, :descending, [0,0]) }
       it "is false" do

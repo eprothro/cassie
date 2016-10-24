@@ -29,5 +29,5 @@ Gem::Specification.new do |s|
 
   s.executables << "cassie"
 
-  s.add_development_dependency "bundler", "~> 1.9"
+  s.add_development_dependency "bundler", "~> 1.10"
 end

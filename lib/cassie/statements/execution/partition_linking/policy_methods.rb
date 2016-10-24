@@ -14,9 +14,10 @@ module Cassie::Statements::Execution::PartitionLinking
       @direction = direction
       @range = range
     end
-
+    
+    # returns linked result
     def link
-      if end_of_partition? && partition_available?
+      if seek_partition? && partition_available?
         prepare_execution
         execution.execute
         combine_results
@@ -31,6 +32,10 @@ module Cassie::Statements::Execution::PartitionLinking
       adjust_limit
       execution
     end
+    
+    def seek_partition?
+      end_of_partition?
+    end
 
     def end_of_partition?
       !peeking_execution.result.peeked_row
@@ -41,15 +46,8 @@ module Cassie::Statements::Execution::PartitionLinking
     end
 
     def partition_available?
-      if ascending?
-        #     |0| |1| |2| |3|
-        # |X| |✓| |✓| |✓| |X|
-        current_key < last_key && current_key >= first_key
-      else
-        # |0| |1| |2| |3|
-        # |X| |✓| |✓| |✓|  |X|
-        current_key > first_key && current_key <= last_key
-      end
+      key = ascending? ? next_key(current_key) : previous_key(current_key)
+      key >= first_key && key <= last_key
     end
 
     protected
@@ -63,7 +61,7 @@ module Cassie::Statements::Execution::PartitionLinking
     end
 
     def change_partition
-      _partition = if ascending?
+      key = if ascending?
         # explicitly pass key to keep policy subclass
         # interface clear and consistent
         next_key(current_key)
@@ -72,15 +70,15 @@ module Cassie::Statements::Execution::PartitionLinking
         # interface clear and consistent
         previous_key(current_key)
       end
-      if _partition < first_key || _partition > last_key
-        logger.warn("warning: linking to partition that is outside of ranges defined. #{_partition} outside of (#{first_key}..#{last_key}). This could result in unexpected records being returned.")
+      if key < first_key || key > last_key
+        logger.warn("warning: linking to partition that is outside of ranges defined. #{key} outside of (#{first_key}..#{last_key}). This could result in unexpected records being returned.")
       end
 
       # define object singleton method to
       # override getter for partition key
       # returning the partion that needs to be linked
       execution.define_singleton_method(identifier) do
-        _partition
+        key
       end
     end
 
