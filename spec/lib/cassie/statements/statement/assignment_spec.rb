@@ -59,6 +59,21 @@ RSpec.describe Cassie::Statements::Statement::Assignment do
     end
   end
 
+  describe "#argument?" do
+    context "when disabled" do
+      let(:opts){ {if: false} }
+      it "is nil" do
+        expect(object.argument?).to be_falsy
+      end
+    end
+    context "when non positional" do
+      before(:each){ allow(object).to receive(:positional?){false} }
+      it "is nil" do
+        expect(object.argument?).to be_falsy
+      end
+    end
+  end
+
   describe "#term" do
     it "is ?" do
       expect(object.term).to eq("?")

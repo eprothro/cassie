@@ -18,6 +18,20 @@ RSpec.describe Cassie::Statements::Execution do
     end
   end
 
+  describe "#execute!" do
+    it "returns true" do
+      expect(object.execute!).to be_truthy
+    end
+
+    context "when not successful" do
+      before(:each) { allow(object).to receive(:result){ double(success?: false) } }
+
+      it "raises execution" do
+        expect{ object.execute! }.to raise_error(Cassie::Statements::ExecutionError)
+      end
+    end
+  end
+
   describe "execution_options" do
     it "defaults to an empty hash" do
       expect(object.execution_options.keys).to be_empty

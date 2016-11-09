@@ -5,11 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## 1.0.0.beta.25
 
 ### Added
 - `Cassie::Support::CommandRunner#run!`
 - support for statement idempotency and type hinting (Selections default to idempotent)
+- Cassie::Statement `execute!` helper that raises if execution fails
+
+### Fixed
+- Bug where nil values for arguments didn't result in the correct number of bindings
+
 
 ## 1.0.0.beta.24
 
