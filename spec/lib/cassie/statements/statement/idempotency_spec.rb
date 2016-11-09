@@ -8,8 +8,8 @@ RSpec.describe Cassie::Statements::Statement::Idempotency do
 
   describe ".idempotent?" do
     context "when no idempotentcy has been set" do
-      it "is false" do
-        expect(klass.idempotent?).to eq(false)
+      it "is true" do
+        expect(klass.idempotent?).to eq(true)
       end
     end
     context "when idempotentcy has been set" do
@@ -17,6 +17,12 @@ RSpec.describe Cassie::Statements::Statement::Idempotency do
       it "is true" do
         expect(klass.idempotent?).to eq(true)
       end
+    end
+  end
+
+  describe "non_idempotent" do
+    it "sets to false" do
+      expect{klass.non_idempotent}.to change{klass.idempotent?}.to(false)
     end
   end
 end

@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.0.beta.27
+
+### Added
+- `non_idempotent` helper
+
+### Changed
+- `Cassie::Statements.default_idempotency` now defaults to `true`
+
 ## 1.0.0.beta.26
 
 ### Fixed
