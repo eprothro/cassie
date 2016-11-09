@@ -81,7 +81,7 @@ module Cassie::Statements::Statement
       relations_args.each do |args|
         r = Relation.new(self, *args)
         relation_strings += Array(r.to_cql)
-        arguments += Array(r.argument)
+        arguments << r.argument if r.argument?
       end
 
       cql = "WHERE #{relation_strings.join(' AND ')}" unless relation_strings.empty?

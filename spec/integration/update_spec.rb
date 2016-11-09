@@ -12,7 +12,7 @@ RSpec.describe Cassie::Statements::Statement do
   let(:object) { klass.new }
   let(:some_id){ rand(10000) }
 
-  describe ".update" do
+  describe "lightweight transaction" do
     let(:klass) do
       Class.new(Cassie::Modification) do
         self.prepare = false

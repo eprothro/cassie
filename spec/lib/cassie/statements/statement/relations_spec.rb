@@ -32,6 +32,42 @@ RSpec.describe Cassie::Statements::Statement::Relations do
       end
     end
 
+    context "with simple relation" do
+      let(:klass) do
+        Class.new(base_class) do
+          where :foo, :eq
+
+          def foo
+            'foo_val'
+          end
+        end
+      end
+      it "generates update cql" do
+        expect(object.send(:build_where_and_params).first).to eq('WHERE foo = ?')
+      end
+      it "generates positional binding from getter method" do
+        expect(object.send(:build_where_and_params).last).to eq(['foo_val'])
+      end
+    end
+
+    context "when value is nil" do
+      let(:klass) do
+        Class.new(base_class) do
+          where :foo, :eq
+
+          def foo
+            nil
+          end
+        end
+      end
+      it "generates update cql" do
+        expect(object.send(:build_where_and_params).first).to eq('WHERE foo = ?')
+      end
+      it "generates positional binding from getter method" do
+        expect(object.send(:build_where_and_params).last).to eq([nil])
+      end
+    end
+
     context "with :in operation" do
       let(:klass) do
         Class.new(base_class) do

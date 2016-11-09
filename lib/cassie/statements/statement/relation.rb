@@ -40,9 +40,12 @@ module Cassie::Statements::Statement
       !!enabled
     end
 
+    def argument?
+      enabled? && positional?
+    end
+
     def argument
-      return nil unless enabled? && positional?
-      value
+      value if argument?
     end
 
     def positional?

@@ -69,7 +69,7 @@ module Cassie::Statements::Statement
         a = Assignment.new(self, *args)
         identifiers += Array(a.identifier)
         terms += Array(a.term)
-        arguments += Array(a.argument)
+        arguments << a.argument if a.argument?
       end
 
       identifiers_cql = identifiers.join(", ")
