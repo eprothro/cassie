@@ -9,20 +9,21 @@ RSpec.describe Cassie::Statements::Statement do
 
 
   describe "statement" do
-    
+
     it "passes idempotency along" do
+      object.idempotent = false
       expect{ object.idempotent = true }.to change{
         object.statement.idempotent?
       }.to(true)
     end
-    
+
     it "passes type hints along" do
       object.type_hints = {}
       expect_any_instance_of(Cassandra::Statements::Simple).to receive(:initialize).with(object.cql, object.params, object.type_hints, object.idempotent)
-      
+
       object.statement
     end
-    
+
     context "when overridden" do
       let(:klass) do
         Class.new(Cassie::FakeQuery) do

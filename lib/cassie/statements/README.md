@@ -88,7 +88,7 @@ Cassie provides 3 base classes for these 3 kinds of queries. Subclass `Cassie::D
     * `result` attribute, populated by execution
     * instrumentation and logging of execution
 
-  Typical use of a `Definition` subclass would be for a static DDL query. Override the `statement` method, returning a CQL statement (`String` or `Cassandra::Statements`) that will be executed with the `Cassandra` driver.
+  A typical use of a `Definition` subclass would be for a static DDL query. Override the `statement` method, returning a CQL statement (`String` or `Cassandra::Statements`) that will be executed with the `Cassandra` driver.
 
 ##### `Cassie::Modification`
   Includes core functionality for prepared statement execution.
@@ -280,9 +280,11 @@ set :id, term: "now()"
 ```
 
 ```ruby
-insert_into :posts
+update :post_counts
 
-set :published_at, "toTimestamp(now())"
+set :comments_count, "comments_count + 1"
+
+non_idempotent
 ```
 
 A value will be fetched and placed as an argument in the statement if the provided term includes a positional marker ('?').
@@ -351,80 +353,6 @@ Arbitrary strings are supported as well in case the DSL gets in the way.
 #=> SELECT cowboy, coder FROM posts_by_author;
 ```
 
-#### Consistency configuration
-
-The [consistency level](http://datastax.github.io/ruby-driver/v2.1.6/api/cassandra/#consistencies-constant) for a query is determined by your `Cassie::configuration` by default, falling to back to the `Cassandra` default if none is given.
-
-```ruby
-Cassie.configuration[:consistency]
-#=> nil
-
-Cassie.cluster.instance_variable_get(:@execution_options).consistency
-#=> :one
-```
-
-Cassie queries allow for a consistency level to be defined on the object, subclass, base class, and global levels. If none is found, it will default to the `cluster` default when the query is executed.
-
-Object writer:
-```ruby
-  query = MyQuery.new
-  query.consistency = :all
-  query.execute
-```
-Override Object reader:
-```ruby
-  select_from :posts_by_author_category
-
-  where :author_id, :eq
-  where :category, :eq, if: :filter_by_category?
-
-  def filter_by_category?
-    #true or false, as makes sense for your query
-  end
-
-  def consistency
-    #dynamically determine a query object's consistency level
-    if filter_by_category?
-      :quorum
-    else
-      super
-    end
-  end
-```
-
-Class writer
-```ruby
-  select_from :posts_by_author_category
-
-  where :author_id, :eq
-  where :category, :eq
-
-  consistency :quorum
-```
-
-Cassie query classes
-```ruby
-# lib/tasks/interesting_task.rake
-require_relative "interesting_worker"
-
-task :interesting_task do
-  Cassie::Modification.consistency = :all
-
-  InterestingWorker.new.perform
-end
-```
-
-Cassie global default
-```ruby
-# lib/tasks/interesting_task.rake
-require_relative "interesting_worker"
-
-task :interesting_task do
-  Cassie::Statements.default_consistency = :all
-
-  InterestingWorker.new.perform
-end
-```
 
 #### Execution and Result
 
@@ -698,6 +626,123 @@ By default, this works for ascending and descending orderings when paging in the
 
 Custom policies can be defined by setting `Query.partition_linker` for more complex schemas. See the `SimplePolicy` source for an example.
 
+#### Consistency configuration
+
+The [consistency level](http://datastax.github.io/ruby-driver/api/cassandra/#consistencies-constant) for a query is determined by your `Cassie::configuration` by default, falling to back to the `Cassandra` default if none is given.
+
+```ruby
+Cassie.configuration[:consistency]
+#=> nil
+
+Cassie.cluster.instance_variable_get(:@execution_options).consistency
+#=> :one
+```
+
+Cassie queries allow for a consistency level to be defined on the object, subclass, base class, and global levels. If none is found, it will default to the `cluster` default when the query is executed.
+
+Object writer:
+```ruby
+  query = MyQuery.new
+  query.consistency = :all
+  query.execute
+```
+Override Object reader:
+```ruby
+  select_from :posts_by_author_category
+
+  where :author_id, :eq
+  where :category, :eq, if: :filter_by_category?
+
+  def filter_by_category?
+    #true or false, as makes sense for your query
+  end
+
+  def consistency
+    #dynamically determine a query object's consistency level
+    if filter_by_category?
+      :quorum
+    else
+      super
+    end
+  end
+```
+
+Class writer
+```ruby
+  select_from :posts_by_author_category
+
+  where :author_id, :eq
+  where :category, :eq
+
+  consistency :quorum
+```
+
+Cassie query classes
+```ruby
+# lib/tasks/interesting_task.rake
+require_relative "interesting_worker"
+
+task :interesting_task do
+  Cassie::Modification.consistency = :all
+
+  InterestingWorker.new.perform
+end
+```
+
+Cassie global default
+```ruby
+# lib/tasks/interesting_task.rake
+require_relative "interesting_worker"
+
+task :interesting_task do
+  Cassie::Statements.default_consistency = :all
+
+  InterestingWorker.new.perform
+end
+```
+
+#### Idempotentcy configuration
+
+Cassie statements are set as [idempotent](http://datastax.github.io/ruby-driver/api/cassandra/statements/simple/) by default. This setting influences how [retries](http://datastax.github.io/ruby-driver/features/retry_policies/) are handled.
+
+Mark queries that are not idempotent, so that the driver won't automatically retry for certain failure scenarios.
+
+Similar to other settings, there is a `Cassie::Statements.default_idempotency`, class level setting, and object level setting.
+
+```ruby
+class MyQuery < Cassie::Modification
+  update :counter_table
+
+  set :counter, term: :counter_val
+
+  def counter_val
+    "counter + 1"
+  end
+end
+```
+```
+MyQuery.idempotent?
+# => true
+```
+
+```ruby
+class MyQuery < Cassie::Modification
+  update :counter_table
+
+  set :counter, term: :counter_val
+
+  non_idempotent
+
+  def counter_val
+    "counter + 1"
+  end
+end
+```
+```
+MyQuery.idempotent?
+# => false
+```
+
 #### Prepared statements
 
 A `Cassie::Query` will use prepared statements by default, cacheing prepared statements across all `Query`, `Modification`, and `Definition` objects, keyed by the unbound CQL string.
@@ -727,6 +772,26 @@ set_1 = query.fetch([1, 2, 3])
 # will not prepare statement
 set_2 = query.fetch([7, 8, 9, 10, 11, 12])
 ```
+
+#### Custom queries
+
+For certain queries, it may be more effective to write your own CQL. The recommended way is to override `cql` and `params`.
+
+```ruby
+class MySpecialQuery < Cassandra::Modification
+  attr_accessor :resource
+
+  def cql
+    "UPDATE my_table SET udt.field = ? WHERE id = ?;"
+  end
+
+  def params
+    [resource.field, resource.id]
+  end
+end
+```
+
+This will preserve using other features such as consistency, idempotency, prepared statements, etc.
 
 #### Non-positional (unbound) statements
 

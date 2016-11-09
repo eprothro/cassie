@@ -1,7 +1,7 @@
 module Cassie::Statements
   def self.default_idempotency
     return @default_idempotency if defined?(@default_idempotency)
-    false
+    true
   end
 
   def self.default_idempotency=(val)
@@ -34,7 +34,11 @@ module Cassie::Statements
           self.idempotent = val
         end
       end
-      
+
+      def non_idempotent
+        self.idempotent = false
+      end
+
       def idempotent?
         !!idempotent
       end
@@ -44,7 +48,7 @@ module Cassie::Statements
       return @idempotent if defined?(@idempotent)
       self.class.idempotent
     end
-    
+
     def idempotent?
       !!idempotent
     end

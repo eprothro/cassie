@@ -48,16 +48,16 @@ module Cassie::Statements
         statement.to_s
       end
     end
-    
+
     def logger
       Cassie::Statements.logger
     end
-    
+
     def cql
       return @cql if defined?(@cql)
       ""
     end
-    
+
     def params
       return @params if defined?(@params)
       nil
@@ -69,6 +69,7 @@ module Cassie::Statements
       if self.class.type
         send "build_#{self.class.type}_cql_and_params"
       end
+
       [cql, params]
     end
 
