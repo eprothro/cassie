@@ -775,7 +775,7 @@ set_2 = query.fetch([7, 8, 9, 10, 11, 12])
 
 #### Custom queries
 
-For certain queries, it may be more effective to write your own CQL. The recommended way is to override `cql` and `params`.
+For certain queries, it may be most effective to write CQL directly. The recommended way is to override `cql` and `params`.
 
 ```ruby
 class MySpecialQuery < Cassandra::Modification
@@ -791,7 +791,7 @@ class MySpecialQuery < Cassandra::Modification
 end
 ```
 
-This will preserve using other features such as consistency, idempotency, prepared statements, etc.
+This preserves using other features and configuration such as consistency, idempotency, prepared statements, etc.
 
 #### Non-positional (unbound) statements
 
