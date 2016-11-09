@@ -52,7 +52,7 @@ module Cassie::Statements::Statement
       assignments_args.each do |args|
         a = Assignment.new(self, *args)
         assignment_strings += Array(a.to_update_cql)
-        arguments += Array(a.argument)
+        arguments << a.argument if a.argument?
       end
 
       cql = assignment_strings.join(', ')

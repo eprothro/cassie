@@ -50,14 +50,6 @@ RSpec.describe Cassie::Statements::Execution::PartitionLinking do
         object.execute
       end
     end
-
-    context "when unsuccessful" do
-      let(:succeed?) { false }
-      it "doesn't call the policy" do
-        expect_any_instance_of(klass.partition_linker).not_to receive(:link)
-        object.execute
-      end
-    end
   end
 
   describe "build_partition_linker" do

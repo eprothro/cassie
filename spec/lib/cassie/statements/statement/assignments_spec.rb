@@ -33,6 +33,24 @@ RSpec.describe Cassie::Statements::Statement::Assignments do
       end
     end
 
+    context "when value is nil" do
+      let(:klass) do
+        Class.new(base_class) do
+          set :foo
+
+          def foo
+            nil
+          end
+        end
+      end
+      it "generates update cql" do
+        expect(object.send(:build_update_and_params).first).to eq('foo = ?')
+      end
+      it "generates positional binding from getter method" do
+        expect(object.send(:build_update_and_params).last).to eq([nil])
+      end
+    end
+
     context "with custom assignment" do
       let(:klass) do
         Class.new(base_class) do

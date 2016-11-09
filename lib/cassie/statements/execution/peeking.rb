@@ -8,13 +8,20 @@ module Cassie::Statements::Execution
 
     def execute
       assert_limit
-      with_limit(limit + 1) { super }
+      @unpeeked_limit = limit
+      with_limit(limit + 1) do
+       super
+      end
+    end
+    
+    def unpeeked_limit
+      @unpeeked_limit if defined?(@unpeeked_limit)
     end
 
     protected
 
     def result_opts
-      super.merge(limit: limit - 1)
+      super.merge(limit: unpeeked_limit || limit)
     end
 
     private

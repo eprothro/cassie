@@ -1,5 +1,6 @@
 module Cassie::Statements
   module Execution
+    require_relative 'execution/errors'
     require_relative 'execution/consistency'
     require_relative 'execution/callbacks'
     require_relative 'execution/results'
@@ -37,6 +38,12 @@ module Cassie::Statements
     def execute
       @result = result_class.new(session.execute(statement, execution_options), result_opts)
       result.success?
+    end
+
+    # Executes the statment, populates result
+    # true or raises if the  was not successful
+    def execute!
+      execute || (raise Cassie::Statements::ExecutionError.new(result))
     end
 
     def execution_options

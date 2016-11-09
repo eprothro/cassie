@@ -23,16 +23,16 @@ Open an issue for conversation about any ideas or suggestions.
 
 ## Making Changes
 
-### Add Unit tests
+### Unit tests
 
 Unit tests should provide complete coverage of features and should not depend on an available Cassandra server.
 
 
-### Add `Integration/db` tests
+### Integration tests depending on database
 
-Integration tests that rely on a Cassandra server exist as an extra 'sanity check' layer. Please don't use them as an excuse to not write solid unit tests.
+Integration tests that rely on a Cassandra server exist as an extra 'sanity check' layer in `spec/integration/db`. Please don't create them as an excuse to not write solid unit tests.
 
-Please add them if they seem like a good idea! If you add one and it fails, please write a corresponding failing unit spec.
+Please do add them if they seem like a good idea! If you add one and it fails, please write a corresponding failing unit spec before fixing up.
 
 
 ## Working with Changes
@@ -61,3 +61,5 @@ Run `rake release` to:
 ### Bumping the version
 
 Bump version minor / major with `gem bump --version <minor|major>`.
+
+Please don't include version bumps in your patches. Maintainers will handle this.
