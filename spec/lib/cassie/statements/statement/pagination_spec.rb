@@ -3,7 +3,7 @@ RSpec.describe Cassie::Statements::Statement::Pagination do
     Class.new(Cassie::FakeQuery)
   end
   let(:object) { klass.new }
-  let(:limit){ rand(2..500) }
+  let(:limit){ rand(2..499) }
 
   before(:each){ @original = klass.page_size }
   after(:each){ klass.page_size = @original }

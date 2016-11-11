@@ -32,6 +32,19 @@ RSpec.describe "Cassie curosred pagination" do
   let(:max_id){ nil }
   let(:since_id){ nil }
 
+  context "when no cursors are given" do
+    it "sets next max id after cursor" do
+      expect(object.fetch.next_max_id).to eq(45)
+    end
+    it "fetches results from cursor" do
+      expect(object.fetch.map(&:id)).to eq((46..50).to_a.reverse)
+    end
+    it "fetches first result" do
+      pending "fixing issue #20"
+      expect(object.fetch_first.id).to eq(50)
+    end
+  end
+
   context "when cursoring by max_id" do
     let(:max_id){ 46 }
 
@@ -42,6 +55,7 @@ RSpec.describe "Cassie curosred pagination" do
       expect(object.fetch.map(&:id)).to eq((42..46).to_a.reverse)
     end
   end
+
   context "when cursoring by since_id" do
     let(:since_id){ 44 }
 
@@ -53,7 +67,7 @@ RSpec.describe "Cassie curosred pagination" do
     end
     context "when results meet cursor" do
       let(:since_id){ 46 }
-      
+
       it "sets next max id after cursor" do
         expect(object.fetch.next_max_id).to eq(nil)
       end
@@ -62,6 +76,7 @@ RSpec.describe "Cassie curosred pagination" do
       end
     end
   end
+
   context "when cursoring by since_id and max_id" do
     let(:since_id){ 41 }
     let(:max_id){ 49 }
