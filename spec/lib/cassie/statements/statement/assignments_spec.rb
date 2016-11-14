@@ -58,6 +58,20 @@ RSpec.describe Cassie::Statements::Statement::Assignments do
       end
     end
 
+    context "with if option" do
+      let(:klass) do
+        Class.new(base_class) do
+          set :foo, if: :check
+
+          def check
+            false
+          end
+        end
+        it "doesn't "
+        expect(object.send(:build_insert_and_params).first).to eq('foo')
+      end
+    end
+
     context "with custom assignment" do
       let(:klass) do
         Class.new(base_class) do

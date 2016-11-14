@@ -7,16 +7,21 @@ module Cassie::Statements::Statement
 
     attr_reader :source,
                 :identifier,
-                :value,
+                :value_method,
                 :enabled,
                 :term
 
     def initialize(source, identifier, value_method, opts={})
       @source = source
       @identifier = identifier
-      @value = source.send(value_method)
+      @value_method = value_method
       @enabled = opts.has_key?(:if) ? source_eval(opts[:if]) : true
       @term = opts.has_key?(:term) ? source_eval(opts[:term]) : "?"
+    end
+
+    def value
+      return @value if defined?(@value)
+      @value = source.send(value_method)
     end
 
     def enabled?

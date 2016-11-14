@@ -22,7 +22,7 @@ module Cassie::Statements::Statement
     attr_reader :source,
                 :identifier,
                 :operation,
-                :value,
+                :value_method,
                 :enabled,
                 :term
 
@@ -31,7 +31,7 @@ module Cassie::Statements::Statement
       @source = source
       @identifier = identifier
       @operation = OPERATIONS[op_type.to_sym]
-      @value = source.send(value_method)
+      @value_method = value_method
       @enabled = opts.has_key?(:if) ? source_eval(opts[:if]) : true
       @term = opts.has_key?(:term) ? source_eval(opts[:term]) : "?"
     end
@@ -42,6 +42,11 @@ module Cassie::Statements::Statement
 
     def argument?
       enabled? && positional?
+    end
+
+    def value
+      return(@value) if defined?(@value)
+      @value = source.send(value_method)
     end
 
     def argument
