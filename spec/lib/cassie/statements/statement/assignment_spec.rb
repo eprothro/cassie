@@ -59,6 +59,30 @@ RSpec.describe Cassie::Statements::Statement::Assignment do
     end
   end
 
+  describe "#term" do
+    it "is relation syntax with positional placeholder" do
+      expect(object.term).to eq("?")
+    end
+    context "when disabled" do
+      let(:opts){ {if: false} }
+      it "is nil" do
+        expect(object.term).to be_nil
+      end
+    end
+  end
+
+  describe "#identifier" do
+    it "is relation syntax with positional placeholder" do
+      expect(object.identifier).to eq(identifier)
+    end
+    context "when disabled" do
+      let(:opts){ {if: false} }
+      it "is nil" do
+        expect(object.identifier).to be_nil
+      end
+    end
+  end
+
   describe "#argument?" do
     context "when disabled" do
       let(:opts){ {if: false} }

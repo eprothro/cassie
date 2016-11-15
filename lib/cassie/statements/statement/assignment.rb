@@ -8,8 +8,7 @@ module Cassie::Statements::Statement
     attr_reader :source,
                 :identifier,
                 :value_method,
-                :enabled,
-                :term
+                :enabled
 
     def initialize(source, identifier, value_method, opts={})
       @source = source
@@ -17,6 +16,10 @@ module Cassie::Statements::Statement
       @value_method = value_method
       @enabled = opts.has_key?(:if) ? source_eval(opts[:if]) : true
       @term = opts.has_key?(:term) ? source_eval(opts[:term]) : "?"
+    end
+
+    def identifier
+      @identifier if enabled?
     end
 
     def value
@@ -29,11 +32,15 @@ module Cassie::Statements::Statement
     end
 
     def argument?
-      enabled? && positional?
+      positional?
     end
 
     def argument
       value if argument?
+    end
+
+    def term
+      @term if enabled?
     end
 
     def positional?
@@ -41,8 +48,7 @@ module Cassie::Statements::Statement
     end
 
     def to_update_cql
-      return nil unless enabled?
-      "#{identifier} = #{term}"
+      "#{identifier} = #{term}" if enabled?
     end
 
     private
