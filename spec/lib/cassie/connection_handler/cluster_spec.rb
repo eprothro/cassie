@@ -1,16 +1,18 @@
 RSpec.describe Cassie::ConnectionHandler::Cluster do
-  let(:mod) do
-    Module.new do
-      extend Cassie::ConnectionHandler::Cluster
+  let(:klass) do
+    Class.new do
+      include Cassie::ConnectionHandler::Cluster
 
-      def self.configuration
+      def configuration
       end
-      def self.logger
+      def logger
         @logger ||= Logger.new('/dev/null')
         # @logger ||= Logger.new(STDOUT)
       end
     end
   end
+  let(:mod){ klass.new }
+  let(:cluster){ double(hosts: [], name: "") }
 
   let(:config){ {'hosts' => ['127.0.0.1'], 'port' => 9042} }
 
@@ -20,19 +22,19 @@ RSpec.describe Cassie::ConnectionHandler::Cluster do
         allow(mod).to receive(:configuration){config}
       end
       it "creates cluster with configuration" do
-        expect(Cassandra).to receive(:cluster).with(config.symbolize_keys)
+        expect(Cassandra).to receive(:cluster).with(config.symbolize_keys){cluster}
 
         mod.cluster
       end
       it "passes symbols as configuration keys" do
-        expect(Cassandra).to receive(:cluster).with(hash_including(config.symbolize_keys))
+        expect(Cassandra).to receive(:cluster).with(hash_including(config.symbolize_keys)){cluster}
 
         mod.cluster
       end
       it "logs connection timing" do
-        allow(Cassandra).to receive(:cluster).with(config.symbolize_keys)
+        allow(Cassandra).to receive(:cluster).with(config.symbolize_keys){cluster}
 
-        expect(mod.logger).to receive(:info).with(/(.*ms).*cluster/i)
+        expect(Cassie.instrumenter).to receive(:instrument).with('cassie.cluster.connect')
 
         mod.cluster
       end
@@ -41,7 +43,7 @@ RSpec.describe Cassie::ConnectionHandler::Cluster do
     context "when cluster has already been created" do
       before(:each) do
         allow(mod).to receive(:configuration){config}
-        allow(Cassandra).to receive(:cluster){double("Cassandra::Cluster")}
+        allow(Cassandra).to receive(:cluster){cluster}
         mod.cluster
       end
       it "doesn't create a new one" do

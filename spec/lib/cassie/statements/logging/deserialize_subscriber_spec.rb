@@ -6,7 +6,7 @@ RSpec.describe Cassie::Statements::Logging::DeserializeSubscriber do
   context "when 'cassie.cql.execution' is instrumented" do
     it "receives call" do
       expect_any_instance_of(klass).to receive(:call)
-      Cassie::Statements.instrumenter.instrument("cassie.deserialize"){}
+      Cassie.instrumenter.instrument("cassie.deserialize"){}
     end
   end
 

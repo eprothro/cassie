@@ -6,6 +6,7 @@ module Cassie
   module ConnectionHandler
     require_relative 'connection_handler/cluster'
     require_relative 'connection_handler/sessions'
+    require_relative 'connection_handler/logging'
 
     include Cluster
     include Sessions

@@ -1,5 +1,3 @@
-require 'benchmark'
-
 module Cassie::ConnectionHandler
   # ## Cassie::ConnectionHandler::Cluster
   #
@@ -8,22 +6,24 @@ module Cassie::ConnectionHandler
   # Include in any class or module that responds to `configuration` with
   # a cassandra cluster options hash.
   module Cluster
+    require_relative 'cluster/instrumentation'
+    extend ActiveSupport::Concern
+
+    included do
+      include Instrumentation
+    end
 
     def cluster
       # Cassandra::cluster parses suppored
       # options from the passed hash, no need
       # to validate/transform ourselves yet
-      @cluster ||= begin
-        _cluster = nil
-        config = configuration.try(:symbolize_keys)
+      @cluster ||= initialize_cluster
+    end
 
-        sec = Benchmark.realtime do
-          _cluster = Cassandra.cluster(config)
-        end
+    protected
 
-        logger.info "(#{(sec*1000).round(2)}ms) Connected to Cassandra cluster #{config[:hosts]}"
-        _cluster
-      end
+    def initialize_cluster
+      Cassandra.cluster(configuration.try(:symbolize_keys))
     end
   end
 end

@@ -1,20 +1,21 @@
 RSpec.describe Cassie::ConnectionHandler::Sessions do
-  let(:mod) do
-    Module.new do
-      extend Cassie::ConnectionHandler::Sessions
+  let(:klass) do
+    Class.new do
+      include Cassie::ConnectionHandler::Sessions
 
-      def self.keyspace
+      def keyspace
       end
 
-      def self.cluster
+      def cluster
       end
 
-      def self.logger
+      def logger
         @logger ||= Logger.new('/dev/null')
         # @logger ||= Logger.new(STDOUT)
       end
     end
   end
+  let(:mod){ klass.new }
 
   before(:each) do
     allow(mod).to receive(:keyspace){default_keyspace}
@@ -39,10 +40,10 @@ RSpec.describe Cassie::ConnectionHandler::Sessions do
 
           mod.session(keyspace)
         end
-        it "logs connection timing" do
+        it "instruments connection opening" do
           allow(cluster).to receive(:connect).with(keyspace)
 
-          expect(mod.logger).to receive(:info).with(/(.*ms).*session/i)
+          expect(Cassie.instrumenter).to receive(:instrument).with('cassie.session.connect')
 
           mod.session(keyspace)
         end

@@ -1,27 +1,24 @@
-require 'benchmark'
-
 module Cassie::ConnectionHandler
   module Sessions
+    require_relative 'sessions/instrumentation'
+    extend ActiveSupport::Concern
+
+    included do
+      include Instrumentation
+    end
 
     def sessions
       @sessions ||= {}
     end
 
-    def session(_keyspace=self.keyspace)
-      sessions[_keyspace] || connect(_keyspace)
+    def session(keyspace=self.keyspace)
+      sessions[keyspace] || initialize_session(keyspace)
     end
 
     protected
 
-    def connect(_keyspace)
-      _session = nil
-
-      sec = Benchmark.realtime do
-        _session = cluster.connect(_keyspace)
-      end
-
-      logger.info "(#{(sec*1000).round(2)}ms) Session opened to Cassandra[#{_keyspace}]"
-      @sessions[_keyspace] = _session
+    def initialize_session(keyspace)
+      @sessions[keyspace] = cluster.connect(keyspace)
     end
   end
 end
