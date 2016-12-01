@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 1.0.0.beta.29
 
+### Changed
+- Cluser and session connection logging outputs hash now to support complex formatting (JSON,etc)
+
+## 1.0.0.beta.29
+
 ### Fixed
 - bug where insert queries didn't respect `if` options
 

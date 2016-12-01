@@ -1,4 +1,5 @@
 require_relative 'support/seeds'
+require 'benchmark'
 
 def red(message)
   "\e[1;31m#{message}\e[0m"
