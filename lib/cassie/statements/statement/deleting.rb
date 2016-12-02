@@ -26,14 +26,19 @@ module Cassie::Statements::Statement
 
         yield(self) if block_given?
       end
+
       def delete(table)
         Cassie.logger.warn "[DEPRECATION] `Cassie::Modification#delete` has been replaced by `delete_from` and will be removed."
         delete_from(table)
       end
 
-      # TODO rename to identifiers and extract
-      def selectors
-        @selectors ||= []
+
+      def column(identifier, opts={})
+        columns << identifier.to_s
+      end
+
+      def columns
+        @columns ||= []
       end
     end
 
@@ -53,16 +58,16 @@ module Cassie::Statements::Statement
       @params = where_params + condition_params
     end
 
-    # a select clause is built up of selectors
-    def selectors
-      self.class.selectors
+    # a delete clause is built up of zero or more columns
+    def columns
+      self.class.columns
     end
 
     def build_delete_clause
-      str = if selectors.empty?
+      str = if columns.empty?
         ''
       else
-        selectors.join(', ')
+        columns.join(', ')
       end
     end
   end

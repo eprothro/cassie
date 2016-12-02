@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 1.0.0.beta.29
+## Unreleased
+
+### Added
+- Statement support for deleting specific columns
+
+## 1.0.0.beta.30
 
 ### Changed
 - Cluser and session connection logging outputs hash now to support complex formatting (JSON,etc)

@@ -353,6 +353,18 @@ Arbitrary strings are supported as well in case the DSL gets in the way.
 #=> SELECT cowboy, coder FROM posts_by_author;
 ```
 
+#### Column Deletion (`column`)
+
+By default, all columns for specified CQL rows will be deleted. Identify a subset of columns for tombstoning with `column`.
+
+```ruby
+  delete_from :authors_by_id
+  column :nickname
+  where :id, :eq
+```
+```
+#=> DELETE nickname FROM authors_by_id where id = 123;
+```
 
 #### Execution and Result
 
