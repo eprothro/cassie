@@ -172,19 +172,22 @@ Schema Version information is stored in Cassandra persistence, in the `cassie_sc
 
 #### Tasks
 
+`* = TODO`
+
 | Task | Description |
 | --- | --- |
 | migration:create | Generates an empty migration file prefixed with the next semantic version number |
 | migrate | Migrates the schema by running the `up` methods in any migrations starting after the current schema version |
-| rollback | Rolls back the schema by running the `down` methods starting with the current schema version |
-| migration:initialize | Create an initial migration based on the current Cassandra non-system schema |
-| migration:import | Import existing `cassandra_migrations` migration files and convert to semantic versioning |
+| *migrate:reset | reset and migrate |
+| *migrations:initialize | Create an initial migration based on the current Cassandra non-system schema |
+| *migrations:import | Import existing `cassandra_migrations` migration files and convert to semantic versioning |
+| *drop | drop all keyspace(s) |
 | schema:version | Print the current schema version information for the Cassandra cluster |
 | schema:history | Print the the historical version information the current Cassandra cluster state |
-| structure:dump | Dumps the schema for all non-system keyspaces in CQL format (`db/structure.cql` by default) |
-| structure:load | Creates the schema by executing the CQL schema in the structure file (`db/structure.cql` by default) |
+| structure:dump | Dumps the schema for all non-system keyspaces in CQL format (`db/cassandra/structure.cql` by default) |
+| structure:load | Creates the schema by executing the CQL schema in the structure file (`db/cassandra/structure.cql` by default) |
 
-See the [Migrations README](./lib/cassie/migration/README.md#readme) for more on features and usage.
+See the [Migrations README](./lib/cassie/schema/README.md#readme) for more on features and usage.
 
 ### Query Classes
 
@@ -216,13 +219,13 @@ Avoid making queries into the persistnace layer when you can afford it.
 ```ruby
 some_query = SomeQuery.new
 some_query.extend(Cassie::Testing::Fake::Query)
-some_query.session
-=> #<Cassie::Testing::Fake::Session::Session:0x007fd03e29a688>
+some_query.session.rows = [{'user_id' => 123, 'username' => 'eprothro'}]
 
-some_query.execute
+some_query.fetch
+=> [#<Struct user_id=123, username="eprothro">]
 
 some_query.session.last_statement
-=> #<Cassandra::Statements::Simple:0x3ffde09930b8 @cql="SELECT * FROM users LIMIT 1;" @params=[]>
+=> #<Cassandra::Statements::Simple:0x3ffde09930b8 @cql="SELECT * FROM users LIMIT 500;" @params=[]>
 ```
 
 See the [Testing README](./lib/cassie/testing/README.md#readme) for more on features and usage.

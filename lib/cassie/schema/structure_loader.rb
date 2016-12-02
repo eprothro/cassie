@@ -1,4 +1,4 @@
-module Cassie::Migration
+module Cassie::Schema
  class StructureLoader
    attr_reader :source_path
 

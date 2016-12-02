@@ -1,4 +1,4 @@
-module Cassie::Migration
+module Cassie::Schema
   require_relative 'queries'
 
   class StructureDumper
@@ -57,7 +57,7 @@ module Cassie::Migration
     end
 
     def destination_path
-      @destination_path || raise("Unconfigured schema structure path: `Cassie::Migration.paths[:schema_structure]` is empty")
+      @destination_path || raise("Unconfigured schema structure path: `Cassie::Schema.paths[:schema_structure]` is empty")
     end
 
     protected
@@ -67,7 +67,7 @@ module Cassie::Migration
     end
 
     def default_destination_path
-      Cassie::Migration.paths[:schema_structure]
+      Cassie::Schema.paths[:schema_structure]
     end
 
     def prepare_stream

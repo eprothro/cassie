@@ -1,74 +1,96 @@
-# Cassie Migrations
+# Cassie Schema Migrations
 
 Cassie provides versioned migrations similar to many existing adapters and frameworks.
 
-Practically speaking, this gives your cluster schmea its own "version" and simplifies upgrading or downgrading the schema.
+Practically speaking, this gives your cluster Schema its own "version" and simplifies upgrading or downgrading the schema.
 
 As such, Cassie uses semantic versioning, where a defined version describes all non-system keyspaces.
 
-Major, minor, and patch versions are used, without support for semantic extensions (prerelase or metadata, ex: 1.0.0.beta).
+Major, minor, patch, and build versions are used, however semantic extensions are not supported (prerelase or metadata, ex: 1.0.0.beta).
 
 ### Schema Migrations
 #### Creating a migration
 
 ```
-cassie migration:create that_killer_feature --bump minor
-=> 0.2.0 - migrations/000_002_000_that_killer_feature.rb
+cassie migration:create that_killer_feature --minor
+```
+```
+Creating migration for schema version 0.2.0.0
+  create db/cassandra/migrations/000_002_000_000_that_killer_feature.rb
 ```
 
 ```ruby
-# migrations/000_002_000_that_killer_feature.rb
+# db/cassandra/migrations/000_002_000_000_that_killer_feature.rb
+class Migration_0_2_0_0 < Cassie::Schema::Migration
+  def up
+    # Uses the excellent DSL from `cassandra_migrations`.
+  end
 
-Uses the excellend DSL from `cassandra_migrations`.
+  def down
+    # Uses the excellent DSL from `cassandra_migrations`.
+  end
+end
 ```
+
+By default, the `patch` version will be bumped. Use the `--major`, `--minor`, or `--build` switch to bump differently. Or, explicitly set the version with `cassie migration:create that_fixup 0.1.3.15`.
+
+> *Note:* The class name convention matches only the version in the filename. You can change the description suffix without having to change the classname.
 
 #### Executing migrations
 
+##### Roll up to latest version
+
 ```
 cassie migrate
-=> roll up to latest version
 ```
+
+##### Roll up to a specific version
 
 ```
 cassie migrate 0.2.0
-=> roll up to 0.2.0 and stop
 ```
+
+##### Rolling back
+
+Use the same interface to migrate up or down to a specific version.
 
 ```
 cassie migrate 0.1.9
-=> roll back to 0.1.9 and stop
 ```
 
-#### Rolling back
+Migrating backwards rolls back the actual state of the schema in the given database. The in-database schema history keeps track of what migrations have been applied and rolls them back in that order. This is one reason for not recommending a `cassie rollback <STEP>` interface. This ensures the following scenario is supported:
 
-```
-cassie rollback
-=> roll back 1 version and stop
-```
+* Given the following mirgations exist:
+  * 0.1.0.0
+  * 0.1.1.0
+* And both migrations have been executed.
+* When a migraiton is created for version `0.1.0.99`
+* And the schema is migrated with `cassie migrate 0.1.0.0`
+* Then the `down` method for `0.1.0.99` is NOT executed
 
-```
-cassie rollback 3
-=> roll back 3 versions and stop
-```
+* And then when the schema is migrated with `cassie migrate`, the `up` methods from the following migrations are executed:
+  * 0.1.0.99
+  * 0.1.1.0
 
-#### Getting the current version
+
+#### Reporting the current version
 ```
 cassie schema:version
 +---------+----------------+-------------+---------------------------+
 | Version | Description    | Migrated by | Migrated at               |
 +---------+----------------+-------------+---------------------------+
-| * 0.1.0 | initial schema | eprothro    | 2016-09-08 09:23:54 -0500 |
+| * 0.2.0 |  create users  | serverbot   | 2016-09-08 10:23:54 -0500 |
 +---------+----------------+-------------+---------------------------+
 ```
 
-#### Getting the version history
+#### Reporting the version history
 ```
 cassie schema:history
 +---------+----------------+-------------+---------------------------+
 | Version | Description    | Migrated by | Migrated at               |
 +---------+----------------+-------------+---------------------------+
 | * 0.2.0 |  create users  | serverbot   | 2016-09-08 10:23:54 -0500 |
-| * 0.1.0 | initial schema | eprothro    | 2016-09-08 09:23:54 -0500 |
+|   0.1.0 | initial schema | eprothro    | 2016-09-08 09:23:54 -0500 |
 +---------+----------------+-------------+---------------------------+
 ```
 

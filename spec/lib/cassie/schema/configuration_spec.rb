@@ -1,13 +1,13 @@
 RSpec.describe Cassie::Configuration::Core do
   let(:mod) do
     Module.new do
-      extend Cassie::Migration::Configuration
+      extend Cassie::Schema::Configuration
     end
   end
 
   describe "paths" do
     it "has a default path for schema_structure" do
-      expect(mod.paths[:schema_structure]).to eq 'db/structure.cql'
+      expect(mod.paths[:schema_structure]).to eq 'db/cassandra/structure.cql'
     end
     it "allows setting values" do
       expect{ mod.paths[:schema_structure] = 'db/cassie.cql' }.to change{ mod.paths[:schema_structure] }.to 'db/cassie.cql'

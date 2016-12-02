@@ -638,9 +638,38 @@ By default, this works for ascending and descending orderings when paging in the
 
 Custom policies can be defined by setting `Query.partition_linker` for more complex schemas. See the `SimplePolicy` source for an example.
 
-#### Consistency configuration
 
-The [consistency level](http://datastax.github.io/ruby-driver/api/cassandra/#consistencies-constant) for a query is determined by your `Cassie::configuration` by default, falling to back to the `Cassandra` default if none is given.
+#### Connection options
+
+Options are searched for in the following order:
+
+1. the object instance value
+2. the class instance value
+3. the `Cassie` instance value
+4. the `Cassie::configuruation[:option]` value
+5. the `Cassandra::cluster` value (default cassandra driver value)
+
+Connection options include:
+
+* `keyspace`
+
+See the [Connection Readme](./lib/cassie/configuration/README.md#connection-options) for additional information. Cassie query superclasses include `Cassie::Connection`.
+
+#### Statement options
+
+Like connection options, statement options offer a similar fallback chain for flexibility.
+
+1. the object instance value
+2. the class instance value (e.g. the class inheriting from `Cassie::Query`, `Cassie::Modification`, etc)
+3. the superclass instance value (e.g. `Cassie::Query`, `Cassie::Modification`, etc)
+3. the `Cassie::Statment::default_foo` value (where foo is the option name)
+4. the `Cassandra::cluster` value (default cassandra driver value)
+
+Statement options include:
+
+* `consistency` [symbol](http://datastax.github.io/ruby-driver/api/cassandra/#consistencies-constant)
+* `limit` integer
+* `idempotent` boolean
 
 ```ruby
 Cassie.configuration[:consistency]
@@ -650,7 +679,7 @@ Cassie.cluster.instance_variable_get(:@execution_options).consistency
 #=> :one
 ```
 
-Cassie queries allow for a consistency level to be defined on the object, subclass, base class, and global levels. If none is found, it will default to the `cluster` default when the query is executed.
+See the examples below of setting the `consistency` option at various places.
 
 Object writer:
 ```ruby
@@ -689,24 +718,26 @@ Class writer
   consistency :quorum
 ```
 
-Cassie query classes
+`Cassie::Query` or `Cassie::Modificaton` superclass writer
 ```ruby
 # lib/tasks/interesting_task.rake
 require_relative "interesting_worker"
 
 task :interesting_task do
+  # All modification queries execute with :all consistency
   Cassie::Modification.consistency = :all
 
   InterestingWorker.new.perform
 end
 ```
 
-Cassie global default
+`Cassie` global default
 ```ruby
 # lib/tasks/interesting_task.rake
 require_relative "interesting_worker"
 
 task :interesting_task do
+  # All `Cassie` statements execute with :all consistency
   Cassie::Statements.default_consistency = :all
 
   InterestingWorker.new.perform
@@ -719,7 +750,7 @@ Cassie statements are set as [idempotent](http://datastax.github.io/ruby-driver/
 
 Mark queries that are not idempotent, so that the driver won't automatically retry for certain failure scenarios.
 
-Similar to other settings, there is a `Cassie::Statements.default_idempotency`, class level setting, and object level setting.
+Similar to other statement options, there is a `Cassie::Statements.default_idempotency`, class level setting, and object level setting.
 
 ```ruby
 class MyQuery < Cassie::Modification

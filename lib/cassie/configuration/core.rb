@@ -1,17 +1,22 @@
 require_relative 'loading'
 
 module Cassie::Configuration
-  #TODO: proper rdoc
-  # Extend a class with Core to enable configuration management
+  # Extend a class with Core to add configuration management
+  # methods and attributes
   module Core
     include Loading
 
-    attr_writer :keyspace
+    # The currently selected keyspace.
+    # If no keyspace has been explicitly set, then
+    # the default +:keyspace+ from {#configuration} is used.
+    attr_accessor :keyspace
 
-    def self.extended(extender)
+    def self.extended(extender) # @!visibility private
       extender.paths["cluster_configurations"] = "config/cassandra.yml"
     end
 
+    # The currently active environment.
+    # Used to select which configuration will be used
     def env
       @env ||= ActiveSupport::StringInquirer.new(ENV["CASSANDRA_ENV"] || ENV["RACK_ENV"] || "development")
     end
@@ -20,6 +25,10 @@ module Cassie::Configuration
       @env = ActiveSupport::StringInquirer.new(val)
     end
 
+    # Paths used for configuration loading.
+    #
+    # @return [Hash]
+    #   * +:cluster_configurations+ - The .yml file defining the configuration for your cluster for various environments.
     def paths
       @paths ||= {}.with_indifferent_access
     end

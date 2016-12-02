@@ -1,5 +1,6 @@
 require_relative 'support/seeds'
 require 'benchmark'
+require_relative 'allow_cassandra_connection'
 
 def red(message)
   "\e[1;31m#{message}\e[0m"
@@ -84,7 +85,3 @@ module Test
   end
   puts "(#{(time*1000).round(0)}ms) Set up Cassandra test data"
 end
-
-
-
-

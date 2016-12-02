@@ -61,7 +61,7 @@ class HelpfulCounter
 end
 ```
 
-Ignoring the likely irresponsible example query used -- The object falls back to using the `Cassie::keyspace` value by default.
+Ignoring the likely irresponsible example query used. The object falls back to using the `Cassie::keyspace` value by default.
 
 ```ruby
 Cassie.keyspace
@@ -76,7 +76,17 @@ object.user_count
 => 302525
 ```
 
-The keyspace can be set at the class level.
+Connection options follow the following lookup path:
+
+1. the object instance value
+2. the class instance value
+3. the `Cassie` instance value
+4. the `Cassie::configuruation[:option]` value
+5. the `Cassandra::cluster` value (default cassandra driver value)
+
+##### Examples:
+
+###### Set at the class level:
 
 ```ruby
 class Analytics::HelpfulCounter
@@ -102,7 +112,7 @@ object.user_count
 
 ```
 
-Or at the object level
+###### Set at the object level:
 
 ```ruby
 Cassie.keyspace

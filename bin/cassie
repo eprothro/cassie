@@ -76,7 +76,7 @@ def generate_config
 end
 
 def dump_structure
-  dumper = Cassie::Migration::StructureDumper.new
+  dumper = Cassie::Schema::StructureDumper.new
   dumper.dump
   puts "[#{green("✓")}] Cassandra schema written to #{dumper.destination_path}"
 
@@ -86,7 +86,7 @@ rescue => e
 end
 
 def load_structure
-  loader = Cassie::Migration::StructureLoader.new
+  loader = Cassie::Schema::StructureLoader.new
   loader.load
   puts "[#{green("✓")}] Cassandra schema loaded from #{loader.source_path}"
 
@@ -99,7 +99,7 @@ def tail_log
   runner = Cassie::Support::CommandRunner.new("which", ["cassandra"])
   runner.run!
 
-  bin_path = runner.output.gsub("\n", '')
+  bin_path = runner.output.tr("\n", '')
   log_path = bin_path.sub('bin/cassandra', 'logs/system.log')
   puts white("Tailing Cassandra system log, Ctrl-C to stop...")
   puts "  #{log_path}:\n\n"
@@ -115,36 +115,78 @@ end
 #   * insert initial version
 #   * dump structure
 def initialize_migrations
-  Cassie::Migration.initialize_versioning
-  puts "[#{green("✓")}] Versioned migrations initialized. Current version: #{Cassie::Migration.version_number}"
-rescue Cassie::Migration::AlreadyInitiailizedError
-  puts "[#{red('✘')}] Versioned migration metatdata already exists. Current version: #{Cassie::Migration.version_number}"
+  Cassie::Schema.initialize_versioning
+  puts "[#{green("✓")}] Versioned migrations initialized. Current version: #{Cassie::Schema.version_number}"
+rescue Cassie::Schema::AlreadyInitiailizedError
+  puts "[#{red('✘')}] Versioned migration metatdata already exists. Current version: #{Cassie::Schema.version_number}"
 rescue => e
   puts e.message
   exit(1)
 end
 
 def schema_history
-  print_versions(Cassie::Migration.versions)
-rescue Cassie::Migration::UninitializedError => e
+  print_versions(Cassie::Schema.versions)
+rescue Cassie::Schema::UninitializedError => e
   puts red(e.message)
 end
 
 def schema_version
-  print_versions([Cassie::Migration.version])
-rescue Cassie::Migration::UninitializedError => e
+  print_versions([Cassie::Schema.version])
+rescue Cassie::Schema::UninitializedError => e
   puts red(e.message)
+end
+
+def create_migration(name, bump_type)
+  version = Cassie::Schema.next_version(bump_type)
+  version.description = name
+  puts("Creating migration for schema version #{version.number}")
+  begin
+    writer = Cassie::Schema::Migration::Writer.new(version)
+    writer.write
+    rel_path = writer.filename.sub(Dir.pwd, "")
+    puts green("  create #{rel_path}")
+  rescue IOError => e
+    puts red(e.message)
+  end
+end
+
+def migrate(version)
+
+  migrator = Cassie::Schema::Migration::Migrator.new(version)
+
+  migrator.before_each = Proc.new do |migration, direction|
+    puts "-- Migragting #{migration.direction}: #{migration.version.number}"
+  end
+
+  migrator.after_each = Proc.new do |migration, duration|
+    puts "-- done (#{duration} ms)"
+  end
+
+  if migrator.migrations.count == 0
+    if migrator.target == migrator.current
+      puts "Already at #{migrator.target}, no migrations to process..."
+    else
+      puts "No migrations found to migrate to #{migrator.target}, staying at #{migrator.current}"
+    end
+  else
+    puts "Migrating #{migrator.direction} to schema version #{migrator.target.number}:"
+    migrator.migrate
+    puts "\nMigration complete. Schema is at #{migrator.target.number}"
+  end
 end
 
 def print_versions(versions)
   require 'terminal-table'
-  members = [:version_number, :description, :migrator, :migrated_at]
-  titles  = ['Version', 'Description', 'Migrated by', 'Migrated at']
+  members = [:number, :description, :migrator, :migrated_at]
+  titles  = ['Number', 'Description', 'Migrated by', 'Migrated at']
   table = Terminal::Table.new(headings:  titles)
+
   versions.each.with_index do |v, i|
-    v.version_number = "* #{v.version_number}" if i == 0
-    table.add_row(v.to_h.values_at(*members))
+    row = v.to_h.values_at(*members)
+    row[0] = "* #{row[0]}" if i == 0
+    table.add_row(row)
   end
+
   table.align_column(0, :right)
   puts table
 end
@@ -159,11 +201,17 @@ def green(message)
   "\e[1;32m#{message}\e[0m"
 end
 
-case ARGV[0]
+args = ARGV.dup.select{|a| a !~ /^--/ }
+opts = ARGV.dup.select{|a| a =~ /^--/ }
+cmd = args.delete_at(0)
+
+Cassie.logger.level = ::Logger::WARN unless opts.include?('--debug')
+
+case cmd
 when "start"
   start
 when "stop"
-  stop(ARGV.include?('--all'))
+  stop(opts.include?('--all'))
 when /kick|restart/
   kick
 when /tail|log/
@@ -180,6 +228,16 @@ when "schema:history"
   schema_history
 when "schema:version"
   schema_version
+when "migration:create"
+  bump = nil
+  bump = :minor if opts.delete('--minor')
+  bump = :major if opts.delete('--major')
+  bump = :patch if opts.delete('--patch')
+  bump = :build if opts.delete('--build')
+
+  create_migration(args.first, bump)
+when "migrate"
+  migrate(args.first)
 else
-  puts red("`#{ARGV[0]}` is not a supported command.")
+  puts red("`#{cmd}` is not a supported command.")
 end

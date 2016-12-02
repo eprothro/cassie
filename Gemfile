@@ -9,6 +9,7 @@ group :optional do
   gem 'pry',                        '>= 0',     platforms: :ruby
   gem 'gem-release',                '~> 0.7.4'
   gem 'benchmark-ips',              '>= 0'
+  gem "yard",                       "~> 0.9.8"
 end
 
 group :development, :test do
