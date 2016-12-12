@@ -23,7 +23,7 @@ RSpec.describe Cassie::ConnectionHandler::Sessions do
   end
   let(:default_keyspace){ "default_keyspace" }
   let(:cluster){double("Cassandra::Cluster", connect: session)}
-  let(:session){ double("Cassandra::Session") }
+  let(:session){ double("Cassandra::Session", keyspace: keyspace) }
   let(:keyspace){ "explicit_keyspace" }
 
   describe ".sessions" do

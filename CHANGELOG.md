@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Statement support for deleting specific columns
 
+### Fixed
+- Bug where instrumentation didn't report keyspace correctly on cassie.session.connect
+
 ## 1.0.0.beta.30
 
 ### Changed

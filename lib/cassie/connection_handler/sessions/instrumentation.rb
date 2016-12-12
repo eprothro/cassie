@@ -5,7 +5,9 @@ module Cassie::ConnectionHandler::Sessions
 
     def initialize_session(*args)
       Cassie.instrumenter.instrument("cassie.session.connect") do |payload|
-        super(*args)
+        super(*args).tap do |session|
+          payload[:keyspace] = session.keyspace
+        end
       end
     end
   end
