@@ -35,7 +35,7 @@ Tested against:
 Cassie provies database connection configuration (e.g. cluster and session) per environment. Support for a default YAML back-end is provided.
 
 ```bash
-$ cassie config:generate
+$ cassie confiugration:generate
 ```
 
 `Cassie::configurations` are loaded from this configuration file at runtime.
