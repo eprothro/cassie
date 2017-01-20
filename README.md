@@ -27,7 +27,7 @@ $ gem install cassie --pre
 
 Tested against:
 
-* Ruby: MRI 2.1, 2.2, 2.3, and JRuby 1.9
+* Ruby: MRI 2.2, 2.3, and JRuby 1.9
 * `cassandra-driver` 3.0
 
 ### Database Configuration
