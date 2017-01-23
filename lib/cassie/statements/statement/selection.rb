@@ -1,4 +1,5 @@
 require_relative 'limiting'
+require_relative 'allow_filtering'
 require_relative 'pagination'
 require_relative 'relations'
 require_relative 'ordering'
@@ -11,6 +12,7 @@ module Cassie::Statements::Statement
       include Relations
       include Ordering
       include Limiting
+      include AllowFiltering
       include Pagination
 
       @result_class = Cassie::Statements::Results::QueryResult
@@ -68,6 +70,7 @@ module Cassie::Statements::Statement
           #{where_str}
           #{build_order_str}
           #{build_limit_str}
+          #{build_allow_filtering_str}
       ).squish + ";"
     end
 

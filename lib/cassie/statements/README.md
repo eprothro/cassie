@@ -785,6 +785,32 @@ set_1 = query.fetch([1, 2, 3])
 set_2 = query.fetch([7, 8, 9, 10, 11, 12])
 ```
 
+#### Allowing Filtering
+
+For select statements, allowing filtering is supported.
+
+```ruby
+class IveReallyThoughtThisOutQuery < Cassie::Query
+
+  select_from :users_by_id
+
+  where :rank, :gt
+
+  attr_accessor :rank
+
+  allow_filtering
+end
+```
+
+Assuming `rank` is a field for which a ranging query requires [Cassandra filtering](http://www.datastax.com/dev/blog/allow-filtering-explained-2), the statement will now be valid.
+```
+query = IveReallyThoughtThisOutQuery.new(rank: rank)
+query.to_cql
+=> "SELECT * FROM users_by_id WHERE rank > 100 ALLOW FILTERING;"
+```
+
+Allowing filtering in production is usually a Bad Idea, unless you really are ok with Cassandra loading all CQL rows into memory before filtering down to the requested set.
+
 #### Custom queries
 
 For certain queries, it may be most effective to write CQL directly. The recommended way is to override `cql` and `params`.
