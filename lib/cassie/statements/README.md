@@ -489,7 +489,7 @@ UsersByUsernameQuery.new.fetch_first!(username: "eprothro").username
 #=> "eprothro"
 ```
 
-Most applications will want to override `build_result` to construct more useful domain objects
+Most applications will want to provide a `build_result` method to construct more useful domain objects
 
 ```ruby
 class UsersByUsernameQuery < Cassie::Query
@@ -509,7 +509,7 @@ UsersByUsernameQuery.new.fetch_first(username: "eprothro")
 #=> #<User:0x007fedec219cd8 @id=123, @username="eprothro">
 ```
 
-`build_results` may be overridden as well to define custom definition of the enumeration of rows returned from Cassandra.
+`build_results` may be provided as well to define custom definition of the enumeration of rows returned from Cassandra.
 
 #### Cursored paging
 
