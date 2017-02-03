@@ -9,8 +9,8 @@ module Cassie::Schema
            id timeuuid,
            number text,
            description text,
-           migrator text,
-           migrated_at timestamp,
+           executor text,
+           executed_at timestamp,
            PRIMARY KEY (bucket, id)
          ) WITH CLUSTERING ORDER BY (id DESC);
         )

@@ -7,8 +7,8 @@ module Cassie::Schema
       Version.new(row["number"],
                   row["description"],
                   row["id"],
-                  row["migrator"],
-                  row["migrated_at"])
+                  row["executor"],
+                  row["executed_at"])
     end
 
     def keyspace

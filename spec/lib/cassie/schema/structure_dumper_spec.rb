@@ -6,9 +6,9 @@ RSpec.describe Cassie::Schema::StructureDumper do
   let(:id){ Cassandra::TimeUuid::Generator.new.now }
   let(:number){ '0.1.2' }
   let(:description){ 'some description' }
-  let(:migrator){ 'eprothro' }
-  let(:migrated_at){ Time.now - rand(10000) }
-  let(:version){ Cassie::Schema::Version.new(number, description, id, migrator, migrated_at) }
+  let(:executor){ 'eprothro' }
+  let(:executed_at){ Time.now - rand(10000) }
+  let(:version){ Cassie::Schema::Version.new(number, description, id, executor, executed_at) }
   let(:versions){ [version] }
   before(:all) do
     Cassie::Schema::SelectVersionsQuery.include(Cassie::Testing::Fake::SessionMethods)
@@ -83,7 +83,7 @@ RSpec.describe Cassie::Schema::StructureDumper do
       expect(extract_cql_values(object.versions_insert_cql)['bucket']).to eq "0"
     end
     it "inserts for each element of versions" do
-      expect(object.versions_insert_cql).to match(/\(bucket, id, number, description, migrator, migrated_at\) VALUES/i)
+      expect(object.versions_insert_cql).to match(/\(bucket, id, number, description, executor, executed_at\) VALUES/i)
     end
     it "inserts id" do
       expect(extract_cql_values(object.versions_insert_cql)['id']).to eq version.id.to_s
@@ -94,12 +94,12 @@ RSpec.describe Cassie::Schema::StructureDumper do
     it "inserts description as string" do
       expect(extract_cql_values(object.versions_insert_cql)['description']).to eq "\'#{version.description}\'"
     end
-    it "inserts migrator as string" do
-      expect(extract_cql_values(object.versions_insert_cql)['migrator']).to eq "\'#{version.migrator}\'"
+    it "inserts executor as string" do
+      expect(extract_cql_values(object.versions_insert_cql)['executor']).to eq "\'#{version.executor}\'"
     end
-    xit "inserts migrated_at as milliseconds since epoch UTC" do
-      cql_ms_int = extract_cql_values(object.versions_insert_cql)['migrated_at'].to_i
-      expect(migrated_at - Time.at(cql_ms_int / 1000.0)).to be < 0.001
+    xit "inserts executed_at as milliseconds since epoch UTC" do
+      cql_ms_int = extract_cql_values(object.versions_insert_cql)['executed_at'].to_i
+      expect(executed_at - Time.at(cql_ms_int / 1000.0)).to be < 0.001
     end
 
     context "when versions are empty" do

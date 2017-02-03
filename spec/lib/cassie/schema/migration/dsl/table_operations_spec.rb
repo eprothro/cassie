@@ -1,10 +1,9 @@
-require 'support/migrations'
+require 'support/versions'
 Cassie::Schema::Migration.announcing_stream = StringIO.new
 
 RSpec.describe Cassie::Schema::Migration::DSL::TableOperations do
   let(:klass){ Cassie::Schema::Migration }
-  let(:object){ klass.new(version) }
-  let(:version){ Cassie::Schema::Version.new('0') }
+  let(:object){ klass.new }
 
   describe "create_column" do
     let(:table){ 'table_name' }

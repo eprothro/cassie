@@ -1,5 +1,5 @@
-RSpec.describe Cassie::Schema::Migration::Writer do
-  let(:klass){ Cassie::Schema::Migration::Writer }
+RSpec.describe Cassie::Schema::VersionWriter do
+  let(:klass){ Cassie::Schema::VersionWriter }
   let(:object){ klass.new(version, buffer) }
   let(:buffer){ StringIO.new }
   let(:version){ Cassie::Schema::Version.new('1') }
@@ -7,20 +7,20 @@ RSpec.describe Cassie::Schema::Migration::Writer do
 
   describe "class_name" do
     it "always outputs 4 parts" do
-      expect(object.class_name).to eq("Migration_1_0_0_0")
+      expect(object.version.migration_class_name).to eq("Migration_1_0_0_0")
     end
   end
 
   describe "write" do
     let(:migration_klass) do
       object.write
-      Object.send(:remove_const, object.class_name.to_sym) if Object.constants.include?(object.class_name.to_sym)
+      Object.send(:remove_const, version.migration_class_name.to_sym) if Object.constants.include?(version.migration_class_name.to_sym)
       eval(buffer.string)
-      eval(object.class_name)
+      eval(version.migration_class_name)
     end
     let(:migration){ migration_klass.new }
     it "defines ruby class in buffer" do
-      expect(migration_klass.name).to eq(object.class_name)
+      expect(migration_klass.name).to eq(version.migration_class_name)
     end
     it "defines ruby up method in buffer" do
       expect(migration).to respond_to(:up)

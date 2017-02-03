@@ -7,8 +7,8 @@ module Cassie::Schema
     set :id
     set :number
     set :description
-    set :migrator
-    set :migrated_at
+    set :executor
+    set :executed_at
 
     map_from :version
 

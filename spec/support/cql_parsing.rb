@@ -12,7 +12,7 @@ def extract_cql_values(_cql)
     end
   when /UPDATE/
   when /INSERT/
-    # INSERT INTO cassie_schema.versions (id, number, description, migrator, migrated_at) VALUES (09b5cdce-744d-11e6-935f-79233d2548be, '0.1.2', 'some description', 'eprothro', 1473174464000);
+    # INSERT INTO cassie_schema.versions (id, number, description, executor, executed_at) VALUES (09b5cdce-744d-11e6-935f-79233d2548be, '0.1.2', 'some description', 'eprothro', 1473174464000);
     attrs = _cql.match(/\((.+)\) VALUES/i)[1].split(', ')
     values = _cql.match(/VALUES \((.+)\)/i)[1].split(', ')
   else

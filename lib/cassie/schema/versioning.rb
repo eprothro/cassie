@@ -1,4 +1,8 @@
-require 'etc'
+require_relative 'migration'
+require_relative 'version_writer'
+require_relative 'version_file_loader'
+require_relative 'version_object_loader'
+require_relative 'migrator'
 
 module Cassie::Schema
   require_relative 'version'
@@ -7,10 +11,6 @@ module Cassie::Schema
   class UninitializedError < StandardError; end
 
   module Versioning
-    def version_number
-      return nil unless version
-      version.number
-    end
 
     def version
       SelectVersionsQuery.new.fetch_first || Version.new('0')
@@ -18,10 +18,8 @@ module Cassie::Schema
       raise uninitialized_error
     end
 
-    def versions
-      SelectVersionsQuery.new.fetch
-    rescue Cassandra::Errors::InvalidError
-      raise uninitialized_error
+    def applied_versions
+      @applied_versions ||= load_applied_versions
     end
 
     def initialize_versioning
@@ -34,20 +32,49 @@ module Cassie::Schema
       Cassie.cluster.keyspaces.map(&:name).any?{|k| k == Cassie::Schema.schema_keyspace}
     end
 
-    def record_migration(migration)
-      version = build_version(migration.version.number, migration.version.description)
+    def record_version(version)
       InsertVersionQuery.new(version: version).execute
     end
 
-    def forget_migration(migration)
-      id = versions.find{|v| v == migration.version}.id
-      DeleteVersionQuery.new(id: id).execute
+    def forget_version(version)
+      DeleteVersionQuery.new(id: version.id).execute
+    end
+
+    def migration_files
+      Dir[root.join(paths["migrations_directory"], "[0-9]*_*.rb")]
+    end
+
+    def local_versions
+      @local_versions ||= load_local_versions
+    end
+
+    def next_local_version(bump_type=nil)
+      version = local_versions.max || Version.new('0')
+      version.next(bump_type)
     end
 
     protected
 
     def default_version
       '0.0.1.0'
+    end
+
+    def load_applied_versions
+      database_versions.tap do |versions|
+        versions.each{|v| VersionObjectLoader.new(v).load }
+      end
+    rescue Cassandra::Errors::InvalidError
+      raise uninitialized_error
+    end
+
+    def database_versions
+      SelectVersionsQuery.new.fetch
+    end
+
+    def load_local_versions
+      migration_files.map do |filename|
+        VersionFileLoader.new(filename).load
+      end.sort!
     end
 
     def version_exists?
@@ -60,13 +87,6 @@ module Cassie::Schema
       !!SelectVersionsQuery.new(limit: 1).fetch
     rescue Cassandra::Errors::InvalidError
       false
-    end
-
-    def build_version(number, description)
-      id = Cassandra::TimeUuid::Generator.new.now
-      migrator = Etc.getlogin rescue '<unknown>'
-      migrated_at = Time.now
-      Version.new(number, description, id, migrator, migrated_at)
     end
 
     def create_schema_keyspace

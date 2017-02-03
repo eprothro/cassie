@@ -6,16 +6,16 @@ module Cassie::Schema
     attr_accessor :id,
                   :parts,
                   :description,
-                  :migrator,
-                  :migrated_at
+                  :executor,
+                  :executed_at
 
 
-    def initialize(version_number, description=nil, id=nil, migrator=nil, migrated_at=nil)
+    def initialize(version_number, description=nil, id=nil, executor=nil, executed_at=nil)
       @parts = build_parts(version_number)
       @description    = description
       @id             = id
-      @migrator       = migrator
-      @migrated_at    = migrated_at
+      @executor       = executor
+      @executed_at    = executed_at
     end
 
     def number
@@ -38,7 +38,7 @@ module Cassie::Schema
       parts[3].to_i
     end
 
-    def next_version(bump=nil)
+    def next(bump=nil)
       bump ||= :patch
       bump_index = PARTS.index(bump.to_sym)
 
@@ -62,13 +62,28 @@ module Cassie::Schema
       end
     end
 
+    def migration_class_name
+      "Migration_#{major}_#{minor}_#{patch}_#{build}"
+    end
+
+    # The migration associated with this version
+    # @return nil if the expected migration class is not defined
+    # @!parse attr_reader :migration
+    def migration
+      @migration ||= begin
+        migration_class_name.constantize.new
+      rescue NameError
+        nil
+      end
+    end
+
     def to_h
       {
         id: id,
         number: number,
         description: description,
-        migrator: migrator,
-        migrated_at: migrated_at
+        executor: executor,
+        executed_at: executed_at
       }
     end
 
@@ -79,7 +94,7 @@ module Cassie::Schema
     protected
 
     def build_parts(version_number)
-      included = version_number.split('.').map{|p| p.to_i}
+      included = version_number.to_s.split('.').map{|p| p.to_i}
       included + [0]*(PARTS.length - included.length)
     end
   end

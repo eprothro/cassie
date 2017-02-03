@@ -1,23 +1,22 @@
 require 'fileutils'
 
 module Cassie::Schema
-  class Migration::Writer
+  class VersionWriter
     attr_reader :io
     attr_reader :version
+    attr_accessor :migration_contents
 
     def initialize(version, io=nil)
       @version = version
+      @migration_contents = default_migration_contents
       @io = io
+      ensure_dir_exist
     end
 
     def write
       with_io do |io|
-        io << contents
+        io << migration_contents
       end
-    end
-
-    def class_name
-      "Migration_#{version.major}_#{version.minor}_#{version.patch}_#{version.build}"
     end
 
     def with_io
@@ -25,7 +24,6 @@ module Cassie::Schema
         yield io
       else
         ensure_unique_version
-        ensure_dir_exist
         File.open(filename, 'w'){ |file| yield file }
       end
     end
@@ -42,6 +40,10 @@ module Cassie::Schema
       "#{version_prefix}#{description_suffix}.rb"
     end
 
+    def existing_file
+      Dir.glob("#{directory}/#{version_prefix}*.rb").first
+    end
+
     protected
 
     def ensure_dir_exist
@@ -49,14 +51,14 @@ module Cassie::Schema
     end
 
     def ensure_unique_version
-      if match = Dir.glob("#{directory}/#{version_prefix}*.rb").first
-        raise IOError.new("A migration already exists for #{version.parts.join('.')} in #{match}. Try bumping the version.")
+      if existing_file
+        raise IOError.new("A migration already exists for #{version.parts.join('.')} in #{existing_file}. Try bumping the version.")
       end
     end
 
-    def contents
+    def default_migration_contents
       <<-EOS
-class #{class_name} < Cassie::Schema::Migration
+class #{version.migration_class_name} < Cassie::Schema::Migration
   def up
     # Code to execute when executing this migration
   end

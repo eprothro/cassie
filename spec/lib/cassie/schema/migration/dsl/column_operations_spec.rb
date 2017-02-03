@@ -1,9 +1,8 @@
-require 'support/migrations'
+require 'support/versions'
 
 RSpec.describe Cassie::Schema::Migration::DSL::ColumnOperations do
   let(:klass){ Cassie::Schema::Migration }
-  let(:object){ klass.new(version) }
-  let(:version){ Cassie::Schema::Version.new('0') }
+  let(:object){ klass.new }
 
   describe "add_column" do
     let(:table){ 'table_name' }

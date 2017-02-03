@@ -30,18 +30,24 @@ RSpec.describe Cassie::Schema::Version do
     end
   end
 
-  describe "next_version" do
+  describe "next" do
     it "adds 1 to patch" do
-      expect(object.next_version.number).to eq("0.1.3.0")
+      expect(object.next.number).to eq("0.1.3.0")
     end
     it "adds 1 to minor" do
-      expect(object.next_version(:minor).number).to eq("0.2.0.0")
+      expect(object.next(:minor).number).to eq("0.2.0.0")
     end
     it "adds 1 to major" do
-      expect(object.next_version(:major).number).to eq("1.0.0.0")
+      expect(object.next(:major).number).to eq("1.0.0.0")
     end
     it "adds 1 to build" do
-      expect(object.next_version(:build).number).to eq("0.1.2.1")
+      expect(object.next(:build).number).to eq("0.1.2.1")
+    end
+  end
+
+  describe "migration_class_name" do
+    it "always outputs 4 parts" do
+      expect(object.migration_class_name).to eq("Migration_0_1_2_0")
     end
   end
 end

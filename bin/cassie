@@ -1,5 +1,9 @@
 #! ruby
 require_relative '../lib/cassie'
+begin
+  require 'byebug'
+rescue LoadError
+end
 
 def start
   runner = Cassie::Support::CommandRunner.new("cassandra")
@@ -116,9 +120,9 @@ end
 #   * dump structure
 def initialize_migrations
   Cassie::Schema.initialize_versioning
-  puts "[#{green("✓")}] Versioned migrations initialized. Current version: #{Cassie::Schema.version_number}"
+  puts "[#{green("✓")}] Versioned migrations initialized. Current version: #{Cassie::Schema.version}"
 rescue Cassie::Schema::AlreadyInitiailizedError
-  puts "[#{red('✘')}] Versioned migration metatdata already exists. Current version: #{Cassie::Schema.version_number}"
+  puts "[#{red('✘')}] Versioned migration metatdata already exists. Current version: #{Cassie::Schema.version}"
 rescue => e
   puts e.message
   exit(1)
@@ -137,11 +141,11 @@ rescue Cassie::Schema::UninitializedError => e
 end
 
 def create_migration(name, bump_type)
-  version = Cassie::Schema.next_version(bump_type)
+  version = Cassie::Schema.next_local_version(bump_type)
   version.description = name
   puts("Creating migration for schema version #{version.number}")
   begin
-    writer = Cassie::Schema::Migration::Writer.new(version)
+    writer = Cassie::Schema::VersionWriter.new(version)
     writer.write
     rel_path = writer.filename.sub(Dir.pwd, "")
     puts green("  create #{rel_path}")
@@ -150,34 +154,49 @@ def create_migration(name, bump_type)
   end
 end
 
+def import_schema(keyspace)
+  Cassie::Schema::Migration::CassandraImporter.new
+
+  importer.import
+end
+
+def import_migrations(path)
+  require_relative '../lib/cassie/schema/cassandra_migrations/importer'
+
+  importer = Cassie::Schema::CassandraMigrations::Importer.new(path)
+
+  importer.import
+
+end
+
 def migrate(version)
 
-  migrator = Cassie::Schema::Migration::Migrator.new(version)
+  migrator = Cassie::Schema::Migrator.new(version)
 
-  migrator.before_each = Proc.new do |migration, direction|
-    puts "-- Migragting #{migration.direction}: #{migration.version.number}"
+  migrator.before_each = Proc.new do |version, direction|
+    puts "-- Migragting #{direction}: #{version}"
   end
 
   migrator.after_each = Proc.new do |migration, duration|
     puts "-- done (#{duration} ms)"
   end
 
-  if migrator.migrations.count == 0
-    if migrator.target == migrator.current
-      puts "Already at #{migrator.target}, no migrations to process..."
+  if migrator.commands.count == 0
+    if migrator.target_version == migrator.current_version
+      puts "Already at #{migrator.target_version}, no migrations to process..."
     else
-      puts "No migrations found to migrate to #{migrator.target}, staying at #{migrator.current}"
+      puts "No migrations found to migrate to #{migrator.target_version}, staying at #{migrator.current_version}"
     end
   else
-    puts "Migrating #{migrator.direction} to schema version #{migrator.target.number}:"
+    puts "Migrating #{migrator.direction} to schema version #{migrator.target_version}:"
     migrator.migrate
-    puts "\nMigration complete. Schema is at #{migrator.target.number}"
+    puts "\nMigration complete. Schema is at #{migrator.target_version}"
   end
 end
 
 def print_versions(versions)
   require 'terminal-table'
-  members = [:number, :description, :migrator, :migrated_at]
+  members = [:number, :description, :executor, :executed_at]
   titles  = ['Number', 'Description', 'Migrated by', 'Migrated at']
   table = Terminal::Table.new(headings:  titles)
 
@@ -236,8 +255,12 @@ when "migration:create"
   bump = :build if opts.delete('--build')
 
   create_migration(args.first, bump)
-when "migrate"
+when /(schema:)?migrate/
   migrate(args.first)
+when /schema:import/
+  import_schema(args.first)
+when /migrations:import/
+  import_migrations(args.first)
 else
   puts red("`#{cmd}` is not a supported command.")
 end
