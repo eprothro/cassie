@@ -163,7 +163,7 @@ INFO  [main] 2016-09-23 11:18:05,344 Server.java:160 - Starting listening for CQ
 INFO  [main] 2016-09-23 11:18:05,407 CassandraDaemon.java:477 - Not starting RPC server as requested. Use JMX (StorageService->startRPCServer()) or nodetool (enablethrift) to start it
 ```
 
-### Versioned Migrations
+### Versioned Schema Migrations
 
 Cassie allows you to migrate between schema states using semantically versioned, incremental mutations.
 
