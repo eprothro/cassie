@@ -1,11 +1,11 @@
-module Cassie::Migration
+module Cassie::Schema
   class InsertVersionQuery < Cassie::Modification
 
-    insert_into Cassie::Migration.versions_table
+    insert_into Cassie::Schema.versions_table
 
     set :bucket
     set :id
-    set :version_number
+    set :number
     set :description
     set :migrator
     set :migrated_at
@@ -17,7 +17,7 @@ module Cassie::Migration
     end
 
     def keyspace
-      Cassie::Migration.schema_keyspace
+      Cassie::Schema.schema_keyspace
     end
   end
 end

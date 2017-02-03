@@ -1,18 +1,18 @@
 require 'support/cql_parsing'
 
-RSpec.describe Cassie::Migration::StructureDumper do
-  let(:klass){ Cassie::Migration::StructureDumper  }
+RSpec.describe Cassie::Schema::StructureDumper do
+  let(:klass){ Cassie::Schema::StructureDumper  }
   let(:object) { klass.new }
   let(:id){ Cassandra::TimeUuid::Generator.new.now }
-  let(:version_number){ '0.1.2' }
+  let(:number){ '0.1.2' }
   let(:description){ 'some description' }
   let(:migrator){ 'eprothro' }
   let(:migrated_at){ Time.now - rand(10000) }
-  let(:version){ Cassie::Migration::Version.new(id, version_number, description, migrator, migrated_at) }
+  let(:version){ Cassie::Schema::Version.new(number, description, id, migrator, migrated_at) }
   let(:versions){ [version] }
   before(:all) do
-    Cassie::Migration::SelectVersionsQuery.include(Cassie::Testing::Fake::SessionMethods)
-    Cassie::Migration::InsertVersionQuery.include(Cassie::Testing::Fake::SessionMethods)
+    Cassie::Schema::SelectVersionsQuery.include(Cassie::Testing::Fake::SessionMethods)
+    Cassie::Schema::InsertVersionQuery.include(Cassie::Testing::Fake::SessionMethods)
   end
 
   describe "dump" do
@@ -46,7 +46,7 @@ RSpec.describe Cassie::Migration::StructureDumper do
   describe "versions" do
     let(:rows){ versions.map(&:to_h) }
     let(:versions_query) do
-      q = Cassie::Migration::SelectVersionsQuery.new
+      q = Cassie::Schema::SelectVersionsQuery.new
       q.session.rows = rows
       q
     end
@@ -83,13 +83,13 @@ RSpec.describe Cassie::Migration::StructureDumper do
       expect(extract_cql_values(object.versions_insert_cql)['bucket']).to eq "0"
     end
     it "inserts for each element of versions" do
-      expect(object.versions_insert_cql).to match(/\(bucket, #{version.members.map(&:to_s).join(', ')}\) VALUES/i)
+      expect(object.versions_insert_cql).to match(/\(bucket, id, number, description, migrator, migrated_at\) VALUES/i)
     end
     it "inserts id" do
       expect(extract_cql_values(object.versions_insert_cql)['id']).to eq version.id.to_s
     end
     it "inserts version number as string" do
-      expect(extract_cql_values(object.versions_insert_cql)['version_number']).to eq "\'#{version.version_number}\'"
+      expect(extract_cql_values(object.versions_insert_cql)['number']).to eq "\'#{version.number}\'"
     end
     it "inserts description as string" do
       expect(extract_cql_values(object.versions_insert_cql)['description']).to eq "\'#{version.description}\'"

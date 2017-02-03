@@ -1,13 +1,13 @@
-module Cassie::Migration
+module Cassie::Schema
   class CreateVersionsTableQuery < Cassie::Definition
     self.prepare = false
 
     def statement
       %(
-         CREATE TABLE #{Cassie::Migration.versions_table} (
+         CREATE TABLE #{Cassie::Schema.versions_table} (
            bucket int,
            id timeuuid,
-           version_number text,
+           number text,
            description text,
            migrator text,
            migrated_at timestamp,
@@ -17,7 +17,7 @@ module Cassie::Migration
     end
 
     def keyspace
-      Cassie::Migration.schema_keyspace
+      Cassie::Schema.schema_keyspace
     end
   end
 end

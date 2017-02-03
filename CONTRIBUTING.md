@@ -37,6 +37,31 @@ Please do add them if they seem like a good idea! If you add one and it fails, p
 
 ## Working with Changes
 
+### Running against local source
+
+Load a console with `cassie` source loaded to work with Cassie directly in development.
+
+```
+bin/console
+```
+```
+irb(main):001:0> Cassie::VERSION
+=> "1.0.0.beta.30-dev"
+```
+
+Run the executable with local source:
+
+```
+bin/run schema:version
+```
+```
++-----------+-------------+-------------+---------------------------+
+| Number    | Description | Migrated by | Migrated at               |
++-----------+-------------+-------------+---------------------------+
+| * 0.2.0.0 | test        | eprothro    | 2017-02-02 16:21:39 -0600 |
++-----------+-------------+-------------+---------------------------+
+```
+
 ### Installing your changes locally
 
 Run `rake install` to:
