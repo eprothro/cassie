@@ -5,7 +5,7 @@
 [![Inline Docs](http://inch-ci.org/github/eprothro/cassie.svg?branch=master)](http://www.rubydoc.info/github/eprothro/cassie/master)
 
 
-Cassie provides ruby application support for Apache Cassandra. It provides components that most applications will need that are of scope of the official `cassandra-driver`, including:
+Cassie provides ruby application support for Apache Cassandra. It provides components that most applications will need that are out of scope of the official `cassandra-driver`, including:
 
 * Database configuration
 * Cluster/session management
