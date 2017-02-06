@@ -4,15 +4,21 @@
 [![Build Status](https://travis-ci.org/eprothro/cassie.svg?branch=master)](https://travis-ci.org/eprothro/cassie)
 
 
-Cassie provides support for the components most applications need to work with a Cassandra persistence layer:
+Cassie provides ruby application support for Apache Cassandra. It provides components that most applications will need that are of scope of the official `cassandra-driver`, including:
 
-* Database configuration and efficient session management
+* Database configuration
+* Cluster/session management
+* Cassandra server command helpers
 * Versioned schema migrations
-* Query classes
+* Query classes and DSL
 * Test harnessing
 
-Each component is designed to be abstract. A given application may only use `Cassie::Connection` and nothing else.
-Cassie attempts to support use cases such as that in a lightweight and straightforward manner.
+Each of these components are designed to be used independently or together in a ruby application. If you want to manage your own configuration, use Cassie for session management, and some other gem for your queries -- great!
+
+##### Tested against:
+
+* Ruby: MRI 2.2, 2.3, and JRuby 1.9
+* `cassandra-driver` 3.0
 
 ### Installation
 
@@ -24,11 +30,6 @@ or
 ```bash
 $ gem install cassie --pre
 ```
-
-Tested against:
-
-* Ruby: MRI 2.2, 2.3, and JRuby 1.9
-* `cassandra-driver` 3.0
 
 ### Database Configuration
 
