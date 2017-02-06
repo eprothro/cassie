@@ -174,18 +174,21 @@ Schema Version information is stored in Cassandra persistence, in the `cassie_sc
 
 #### Tasks
 
-`* = TODO`
+`* = Not yet implemented`
 
 | Task | Description |
 | --- | --- |
+| migrations:import | Import existing `cassandra_migrations` migration files and convert to semantic versioning |
 | migration:create | Generates an empty migration file prefixed with the next semantic version number |
 | migrate | Migrates the schema by running the `up` methods in any migrations starting after the current schema version |
-| *migrate:reset | reset and migrate |
-| *migrations:initialize | Create an initial migration based on the current Cassandra non-system schema |
-| *migrations:import | Import existing `cassandra_migrations` migration files and convert to semantic versioning |
-| *drop | drop all keyspace(s) |
+| *migrate:reset | runs schema:reset and migrate |
 | schema:version | Print the current schema version information for the Cassandra cluster |
 | schema:history | Print the the historical version information the current Cassandra cluster state |
+| *schema:status | Print the the migration status for each local migration (up/down) |
+| *schema:load | Loads current schema from structure.cql |
+| *schema:drop | drop keyspace(s) |
+| *schema:reset | runs schema:drop and schema:load|
+| *schema:import | Create an initial migration based on the current Cassandra non-system schema |
 | structure:dump | Dumps the schema for all non-system keyspaces in CQL format (`db/cassandra/structure.cql` by default) |
 | structure:load | Creates the schema by executing the CQL schema in the structure file (`db/cassandra/structure.cql` by default) |
 
