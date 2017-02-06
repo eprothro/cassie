@@ -16,5 +16,4 @@ group :development, :test do
   gem 'rspec',                      '~> 3.5'
   gem 'codeclimate-test-reporter',  '~> 0.6.0'
   gem 'simplecov',                  '~> 0.12.0'
-  gem 'rake',                       '~> 11.3'
 end
