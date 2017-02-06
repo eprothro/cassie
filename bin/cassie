@@ -155,7 +155,7 @@ def create_migration(name, bump_type)
 end
 
 def import_schema(keyspace)
-  Cassie::Schema::Migration::CassandraImporter.new
+  Cassie::Schema::Migration::CassandraImporter.new(keyspace)
 
   importer.import
 end
@@ -177,7 +177,7 @@ def migrate(version)
     puts "-- Migragting #{direction}: #{version}"
   end
 
-  migrator.after_each = Proc.new do |migration, duration|
+  migrator.after_each = Proc.new do |_migration, duration|
     puts "-- done (#{duration} ms)"
   end
 

@@ -1,5 +1,7 @@
 module Cassie::Support
   class StatementParser
+    QUOTED_TYPES = [:date, :time, :text, :timestamp, :inet, :ascii].freeze
+
     attr_reader :statement
 
     def initialize(statement)
@@ -24,7 +26,7 @@ module Cassie::Support
       params_types.map.with_index do |type, i|
         cassandra_param = type.new(params[i])
         quoted_val = if QUOTED_TYPES.include? type.kind
-          "'#{cassandra_param.to_s}'"
+          "'#{cassandra_param}'"
         else
           cassandra_param.to_s
         end
@@ -33,9 +35,5 @@ module Cassie::Support
       end
       cql
     end
-
-    protected
-
-    QUOTED_TYPES = [:date, :time, :text, :timestamp, :inet, :ascii].freeze
   end
 end

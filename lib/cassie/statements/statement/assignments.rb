@@ -45,7 +45,6 @@ module Cassie::Statements::Statement
     end
 
     def build_update_and_params
-      cql = ""
       arguments = []
       assignment_strings = []
 

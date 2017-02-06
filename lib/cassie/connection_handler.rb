@@ -11,10 +11,11 @@ module Cassie
     include Cluster
     include Sessions
 
-    def self.extended(extender)
-      #TODO: raise if extender doesn't
-      #      respond to configuration
-      #      and keyspace
-    end
+    #TODO: raise if extender doesn't
+    #      respond to configuration
+    #      and keyspace
+    # def self.extended(extender)
+
+    # end
   end
 end

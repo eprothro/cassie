@@ -32,7 +32,7 @@ module Cassie::Configuration
       msg = "Could not load cassandra cluster configurations. "
       msg += "No cluster configurations exists at #{path}.\n"
       msg += generation_instructions
-      msg += ", or configure the correct path via Cassie::Configuration.paths['cluster_configurations'] = <path>."
+      msg + ", or configure the correct path via Cassie::Configuration.paths['cluster_configurations'] = <path>."
     end
 
     def generation_instructions

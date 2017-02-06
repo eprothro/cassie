@@ -6,7 +6,7 @@ module Cassie::Testing::Fake
       @statement = statement
     end
 
-    def bind(params)
+    def bind(_params)
       statement
     end
 

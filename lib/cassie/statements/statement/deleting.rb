@@ -64,7 +64,7 @@ module Cassie::Statements::Statement
     end
 
     def build_delete_clause
-      str = if columns.empty?
+      if columns.empty?
         ''
       else
         columns.join(', ')
