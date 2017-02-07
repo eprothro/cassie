@@ -1,7 +1,7 @@
 namespace :cassie do
   desc "Tail the cassandra server logs"
   task :tail do
-    runner = Cassie::Support::CommandRunner.new("which", ["cassandra"])
+    runner = Cassie::Support::SystemCommand.new("which", ["cassandra"])
     runner.run!
 
     bin_path = runner.output.tr("\n", '')
@@ -10,7 +10,7 @@ namespace :cassie do
     puts "  #{log_path}:\n\n"
 
     args = ['-f', log_path, '>', '/dev/tty']
-    runner = Cassie::Support::CommandRunner.new("tail", args)
+    runner = Cassie::Support::SystemCommand.new("tail", args)
     runner.run!
   end
 end

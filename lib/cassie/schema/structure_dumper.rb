@@ -18,7 +18,7 @@ module Cassie::Schema
     def structure
       @structure ||= begin
         args = ["-e", "'DESCRIBE SCHEMA'"]
-        runner = Cassie::Support::CommandRunner.new("cqlsh", args)
+        runner = Cassie::Support::SystemCommand.new("cqlsh", args)
         runner.run
 
         raise runner.failure_message unless runner.success?

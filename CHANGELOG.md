@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Support for schema migrations. See the [Migrations README](./lib/cassie/schema/README.md#readme) for more on features and usage.
 
+### Changed
+- Cassie::Support::SystemCommand is now Cassie::Support::SystemCommand
+- Cassie::Support::SystemCommand#run! is now Cassie::Support::SystemCommand.succeed
 
 ## 1.0.0.beta.33
 
@@ -60,7 +63,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 1.0.0.beta.25
 
 ### Added
-- `Cassie::Support::CommandRunner#run!`
+- `Cassie::Support::SystemCommand#run!`
 - support for statement idempotency and type hinting (Selections default to idempotent)
 - Cassie::Statement `execute!` helper that raises if execution fails
 

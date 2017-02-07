@@ -9,7 +9,7 @@ module Cassie::Schema
 
   def load
     args = ["-f", source_path]
-    runner = Cassie::Support::CommandRunner.new("cqlsh", args)
+    runner = Cassie::Support::SystemCommand.new("cqlsh", args)
 
     runner.run
     raise runner.failure_message unless runner.success?
