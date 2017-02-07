@@ -1,6 +1,7 @@
 namespace :cassie do
   desc "Tail the cassandra server logs"
   task :tail do
+    include Cassie::Tasks::IO
     runner = Cassie::Support::SystemCommand.new("which", ["cassandra"])
     runner.run!
 
