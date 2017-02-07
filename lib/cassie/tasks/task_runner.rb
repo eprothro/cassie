@@ -3,15 +3,13 @@ module Cassie
     class TaskRunner
 
       def run_command(args)
-        args = args.dup.select{|a| a !~ /^--/ }
-        opts = args.dup.select{|a| a =~ /^--/ }
         cmd = args.delete_at(0)
 
-        Cassie.logger.level = ::Logger::WARN unless opts.include?('--debug')
+        Cassie.logger.level = ::Logger::WARN unless args.include?('--debug')
 
         task = "cassie:#{cmd}"
         if Rake::Task.task_defined?(task)
-          Rake::Task[task].invoke(args, opts)
+          Rake::Task[task].invoke
         else
           puts "'#{cmd}' is not a supported command.\n\n"
           print_documentation
