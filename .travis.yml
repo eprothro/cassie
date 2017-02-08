@@ -1,5 +1,8 @@
 language: ruby
-before_install: gem install bundler -v 1.13.7
+before_install:
+  - gem install bundler -v 1.13.7
+after_success:
+  - bundle exec codeclimate-test-reporter
 sudo: false
 bundler_args: --without optional
 rvm:
