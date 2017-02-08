@@ -23,15 +23,15 @@ module Cassie
   require_relative 'cassie/modification'
   require_relative 'cassie/schema'
 
-  # @!parse extend Configuration::Core
-  # @!parse extend ConnectionHandler
   extend Configuration::Core
   extend ConnectionHandler
 
+  # Logger used for logging by Cassandra instrumentation
   def self.logger
     Logger.logger
   end
 
+  # Assigns a custom logger for use by Cassandra instrumentation
   def self.logger=(logger)
     Logger.logger = logger
   end

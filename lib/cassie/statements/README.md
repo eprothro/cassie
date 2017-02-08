@@ -16,7 +16,9 @@ Cassie.insert(:users_by_username,
               "id = #{some_id}",
               username: some_username)
 ```
+
 or
+
 ```
 Cassie.select_from(:table)
       .where(id: some_id)
@@ -24,6 +26,7 @@ Cassie.select_from(:table)
 ```
 
 Queries defined on the fly like this tend to create debt for an application in the long term. They:
+
   * create gaps in test coverage
   * lack clear documentation
   * resist refactoring
@@ -327,6 +330,7 @@ which is the same as
 
   select count
 ```
+
 ```
 #=> SELECT COUNT(*) FROM posts_by_author;
 ```
@@ -339,9 +343,11 @@ Aliasing is supported with the `as` option.
   select ttl(:popular)
   select writetime(:popular), as: :created_at
 ```
+
 ```
 #=> SELECT id, TTL(popular), WRITETIME(popular) AS created_at FROM posts_by_author;
 ```
+
 Arbitrary strings are supported as well in case the DSL gets in the way.
 
 ```ruby
@@ -350,6 +356,7 @@ Arbitrary strings are supported as well in case the DSL gets in the way.
   select 'cowboy, coder'
 ```
 ```
+
 #=> SELECT cowboy, coder FROM posts_by_author;
 ```
 
@@ -362,6 +369,7 @@ By default, all columns for specified CQL rows will be deleted. Identify a subse
   column :nickname
   where :id, :eq
 ```
+
 ```
 #=> DELETE nickname FROM authors_by_id where id = 123;
 ```
@@ -378,6 +386,7 @@ query.result.class
 ```
 
 The result lazily enumerates domain objects
+
 ```ruby
 query.execute
 #=> true
@@ -386,6 +395,7 @@ query.result.each
 ```
 
 The result has a `first!` method that raises if no result is available
+
 ```ruby
 query.execute
 #=> true
@@ -393,7 +403,8 @@ query.result.first!
 Cassie::Statements::RecordNotFound: CQL row does not exist
 ```
 
-The result delegates to the `Cassandra::Result`.
+The result delegates to the `Cassandra::Result`
+
 ```ruby
 query.result.execution_info
 #=> #<Cassandra::Execution::Info:0x007fb404b51390 @payload=nil, @warnings=nil, @keyspace="cassie_test", @statement=#<Cassandra::Statements::Bound:0x3fda0258dee8 @cql="SELECT * FROM users_by_username LIMIT 500;" @params=[]>, @options=#<Cassandra::Execution::Options:0x007fb404b1b880 @consistency=:local_one, @page_size=10000, @trace=false, @timeout=12, @serial_consistency=nil, @arguments=[], @type_hints=[], @paging_state=nil, @idempotent=false, @payload=nil>, @hosts=[#<Cassandra::Host:0x3fda02541390 @ip=127.0.0.1>], @consistency=:local_one, @retries=0, @trace=nil>
@@ -625,6 +636,7 @@ class RecordsByOwnerQuery < Cassie::Query
   end
 end
 ```
+
 ```ruby
 RecordsByOwnerQuery.new(owner: owner, min_record: 99,990).fetch.map(&:record)
 (2.9ms) SELECT * FROM records_by_owner WHERE owner_id = ? AND bucket = ? AND record >= ? LIMIT 100; [123, 0, 99990]
@@ -682,12 +694,15 @@ Cassie.cluster.instance_variable_get(:@execution_options).consistency
 See the examples below of setting the `consistency` option at various places.
 
 Object writer:
+
 ```ruby
   query = MyQuery.new
   query.consistency = :all
   query.execute
 ```
+
 Override Object reader:
+
 ```ruby
   select_from :posts_by_author_category
 
@@ -709,6 +724,7 @@ Override Object reader:
 ```
 
 Class writer
+
 ```ruby
   select_from :posts_by_author_category
 
@@ -719,6 +735,7 @@ Class writer
 ```
 
 `Cassie::Query` or `Cassie::Modificaton` superclass writer
+
 ```ruby
 # lib/tasks/interesting_task.rake
 require_relative "interesting_worker"
@@ -732,6 +749,7 @@ end
 ```
 
 `Cassie` global default
+
 ```ruby
 # lib/tasks/interesting_task.rake
 require_relative "interesting_worker"
@@ -763,6 +781,7 @@ class MyQuery < Cassie::Modification
   end
 end
 ```
+
 ```
 MyQuery.idempotent?
 # => true
@@ -781,6 +800,7 @@ class MyQuery < Cassie::Modification
   end
 end
 ```
+
 ```
 MyQuery.idempotent?
 # => false
@@ -912,6 +932,7 @@ Cassie Queries instrument execution time as `cassie.cql.execution` and logs a de
 SelectUserByUsernameQuery.new('some_user').execute
 (5.5ms) SELECT * FROM users_by_username WHERE username = ? LIMIT 1; ["some_user"] [LOCAL_ONE]
 ```
+
 This measures the time to build the CQL query (statement and bindings), transmit the query to the cassandra coordinator, receive the result from the cassandra coordinator, and have the cassandra ruby driver build the ruby representation of the results. It does not include the time it takes for the Cassie Query to build its resource objects.
 
 #### Result Deserialization

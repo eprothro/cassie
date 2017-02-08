@@ -5,6 +5,9 @@ require_relative "tasks/io"
 require_relative "extensions/object/color_methods"
 
 module Cassie
+  # Various modules and classes for use with executables.
+  # These classes are not loaded by +require 'cassie'+.
+  # Execute +require 'cassie/tasks' if they are needed in an application.
   module Tasks
     Rake::TaskManager.record_task_metadata = true
     # load all tasks, but only once

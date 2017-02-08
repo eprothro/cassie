@@ -12,7 +12,7 @@ module Cassie::Schema
       # Builds a Cassie::Schema::Migration
       # from the CassandraMigrations migration file
       #
-      # @returns source string of new migration class
+      # @return [String] source string of new migration class
       def build_migration_class(version)
         @source = load_source
         redefine_class(version.migration_class_name)

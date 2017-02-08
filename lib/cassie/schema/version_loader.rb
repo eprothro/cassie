@@ -6,7 +6,7 @@ module Cassie::Schema
 
     # Requires the ruby file, thus loading the Migration class into the ObjectSpace.
     #
-    # @returns The Version object if successful. In other words, if
+    # @return [Version, Boolean] The Version object if successful. In other words, if
     #   object representing the version returns a Cassie::Schema::Migration object.
     #   Otherwise returns false.
     #

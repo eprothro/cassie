@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require_relative '../lib/cassie'
-
 require_relative "../lib/cassie/tasks"
 
 runner = Cassie::Tasks::TaskRunner.new

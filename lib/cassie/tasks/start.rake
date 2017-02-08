@@ -1,5 +1,3 @@
-require_relative '../support/server_process'
-
 namespace :cassie do
   desc "Start the cassandra server process in the background with reduced verbosity"
   task :start do

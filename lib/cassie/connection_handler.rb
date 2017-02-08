@@ -2,7 +2,14 @@ module Cassie
   # Extend Cassie::ConnectionHandler to provide cluster and session
   # cacheing in line with Cassandra best practices.
   #
-  # The base class must implement `configuration` and `keyspace` methods.
+  # The extending class must provide two methods
+  # that will be used by the connection handler for connections:
+  # * +self.configuration+
+  #   * A configuration hash defining cluster options per environment
+  #   * Used when connecting through +cassandra_driver+
+  #   * See [Configuration::Core] for a sample implementation with a .yml back-end
+  # * +self.keyspace+
+  #   * The default keyspace to connect to when none is specified for a session.
   module ConnectionHandler
     require_relative 'connection_handler/cluster'
     require_relative 'connection_handler/sessions'
@@ -10,12 +17,5 @@ module Cassie
 
     include Cluster
     include Sessions
-
-    #TODO: raise if extender doesn't
-    #      respond to configuration
-    #      and keyspace
-    # def self.extended(extender)
-
-    # end
   end
 end

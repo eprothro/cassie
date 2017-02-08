@@ -1,4 +1,3 @@
-require "cassie/support/server_process"
 require "support/process_status"
 
 RSpec.describe Cassie::Support::ServerProcess do

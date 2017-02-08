@@ -11,7 +11,8 @@ module Cassie::Configuration
     # the default +:keyspace+ from {#configuration} is used.
     attr_accessor :keyspace
 
-    def self.extended(extender) # @!visibility private
+    # @!visibility private
+    def self.extended(extender)
       extender.paths["cluster_configurations"] = "config/cassandra.yml"
     end
 

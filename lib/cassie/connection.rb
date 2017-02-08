@@ -1,7 +1,10 @@
 module Cassie
-  # Include Cassie::Connection to add #session and #keyspace
-  # convenience methods that conform with object cacheing and reuse
+  # Defines interface providing Cassandra connection management
+  # including object cacheing and reuse
   # behavior in line with Cassandra best practices
+  #
+  # +include Cassie::Connection+ to add +keyspace+
+  # and +session+ attributes to the including module.
   module Connection
 
     extend ActiveSupport::Concern

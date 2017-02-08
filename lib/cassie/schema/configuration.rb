@@ -7,6 +7,7 @@ module Cassie::Schema
     attr_accessor :schema_keyspace,
                   :versions_table
 
+    # @!visibility private
     def self.extended(extender)
       extender.paths["schema_structure"] = "db/cassandra/structure.cql"
       extender.paths["migrations_directory"] = "db/cassandra/migrations"

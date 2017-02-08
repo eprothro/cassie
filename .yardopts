@@ -1,0 +1,11 @@
+--markup "rdoc"
+--embed-mixins
+
+-
+CHANGELOG.md
+CONTRIBUTING.md
+lib/cassie/configuration/README.md
+lib/cassie/connection_handler/README.md
+lib/cassie/schema/README.md
+lib/cassie/statements/README.md
+LICENSE
