@@ -11,20 +11,19 @@ namespace :cassie do
     end.parse!(options)
 
     procs = Cassie::Support::ServerProcess.all
-    if procs.empty?
-      puts red("No Cassandra process was found. Is Cassandra running?")
-      exit(1)
-    elsif procs.length > 1 && !opts[:kill_all]
+
+    puts red("No Cassandra process was found. Is Cassandra running?") if procs.empty?
+
+    if procs.length > 1 && !opts[:kill_all]
       puts red("Couldn't single out a Cassandra process.")
       puts red("  - Is cqlsh running?")
       puts red("  - Kill all cassandra processes with --all")
-      exit(1)
+    else
+      puts("Stopping Cassandra...")
+      procs.each do |process|
+        process.stop
+      end
+      puts "[#{green('✓')}] Cassandra Stopped"
     end
-
-    puts("Stopping Cassandra...")
-    procs.each do |process|
-      process.stop
-    end
-    puts "[#{green('✓')}] Cassandra Stopped"
   end
 end

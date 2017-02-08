@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
 
-bundle exec yard server --reload Cassie -d
-echo "YARD Doc server running. Visit http://localhost::8808"
+bundle exec yard server --reload Cassie -d && echo "YARD Doc server running. Visit http://localhost::8808"
