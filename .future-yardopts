@@ -1,0 +1,21 @@
+# YARD options, see `yardoc -h`
+# for valid options and descriptions
+
+# parse inline documentation with
+# rdoc markup formatting
+--markup "rdoc"
+
+# treat code mixed in via include
+# and extend as first class citizens
+# of the module without additional directives
+--embed-mixins
+
+# Additional files to add to documentation tree
+-
+CHANGELOG.md
+CONTRIBUTING.md
+lib/cassie/configuration/README.md
+lib/cassie/connection_handler/README.md
+lib/cassie/schema/README.md
+lib/cassie/statements/README.md
+LICENSE

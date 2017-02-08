@@ -18,6 +18,7 @@ module Cassie::Configuration
 
     # The currently active environment.
     # Used to select which configuration will be used
+    # @!parse attr_accessor :env
     def env
       @env ||= ActiveSupport::StringInquirer.new(ENV["CASSANDRA_ENV"] || ENV["RACK_ENV"] || "development")
     end
@@ -34,6 +35,9 @@ module Cassie::Configuration
       @paths ||= {}.with_indifferent_access
     end
 
+    # The cluster configurations available for all environments
+    # @return [Hash{String => [Hash]}] Cluster configurations, keyed by environment.
+    # @!parse attr_accessor :configurations
     def configurations
       @configurations ||= cluster_configurations
     end
@@ -45,6 +49,15 @@ module Cassie::Configuration
       @configurations = val
     end
 
+    # The currently active configuration used
+    # for initializing new cluster connections.
+    # If none has been set, the configuration for the
+    # current {#env} is used from {#configuration}
+    #
+    # Note: setting a {#configuration} value will override
+    # the {#configurations} attribute, rendering it useless
+    # @return [Hash{String,Symbol => Object}] Hash of +cassandra-driver+ supported cluster configuration attributes
+    # @!parse attr_accessor :configuration
     def configuration
       return @configuration if defined?(@configuration)
       configurations[env]

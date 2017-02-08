@@ -1,6 +1,8 @@
 module Cassie::Configuration
   module Loading
 
+    protected
+
     def cluster_configurations
       path = paths["cluster_configurations"]
 

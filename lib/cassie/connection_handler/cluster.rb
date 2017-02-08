@@ -13,6 +13,11 @@ module Cassie::ConnectionHandler
       include Instrumentation
     end
 
+    # The cluster connection and metadata. This attribute is
+    # lazy-loaded, not calling out to Cassandra until it is first
+    # accessed. The single cluster object is cached for the entire process.
+    # @return [Cassandra::Cluster] The underlying driver cluster object
+    # @!parse attr_reader :cluster
     def cluster
       # Cassandra::cluster parses suppored
       # options from the passed hash, no need
