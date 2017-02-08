@@ -6,6 +6,15 @@ RSpec.describe Cassie::Schema::Versioning do
     allow(mod).to receive(:applied_versions){ applied_versions }
   end
 
+  describe "applied_versions" do
+    it "returns versions from cassandra" do
+      RSpec::Mocks.space.proxy_for(mod).reset
+
+      allow_any_instance_of(Cassie::Schema::SelectVersionsQuery).to receive(:fetch){applied_versions}
+      expect(Cassie::Schema.applied_versions).to eq(applied_versions)
+    end
+  end
+
   describe "migration_files" do
     it "lists files in config directory" do
       Dir.mktmpdir do |dir|

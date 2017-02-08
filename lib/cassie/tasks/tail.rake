@@ -2,16 +2,13 @@ namespace :cassie do
   desc "Tail the cassandra server logs"
   task :tail do
     include Cassie::Tasks::IO
-    runner = Cassie::Support::SystemCommand.new("which", ["cassandra"])
-    runner.run!
 
-    bin_path = runner.output.tr("\n", '')
-    log_path = bin_path.sub('bin/cassandra', 'logs/system.log')
+    log_path = Cassie::Support::ServerProcess.log_path
     puts white("Tailing Cassandra system log, Ctrl-C to stop...")
     puts "  #{log_path}:\n\n"
 
     args = ['-f', log_path, '>', '/dev/tty']
-    runner = Cassie::Support::SystemCommand.new("tail", args)
-    runner.run!
+    tail = Cassie::Support::SystemCommand.new("tail", args)
+    tail.run
   end
 end

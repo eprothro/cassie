@@ -11,6 +11,18 @@ module Cassie
         pids.map{|pid| new(pid)}
       end
 
+      # The path to the active cassandra binary's log file
+      # Does not yet respect a configured log path,
+      # and assumes the path is relative to bin/casandra at ../logs/system.log
+      # @!parse attr_reader :log_path
+      def self.log_path
+        which = Cassie::Support::SystemCommand.new("which", ["cassandra"])
+        which.success
+
+        bin_path = which.output.tr("\n", '')
+        bin_path.sub('bin/cassandra', 'logs/system.log')
+      end
+
       # Starts a cassandra server process. {#running?} will be true if it started correctly.
       def initialize(pid=nil)
         @pid = pid
