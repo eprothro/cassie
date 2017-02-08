@@ -1,5 +1,5 @@
 require 'optparse'
-require_relative '../../schema/cassandra_migrations/importer'
+require 'cassie/schema/cassandra_migrations/importer'
 
 namespace :cassie do
   namespace :migrations do
@@ -11,9 +11,8 @@ namespace :cassie do
           opts[:path] = p
         end
       end.parse!
-      importer = Cassie::Schema::CassandraMigrations::Importer.new(path)
 
-      importer.import
+      Cassie::Schema::CassandraMigrations::Importer.new(opts[:path]).import
     end
   end
 end

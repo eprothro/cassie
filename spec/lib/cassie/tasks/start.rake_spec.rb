@@ -7,7 +7,7 @@ RSpec.describe "cassie:start rake task" do
 
   describe "#invoke" do
     before(:each) do
-      Cassie::Tasks.io = buffer
+      allow_any_instance_of(Cassie::Tasks::IO).to receive(:io){ buffer }
       allow(Cassie::Support::ServerProcess).to receive(:new){ process }
     end
     after(:each) { object.reenable }

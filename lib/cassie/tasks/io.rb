@@ -1,7 +1,11 @@
 module Cassie::Tasks
   module IO
     def puts(*args)
-      Cassie::Tasks.io.puts(*args)
+      io.puts(*args)
+    end
+
+    def io
+      $stdout
     end
   end
 end

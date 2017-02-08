@@ -11,14 +11,5 @@ module Cassie
     Dir.glob("#{__dir__}/tasks/**/*.rake").each do |file|
       load file
     end
-
-    def self.io
-      return @io if defined?(@io)
-      $stdout
-    end
-
-    def self.io=(val)
-      @io = val
-    end
   end
 end
