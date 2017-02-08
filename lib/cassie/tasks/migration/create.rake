@@ -4,6 +4,8 @@ namespace :cassie do
   namespace :migration do
     desc "Generates an empty migration file prefixed with the next semantic version number"
     task :create do
+      include Cassie::Tasks::IO
+
       opts = {}
       OptionParser.new do |args|
         args.on("-b", "--build", "Bump build version number") do
@@ -18,7 +20,7 @@ namespace :cassie do
         args.on("-maj", "--major", "Bump major version number") do
           opts[:bump_type] = :major
         end
-      end.parse!
+      end.parse!(options)
       name = ARGV[1]
 
       version = Cassie::Schema.next_local_version(opts[:bump_type])

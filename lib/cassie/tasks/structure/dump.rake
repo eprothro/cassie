@@ -2,6 +2,8 @@ namespace :cassie do
   namespace :structure do
     desc "Dumps the schema for all non-system keyspaces in CQL format (`db/cassandra/structure.cql` by default)"
     task :dump do
+      include Cassie::Tasks::IO
+
       begin
         dumper = Cassie::Schema::StructureDumper.new
         dumper.dump

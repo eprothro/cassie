@@ -2,6 +2,8 @@ namespace :cassie do
   namespace :schema do
     desc "Migrates the schema by running the `up` methods for any migrations starting after the current schema version"
     task :migrate do
+      include Cassie::Tasks::IO
+
       version = ARGV[1]
 
       migrator = Cassie::Schema::Migrator.new(version)

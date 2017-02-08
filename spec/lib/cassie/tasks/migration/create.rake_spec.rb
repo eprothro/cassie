@@ -6,6 +6,11 @@ RSpec.describe "cassie:migration:create rake task" do
   let(:buffer){ StringIO.new }
   let(:version){ fake_version(rand(1000)) }
   let(:writer){ double(write: true, filename: "") }
+  let(:options){ [] }
+
+  before(:each) do
+    allow_any_instance_of(Cassie::Tasks::IO).to receive(:options){ options }
+  end
 
   describe "#invoke" do
     before(:each) do

@@ -7,5 +7,9 @@ module Cassie::Tasks
     def io
       $stdout
     end
+
+    def options
+      ARGV
+    end
   end
 end

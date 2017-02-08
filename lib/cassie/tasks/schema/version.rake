@@ -4,6 +4,7 @@ namespace :cassie do
   namespace :schema do
     desc "Print the history of applied schema migrations"
     task :version do
+      include Cassie::Tasks::IO
       include Cassie::Tasks::Schema::VersionDisplay
 
       begin

@@ -4,6 +4,8 @@ namespace :cassie do
   namespace :configuration do
     desc "Generate a sample cassandra configuration file"
     task :generate do
+      include Cassie::Tasks::IO
+
       opts = {}
       OptionParser.new do |args|
         args.on("-p", "--path", "Path to place configuration file. Defaults to './config/cassandra.yml'") do |p|
@@ -16,7 +18,7 @@ namespace :cassie do
         args.on("-n", "--name", "Application name. Used as prefix for keyspace names. Defaults to 'my_app'") do |n|
           opts[:app_name] = n
         end
-      end.parse!
+      end.parse!(options)
 
       generator = Cassie::Configuration::Generator.new(opts)
       generator.save

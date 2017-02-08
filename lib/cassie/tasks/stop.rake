@@ -2,12 +2,13 @@ namespace :cassie do
   desc "Stop the cassandra server process."
   task :stop do
     include Cassie::Tasks::IO
+
     opts = {}
     OptionParser.new do |args|
       args.on("-a", "--all", "Stop all cassandra processes, not just the server (e.g. cqlsh). Defaults to false.") do |a|
         opts[:kill_all] = a || false
       end
-    end.parse!
+    end.parse!(options)
 
     procs = Cassie::Support::ServerProcess.all
     if procs.empty?
