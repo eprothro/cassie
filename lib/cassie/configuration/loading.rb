@@ -1,8 +1,9 @@
 module Cassie::Configuration
   module Loading
-
-    protected
-
+    # Fetch cluster configurations
+    # from configuraiton file located at
+    # +paths["cluster_configurations"]+
+    # @return [Hash{String => Object}] Configuration loaded from yml file
     def cluster_configurations
       path = paths["cluster_configurations"]
 

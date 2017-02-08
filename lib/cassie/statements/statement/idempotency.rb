@@ -10,10 +10,11 @@ module Cassie::Statements
 
 
   module Statement::Idempotency
-    extend ActiveSupport::Concern
-
-    included do
-      attr_writer :idempotent
+    def self.included(base)
+      base.instance_eval do
+        attr_writer :idempotent
+        extend ClassMethods
+      end
     end
 
     module ClassMethods

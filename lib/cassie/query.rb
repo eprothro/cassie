@@ -30,5 +30,8 @@ module Cassie
     include Statements::Core
     include Statements::Query
 
+    # @!parse extend Cassie::Connection::ClassMethods
+    # @!parse extend Cassie::Statements::Core::ClassMethods
+    # @!parse extend Cassie::Statements::Query::ClassMethods
   end
 end

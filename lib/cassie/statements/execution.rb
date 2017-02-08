@@ -7,16 +7,24 @@ module Cassie::Statements
     require_relative 'execution/partition_linking'
     require_relative 'execution/instrumentation'
 
-    extend ActiveSupport::Concern
-    included do
-      attr_reader :result
+    # @!visibility private
+    # @!parse include Consistency
+    # @!parse include Callbacks
+    # @!parse include PartitionLinking
+    # @!parse include Instrumentation
+    def self.included(base)
+      base.instance_eval do
+        attr_reader :result
 
-      include Consistency
-      include Callbacks
-      include PartitionLinking
-      include Instrumentation
+        include Consistency
+        include Callbacks
+        include PartitionLinking
+        include Instrumentation
+      end
+      base.extend ClassMethods
     end
 
+    # @!parse extend ClassMethods
     module ClassMethods
       def inherited(subclass)
         subclass.result_class = result_class if defined?(@result_class)

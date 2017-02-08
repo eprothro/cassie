@@ -16,16 +16,23 @@ module Cassie::Statements
 
     class Invalid < StandardError; end
 
-    extend ::ActiveSupport::Concern
+    # @!visibility private
+    # @!parse include Preparation
+    # @!parse extend Preparation::ClassMethods
+    # @!parse include TypeHinting
+    # @!parse include TypeHinting::ClassMethods
+    # @!parse include Idempotency
+    # @!parse include Idempotency::ClassMethods
+    def self.included(base)
+      base.instance_eval do
+        include Preparation
+        include TypeHinting
+        include Idempotency
 
-    included do
-      include Preparation
-      include TypeHinting
-      include Idempotency
-
-      class << self
-        attr_accessor :table
-        attr_accessor :type
+        class << self
+          attr_accessor :table
+          attr_accessor :type
+        end
       end
     end
 

@@ -4,7 +4,6 @@ RSpec.describe Cassie::Schema::VersionWriter do
   let(:buffer){ StringIO.new }
   let(:version){ Cassie::Schema::Version.new('1') }
 
-
   describe "class_name" do
     it "always outputs 4 parts" do
       expect(object.version.migration_class_name).to eq("Migration_1_0_0_0")

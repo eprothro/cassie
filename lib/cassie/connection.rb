@@ -7,12 +7,15 @@ module Cassie
   # and +session+ attributes to the including module.
   module Connection
 
-    extend ActiveSupport::Concern
-
-    included do
-      attr_writer :keyspace
+    # @!visibility private
+    def self.included(base)
+      base.instance_eval do
+        attr_writer :keyspace
+      end
+      base.extend ClassMethods
     end
 
+    # @!parse extend ClassMethods
     module ClassMethods
       def keyspace(val=NilClass)
         # support DSL style
@@ -33,7 +36,7 @@ module Cassie
       end
 
       def keyspace=(val)
-        #support Class.keyspace = :foo
+        #support non DSL style Class.keyspace = :foo
         @keyspace = val
       end
     end

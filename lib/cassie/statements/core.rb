@@ -4,12 +4,20 @@ require_relative 'logging'
 
 module Cassie::Statements
   module Core
-    extend ActiveSupport::Concern
 
-    included do
-      include Statement
-      include Execution
-      include Logging
+    # @!visibility private
+    # @!parse include Statement
+    # @!parse include Statement::ClassMethods
+    # @!parse include Execution
+    # @!parse include Execution::ClassMethods
+    # @!parse include Logging
+    # @!parse include Logging::ClassMethods
+    def self.included(base)
+      base.instance_eval do
+        include Statement
+        include Execution
+        include Logging
+      end
     end
 
     def initialize(params={})

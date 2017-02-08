@@ -2,21 +2,32 @@ require_relative 'preparation/cache'
 
 module Cassie::Statements::Statement
   module Preparation
-    extend ::ActiveSupport::Concern
-
-    included do
-      class << self
-        attr_accessor :prepare
+    # @!visibility private
+    def self.included(base)
+      base.extend ClassMethods
+      base.instance_eval do
+        self.prepare = true
       end
-      self.prepare = true
     end
 
+    # @!parse extend ClassMethods
     module ClassMethods
+
+      #@!visibility private
       def inherited(subclass)
         subclass.prepare = prepare
         super
       end
 
+      def prepare
+        @prepare
+      end
+
+      def prepare=(val)
+        @prepare = val
+      end
+
+      # @return [Boolean] indicating whether the statement will be prepared when executed
       def prepare?
         !!prepare
       end
@@ -37,7 +48,7 @@ module Cassie::Statements::Statement
       end
     end
 
-    private
+    protected
 
     def statement_cache
       Cassie::Statements::Statement::Preparation.cache
