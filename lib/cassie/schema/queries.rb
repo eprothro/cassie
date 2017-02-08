@@ -5,5 +5,6 @@ module Cassie::Schema
     require_relative 'queries/insert_version_query'
     require_relative 'queries/delete_version_query'
     require_relative 'queries/select_versions_query'
+    require_relative 'queries/drop_keyspace_query'
   end
 end
