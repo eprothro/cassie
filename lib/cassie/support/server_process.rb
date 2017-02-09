@@ -17,7 +17,7 @@ module Cassie
       # @!parse attr_reader :log_path
       def self.log_path
         which = Cassie::Support::SystemCommand.new("which", ["cassandra"])
-        which.success
+        which.succeed
 
         bin_path = which.output.tr("\n", '')
         bin_path.sub('bin/cassandra', 'logs/system.log')
