@@ -1,6 +1,8 @@
 module Cassie::Statements::Statement
   module Conditions
-    extend ActiveSupport::Concern
+    def self.included(base)
+      base.extend ClassMethods
+    end
 
     module ClassMethods
       def if_not_exists(opts={})

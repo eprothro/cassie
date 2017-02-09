@@ -12,8 +12,11 @@ module Cassie::Statements
   module Statement::Limiting
     extend ActiveSupport::Concern
 
-    included do
-      attr_writer :limit
+    def self.included(base)
+      base.instance_eval do
+        attr_writer :limit
+      end
+      base.extend ClassMethods
     end
 
     module ClassMethods

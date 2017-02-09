@@ -1,15 +1,43 @@
 module Cassie::Statements::Statement
   module Mapping
-    extend ActiveSupport::Concern
 
-    included do
-      # We are mapping term values from a client provided resource.
-      # store this object in `_resource` attribte
-      # as they could reasonably want to name it `resource`
-      attr_accessor :_resource
+    def self.included(base)
+      base.instance_eval do
+        # We are mapping term values from a client provided resource.
+        # store this object in `_resource` attribte
+        # as they could reasonably want to name it `resource`
+        attr_accessor :_resource
+      end
+      base.extend ClassMethods
     end
 
+    # @!parse extend ClassMethods
     module ClassMethods
+      # DSL setting a getter and setter.
+      #
+      # When use with a relation (+where+) or assignment (+set+),
+      # the fetching of column values are
+      # delegated to the object in this getter.
+      #
+      # @note This delegation behavor gets last preference.
+      #   * An overwritten +column_name+ getter has first preference
+      #   * the +@column_name+ instance variable has next preference
+      #   * the mapped resource delegation has last preference
+      #
+      # @example Simple Mapping delegation
+      #   Class Statement
+      #     include Cassie::Statements::Statement:Relations
+      #     include Cassie::Statements::Statement:Mapping
+      #
+      #     where :name
+      #
+      #     map_from :user
+      #   end
+      #
+      #   s = Statement.new
+      #   s.user = User.new(id: 1)
+      #   s.id
+      #   #=> 1
       def map_from(resource_name)
         define_method resource_name do
           _resource

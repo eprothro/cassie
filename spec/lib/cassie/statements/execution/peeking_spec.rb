@@ -15,7 +15,7 @@ RSpec.describe Cassie::Statements::Execution::Peeking do
   let(:row_data){ i=0; Array.new(rows){ {'id' => i+=1} } }
   let(:rows){ 2 }
 
-  #TODO: make these tests more abstract. Test that peeking makes peeking result
+  # @todo make these tests more abstract. Test that peeking makes peeking result
   # the result class, makes result option avialable and results in execution of
   # +1 rows. Other tests to should ensure those things are consumed properly.
   describe "#execute" do

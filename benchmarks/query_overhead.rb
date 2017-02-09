@@ -12,7 +12,7 @@ require_relative 'support/cassie_generator'
 #     cassie-query-generation:   753594.1 i/s
 #     baseline-query-generation: 752032.5 i/s - 1.00x slower
 #
-# TODO: use fake session with simulated delay
+# @todo use fake session with simulated delay
 # to get realistic end-to-end comparison
 Benchmark.ips do |b|
 

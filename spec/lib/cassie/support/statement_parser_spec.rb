@@ -43,7 +43,7 @@ RSpec.describe Cassie::Support::StatementParser do
         expect(extract_cql_values(object.to_cql)['attr']).to eq "\'#{value}\'"
       end
       xit "preserves fractional seconds" do
-        #TODO: use integer?
+        # @todo use integer?
       end
 
     end

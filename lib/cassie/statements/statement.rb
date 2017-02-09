@@ -40,14 +40,22 @@ module Cassie::Statements
       self.class.table
     end
 
-    # returns a CQL string, or a Cassandra::Statement
-    # that is ready for execution
+    # A bound statment with type hint and idempotent options, ready for execution ready for execution with a [Cassandra::Session]
+    # @return [Cassandra::Statement]
     def statement
       Cassandra::Statements::Simple.new(*build_cql_and_params, type_hints, idempotent?)
     end
 
-    # returns a CQL string with inline parameters, that
-    # is representative of what could be executed in a CQL shell
+    # A CQL string with inline parameters, representing the current statement
+    # as it would be executed in a CQL shell
+    #
+    # @note This CQL string does not include execution options like type hinting,
+    #  idempotency, consistency level, etc -- just the raw CQL instruction and values.
+    # @return [String]
+    #
+    # @example
+    #   statement.to_cql
+    #   #=> "SELECT * FROM table WHERE first='evan' AND middle='thomas' and last='prothro"
     def to_cql
       if statement.respond_to?(:cql) && statement.respond_to?(:params)
         Cassie::Support::StatementParser.new(statement).to_cql
@@ -60,11 +68,21 @@ module Cassie::Statements
       Cassie::Statements.logger
     end
 
+    # The CQL string portion for the statment
+    # @!parse attr_reader :cql
+    # @example
+    #   statement.cql
+    #   #=> "SELECT * FROM table WHERE first=? AND middle=? and last=?"
     def cql
       return @cql if defined?(@cql)
       ""
     end
 
+    # The positional values portion for the statment
+    # @example
+    #   statement.params
+    #   #=> ['evan', 'thomas', 'prothro']
+    # @!parse attr_reader :params
     def params
       return @params if defined?(@params)
       nil

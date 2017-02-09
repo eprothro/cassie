@@ -43,7 +43,7 @@ module Cassie::Statements::Statement
     def self.init_cache
       previous_cache = defined?(@cache) ? @cache : nil
 
-      #TODO: research why memory story is blowing up when
+      # @todo research why memory story is blowing up when
       #     serializing the Cassandra prepared statement result
       # @cache = ActiveSupport::Cache::MemoryStore.new
       @cache = Cache.new

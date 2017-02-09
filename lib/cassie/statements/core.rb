@@ -20,6 +20,9 @@ module Cassie::Statements
       end
     end
 
+    # Create a new statement-based object, sending
+    # all options passed as a hash to attribute setters
+    # Similar to ActiveModel::Model initialization
     def initialize(params={})
       params.each do |attr, value|
         self.public_send("#{attr}=", value)

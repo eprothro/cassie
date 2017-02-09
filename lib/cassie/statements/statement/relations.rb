@@ -20,30 +20,51 @@ module Cassie::Statements::Statement
     extend ActiveSupport::Concern
 
     module ClassMethods
-      #    where :username, :eq, value: :method
-      #    where :phone, :in
-      #    relation :user_id, :gteq, term: "minTimeuuid('2013-02-02 10:00+0000')"
-      def where(identifier, op, opts={})
-        opts[:value] ||= implied_argument_method(identifier, op)
+      # DSL to set a ranging relation (+WHERE+ clause) for the statement.
+      #
+      # Defining a relation also defines an +attr_accessor+ with the same name as
+      # the identifier (or the +:value+ option if a symbol is used). The underlying instance
+      # variable value for this accessor will be used when determining the value for the relation.
+      #
+      # @param [String, Symbol] identifier The field name or other CQL identifier to restrict the query.
+      # @param [Symbol] operation Which operation to use. See {Cassie::Statements::Statement::Relation::OPERATIONS} for valid symbols and their associated operations.
+      # @param [Hash] opts options for the relation
+      # @option opts [Symbol, Object] :value The value to use for the ranging relation (constraint). If a [Symbol], a method with that name will be called when the statement is built. Otherwise, the value itself will be used.
+      # @option opts [Symbol, Object] :if Determines if the relation is applied to the statement or not. If a [Symbol], a method with that name will be called when the statement is built. Otherwise, the value itself will be used.
+      # @option opts [String] :term The argument value to use instead of a positional placeholder (?). If a [Symbol], a method with that name will be called when the statement is built. Otherwise, the value itself will be used.
+      # @return [Enumerable<Array<Object>>] The enumeration of current relations' parameters
+      # @raise [StandardError] if there is already a getter or setter method defined for the
+      #   relation value's implied accessor (+identifier+ or symbol +:value+ option).
+      #
+      # @example Range relation with implied accessor
+      #   where :username, :eq #<= gets relation value from `:username` method
+      # @example Range relation with explicit accessor
+      #   where :username, :eq, value: :name #<= gets relation value from `:name` method
+      # @example Range relation with multi-value, pluarlized accessr
+      #   where :phone, :in #<= gets relation value from `:phones` method
+      def where(identifier, operation, opts={})
+        opts[:value] ||= implied_argument_method(identifier, operation)
 
         define_argument_accessor(opts[:value])
 
-        relations_args << [identifier, op, opts.delete(:value), opts]
+        relations_args << [identifier, operation, opts.delete(:value), opts]
       end
 
+      # The enumeration of current relations' parameters that will be
+      # used to build Relation objects when the statement is built
       def relations_args
         @relations_args ||= []
       end
 
       protected
 
-      #TODO: extract argument accessor creation for
+      # @todo extract argument accessor creation for
       #      more DRY and clear usage. See mapping module.
       def define_argument_accessor(name)
         unless Symbol === name
           raise ArgumentError, "A Symbol is required for the accessor methods for setting/getting a relation's value. #{name.class} (#{name}) given."
         end
-        #TODO: this should probably only raise
+        # @todo this should probably only raise
         #      if value option was nil and we
         #      are implicilty creating getter/setters.
         if method_defined?(name) || method_defined?("#{name}=")

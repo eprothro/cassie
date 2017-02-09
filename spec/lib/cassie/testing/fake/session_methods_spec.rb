@@ -19,7 +19,7 @@ RSpec.describe Cassie::Testing::Fake::SessionMethods do
         expect(object.session).to be_a(Cassie::Testing::Fake::Session)
       end
       it "returns the same object on subsequent calls" do
-        # TODO: reworking test harnessing
+        # @todo reworking test harnessing
         # based on new Configuration and Connection architecture
         expect(object.session).to equal(object.session)
       end

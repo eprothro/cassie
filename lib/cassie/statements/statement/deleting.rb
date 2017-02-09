@@ -4,22 +4,30 @@ require_relative 'mapping'
 
 module Cassie::Statements::Statement
   module Deleting
-    extend ::ActiveSupport::Concern
 
-    included do
-      include Relations
-      include Conditions
-      include Mapping
+    # @!visibility private
+    # @!parse include Relations
+    # @!parse extend Relations::ClassMethods
+    # @!parse include Conditions
+    # @!parse extend Conditions::ClassMethods
+    # @!parse include Mapping
+    # @!parse extend Mapping::ClassMethods
+    def self.included(base)
+      base.instance_eval do
+        include Relations
+        include Conditions
+        include Mapping
 
-      @result_class = Cassie::Statements::Results::ModificationResult
+        @result_class = Cassie::Statements::Results::ModificationResult
+      end
+      base.extend ClassMethods
     end
 
+    # @!parse extend ClassMethods
     module ClassMethods
-      #TODO: accept block to add specific selectors and aliases
-      #      select_from :table do |t|
-      #        t.id
-      #        t.name as: :username
-      #      end
+      # DSL to set the statement type and table for deleting
+      # @param [String, Symbol] table The table to taret for the delete statement
+      # @return [void]
       def delete_from(table)
         self.table = table
         self.type = :delete
@@ -27,16 +35,16 @@ module Cassie::Statements::Statement
         yield(self) if block_given?
       end
 
-      def delete(table)
-        Cassie.logger.warn "[DEPRECATION] `Cassie::Modification#delete` has been replaced by `delete_from` and will be removed."
-        delete_from(table)
-      end
-
-
-      def column(identifier, opts={})
+      # Add a specific column to tombstone by this statement
+      # @param [String, Symbol] identifier the column to tombstone
+      def column(identifier)
+        # @todo replace with Selection
+        # Module and aliases?
         columns << identifier.to_s
       end
 
+      # The columns to be tombstoned from this statement
+      # @return [Array<String>] column names
       def columns
         @columns ||= []
       end

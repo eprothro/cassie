@@ -11,8 +11,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Support for schema migrations. See the [Migrations README](./lib/cassie/schema/README.md#readme) for more on features and usage.
 
 ### Changed
-- Cassie::Support::SystemCommand is now Cassie::Support::SystemCommand
-- Cassie::Support::SystemCommand#run! is now Cassie::Support::SystemCommand.succeed
+- `Cassie::Support::SystemCommand` is now `Cassie::Support::SystemCommand`
+- `Cassie::Support::SystemCommand#run!` is now `Cassie::Support::SystemCommand.succeed`
+
+### Removed
+- deleted the depreated `Query.insert`. Use `Query.insert_into`.
+- deleted the depreated `Query.delete`. Use `Query.delete_from`.
 
 ## 1.0.0.beta.33
 

@@ -3,17 +3,30 @@ require_relative 'conditions'
 
 module Cassie::Statements::Statement
   module Updating
-    extend ::ActiveSupport::Concern
 
-    included do
-      include Relations
-      include Assignments
-      include Conditions
+    # @!visibility private
+    # @!parse include Relations
+    # @!parse extend Relations::ClassMethods
+    # @!parse include Assignments
+    # @!parse extend Assignments::ClassMethods
+    # @!parse include Conditions
+    # @!parse extend Conditions::ClassMethods
+    def self.included(base)
+      base.instance_eval do
+        include Relations
+        include Assignments
+        include Conditions
 
-      @result_class = Cassie::Statements::Results::ModificationResult
+        @result_class = Cassie::Statements::Results::ModificationResult
+      end
+      base.extend ClassMethods
     end
 
+    # @!parse extend ClassMethods
     module ClassMethods
+      # DSL to set the statement type and table for updating
+      # @param [String, Symbol] table The table to taret for the update statement
+      # @return [void]
       def update(table)
         self.table = table
         self.type = :update
@@ -23,7 +36,8 @@ module Cassie::Statements::Statement
     end
 
     protected
-
+    # Sets the {#cql} and {#params} for a building a bound statement
+    # @return [void]
     def build_update_cql_and_params
       assignment_str, update_params = build_update_and_params
       where_str, where_params = build_where_and_params
