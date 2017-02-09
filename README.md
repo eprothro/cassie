@@ -186,7 +186,7 @@ Schema Version information is stored in Cassandra persistence, in the `cassie_sc
 | schema:history | Print the the historical version information the current Cassandra cluster state |
 | *schema:status | Print the the migration status for each local migration (up/down) |
 | *schema:load | Loads current schema from structure.cql |
-| *schema:drop | drop keyspace(s) |
+| schema:drop | drop keyspace(s) |
 | *schema:reset | runs schema:drop and schema:load|
 | *schema:import | Create an initial migration based on the current Cassandra non-system schema |
 | structure:dump | Dumps the schema for all non-system keyspaces in CQL format (`db/cassandra/structure.cql` by default) |

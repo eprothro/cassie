@@ -3,11 +3,21 @@ module Cassie::Schema
     include Comparable
     PARTS = [:major, :minor, :patch, :build].freeze
 
-    attr_accessor :id,
-                  :parts,
-                  :description,
-                  :executor,
-                  :executed_at
+    # The version uuid, if persisted
+    # @return [Cassandra::TimeUuid]
+    attr_accessor :id
+    # The major, minor, patch, and build parts making up the semantic version
+    # @return [Array<Fixnum>]
+    attr_accessor :parts
+    # The description of the changes introduced in this version
+    # @return [String]
+    attr_accessor :description
+    # The OS username of the user that migrated this version up
+    # @return [String]
+    attr_accessor :executor
+    # The time this version was migrated up
+    # @return [DateTime]
+    attr_accessor :executed_at
 
 
     def initialize(version_number, description=nil, id=nil, executor=nil, executed_at=nil)
@@ -22,25 +32,41 @@ module Cassie::Schema
       parts.join('.')
     end
 
+    # The major part of the semantic version
+    # @!parse attr_reader :major
     def major
       parts[0].to_i
     end
 
+    # The minor part of the semantic version
+    # @!parse attr_reader :minor
     def minor
       parts[1].to_i
     end
 
+    # The patch part of the semantic version
+    # @!parse attr_reader :patch
     def patch
       parts[2].to_i
     end
 
+    # The build part of the semantic version
+    # @!parse attr_reader :build
     def build
       parts[3].to_i
     end
 
-    def next(bump=nil)
-      bump ||= :patch
-      bump_index = PARTS.index(bump.to_sym)
+    # Builds a new version, wiht a version number incremented from this
+    # object's version. Does not propogate any other attributes
+    # @option bump_type [Symbol] :build Bump the build version
+    # @option bump_type [Symbol] :patch Bump the patch version, set build to 0
+    # @option bump_type [Symbol] :minor Bump the minor version, set patch and build to 0
+    # @option bump_type [Symbol] :major Bump the major version, set minor, patch, and build to 0
+    # @option bump_type [nil] nil Default, bumps patch, sets build to 0
+    # @return [Version]
+    def next(bump_type=nil)
+      bump_type ||= :patch
+      bump_index = PARTS.index(bump_type.to_sym)
 
       # 0.2.1 - > 0.2
       bumped_parts = parts.take(bump_index + 1)
@@ -51,6 +77,7 @@ module Cassie::Schema
       self.class.new(bumped_parts.join('.'))
     end
 
+    # Compares versions by semantic version number
     def <=>(other)
       case other
       when Version
@@ -62,6 +89,10 @@ module Cassie::Schema
       end
     end
 
+    # The migration class name, as implied by the version number
+    # @example 1.2.3
+    #   migration_class_name
+    #   #=> "Migration_1_2_3_0"
     def migration_class_name
       "Migration_#{major}_#{minor}_#{patch}_#{build}"
     end
@@ -85,7 +116,7 @@ module Cassie::Schema
         executor: executor,
         executed_at: executed_at
       }
-    end
+major, minor, patch, and build parts of the version    end
 
     def to_s
       number

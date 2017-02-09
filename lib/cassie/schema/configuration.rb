@@ -4,8 +4,10 @@ module Cassie::Schema
   # Extend a module/class with Configuration to enable migration management
   module Configuration
 
-    attr_accessor :schema_keyspace,
-                  :versions_table
+    # The keyspace in which to store Cassie schema data
+    attr_accessor :schema_keyspace
+    # The table in which to store Cassie schema applied versions data
+    attr_accessor :versions_table
 
     # @!visibility private
     def self.extended(extender)
@@ -15,9 +17,16 @@ module Cassie::Schema
       extender.versions_table = "versions"
     end
 
+    # Paths used for configuration loading.
+    #
+    # @return [Hash]
+    #   * +:schema_structure+ - The .cql file defining the current schema structure
+    #   * +:migrations_directory+ - The directory containing the versioned schema migration .rb files
     def paths
       @paths ||= {}.with_indifferent_access
     end
+
+    protected
 
     def root
       Pathname.new(Dir.pwd)
