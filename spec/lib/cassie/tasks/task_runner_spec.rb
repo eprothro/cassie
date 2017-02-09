@@ -32,16 +32,16 @@ RSpec.describe Cassie::Tasks::TaskRunner do
       "migrations:import",
       "migration:create",
       "migrate",
-      # "migrate:reset",
+      "migrate:reset",
       "schema:version",
       "schema:history",
       # "schema:status",
-      # "schema:load",
-      # "schema:drop",
-      # "schema:reset",
+      "schema:load",
+      "schema:drop",
+      "schema:reset",
       "schema:import",
-      "structure:dump",
-      "structure:load"
+      "schema:dump",
+      "schema:load"
     ]
     .each do | cmd_string |
       context "with the #{cmd_string} command" do

@@ -37,12 +37,6 @@ module Cassie::Schema
       create_versions_table unless versions_table_exists?
     end
 
-    # @return [Boolean] whether the [Cassie::Schema.schema_keyspace] exists
-    #   in the Cassandra database
-    def keyspace_exists?
-      Cassie.cluster.keyspaces.map(&:name).any?{|k| k == Cassie::Schema.schema_keyspace}
-    end
-
     # Record a version in the schema version store.
     # This should only be done if the version has been sucesfully migrated
     # @return [Boolean] whether succesfull or not
@@ -95,6 +89,10 @@ module Cassie::Schema
       '0.0.1.0'
     end
 
+    def keyspace_exists?
+      Cassie.keyspace_exists?(Cassie::Schema.schema_keyspace)
+    end
+
     def load_applied_versions
       database_versions.tap do |versions|
         versions.each{|v| VersionObjectLoader.new(v).load }
@@ -126,7 +124,7 @@ module Cassie::Schema
     end
 
     def create_schema_keyspace
-      CreateSchemaKeyspaceQuery.new.execute
+      CreateKeyspaceQuery.new(name: Cassie::Schema.schema_keyspace).execute
     end
 
     def create_versions_table

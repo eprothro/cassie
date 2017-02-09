@@ -1,7 +1,10 @@
 module Cassie::Schema
   class InsertVersionQuery < Cassie::Modification
+    # use fully-qualified tablename
+    # for cql generation for standalone queries
+    self.keyspace = nil
 
-    insert_into Cassie::Schema.versions_table
+    insert_into "#{Cassie::Schema.schema_keyspace}.#{Cassie::Schema.versions_table}"
 
     set :bucket
     set :id
@@ -14,10 +17,6 @@ module Cassie::Schema
 
     def bucket
       0
-    end
-
-    def keyspace
-      Cassie::Schema.schema_keyspace
     end
   end
 end

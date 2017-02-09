@@ -11,20 +11,20 @@ module Cassie
   #
   # @example Inserting a record into a Table
   #   class CreateKeyspaceQuery < Cassie::Definition
-  #     attr_accessor :keyspace
+  #     attr_accessor :name
   #
   #     self.prepare = false
   #
   #     def statement
   #       cql = %(
-  #         CREATE KEYSPACE #{keyspace}
+  #         CREATE KEYSPACE #{name}
   #         WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}
   #         AND durable_writes = true;
   #        )
   #     end
   #   end
   #
-  #   CreateKeyspaceQuery.new(keyspace: "my keyspace").excecute
+  #   CreateKeyspaceQuery.new(name: "my keyspace").excecute
   #   #=> true
   #
   class Definition

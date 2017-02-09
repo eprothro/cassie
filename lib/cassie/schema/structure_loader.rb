@@ -18,7 +18,7 @@ module Cassie::Schema
   protected
 
   def default_source_path
-    Cassie.paths[:schema_structure]
+    Cassie::Schema.paths[:schema_file]
   end
  end
 end

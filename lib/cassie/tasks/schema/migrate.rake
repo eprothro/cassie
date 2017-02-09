@@ -4,7 +4,7 @@ namespace :cassie do
     task :migrate do
       include Cassie::Tasks::IO
 
-      version = ARGV[1]
+      version = ARGV[0]
 
       migrator = Cassie::Schema::Migrator.new(version)
 
@@ -31,4 +31,8 @@ namespace :cassie do
   end
   desc "alias for schema:migrate"
   task :migrate => "schema:migrate"
+end
+
+Rake::Task["cassie:schema:migrate"].enhance do
+  Rake::Task["cassie:schema:dump"].invoke
 end

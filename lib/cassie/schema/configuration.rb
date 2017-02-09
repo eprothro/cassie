@@ -11,7 +11,7 @@ module Cassie::Schema
 
     # @!visibility private
     def self.extended(extender)
-      extender.paths["schema_structure"] = "db/cassandra/structure.cql"
+      extender.paths["schema_file"] = "db/cassandra/schema.cql"
       extender.paths["migrations_directory"] = "db/cassandra/migrations"
       extender.schema_keyspace = "cassie_schema"
       extender.versions_table = "versions"
@@ -20,7 +20,7 @@ module Cassie::Schema
     # Paths used for configuration loading.
     #
     # @return [Hash]
-    #   * +:schema_structure+ - The .cql file defining the current schema structure
+    #   * +:schema_file+ - The .cql file defining the current schema structure
     #   * +:migrations_directory+ - The directory containing the versioned schema migration .rb files
     def paths
       @paths ||= {}.with_indifferent_access

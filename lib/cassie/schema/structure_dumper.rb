@@ -15,15 +15,34 @@ module Cassie::Schema
       end
     end
 
-    def structure
-      @structure ||= begin
-        args = ["-e", "'DESCRIBE SCHEMA'"]
+    # Fetch the CQL that can be used to recreate the current environment's keyspace
+    # @return [String] CQL commands
+    # @raise [RuntimeError] if the {Cassie.configuration[:keyspace]} keyspace could not be described.
+    def keyspace_structure
+      @keyspace_structure ||= begin
+        args = ["-e", "'DESCRIBE KEYSPACE #{Cassie.configuration[:keyspace]}'"]
+        runner = Cassie::Support::SystemCommand.new("cqlsh", args)
+        runner.succeed
+
+        runner.output
+      end
+    end
+
+    # Fetch the CQL that can be used to recreat the schema metadata keyspace,
+    # if it has been defined. If it could not be fetched (likely because it doesn't exist),
+    # an empty string is returned.
+    # @return [String] CQL commands
+    def schema_meta_structure
+      @schema_meta_structure ||= begin
+        args = ["-e", "'DESCRIBE KEYSPACE #{Cassie::Schema.schema_keyspace}'"]
         runner = Cassie::Support::SystemCommand.new("cqlsh", args)
         runner.run
 
-        raise runner.failure_message unless runner.success?
-
-        runner.output
+        if runner.success?
+          runner.output
+        else
+          ""
+        end
       end
     end
 
@@ -43,8 +62,12 @@ module Cassie::Schema
       inserts.join("\n")
     end
 
+    # Dump the CQL for the current environment's keyspace,
+    # the schema metadata keyspace, and the versions rows
+    # that are currently in the schema versions table.
     def dump
-      stream << structure
+      stream << keyspace_structure
+      stream << schema_meta_structure
       stream << "\n\n"
       stream << versions_insert_cql
       stream << "\n"
@@ -53,11 +76,11 @@ module Cassie::Schema
     end
 
     def versions_table_name
-      "cassie_schema.versions"
+      "#{Cassie::Schema.schema_keyspace}.#{Cassie::Schema.versions_table}"
     end
 
     def destination_path
-      @destination_path || raise("Unconfigured schema structure path: `Cassie::Schema.paths[:schema_structure]` is empty")
+      @destination_path || raise("Unconfigured schema file path: `Cassie::Schema.paths[:schema_file]` is empty")
     end
 
     protected
@@ -67,7 +90,7 @@ module Cassie::Schema
     end
 
     def default_destination_path
-      Cassie::Schema.paths[:schema_structure]
+      Cassie::Schema.paths[:schema_file]
     end
 
     def prepare_stream
@@ -81,9 +104,9 @@ module Cassie::Schema
     end
 
     def log_versions_not_found(error)
-      msg = "WARNING: Cassie Schema Versions table not found at '#{versions_table_name}'. Create a migration, or initialize your schema for versioned migration support."
-      msg << "\n\t"
-      msg << error.message.split("\n").join("\n\t")
+      msg = "WARNING: Cassie Schema Versions table not found at '#{versions_table_name}'. Initialize your schema with `cassie schema:init` or `cassie:migrations:import` for versioned migration support."
+      msg << "\n\t- "
+      msg << error.message.split("\n").join("\n\t- ")
       logger.warn(msg)
     end
 

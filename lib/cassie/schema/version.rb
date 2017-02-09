@@ -116,7 +116,7 @@ module Cassie::Schema
         executor: executor,
         executed_at: executed_at
       }
-major, minor, patch, and build parts of the version    end
+    end
 
     def to_s
       number

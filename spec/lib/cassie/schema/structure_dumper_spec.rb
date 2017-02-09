@@ -16,17 +16,17 @@ RSpec.describe Cassie::Schema::StructureDumper do
   end
 
   describe "dump" do
-    let(:structure){ "CREATE KEYSPACE dsfijo32809uagew WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true;" }
+    let(:keyspace_structure){ "CREATE KEYSPACE dsfijo32809uagew WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true;" }
     let(:versions_insert_cql){ "INSERT into cassie_schema.versions (props) VALUES (vals);" }
     let(:buffer){ StringIO.new }
     before(:each) do
       allow(object).to receive(:stream){ buffer }
-      allow(object).to receive(:structure){ structure }
+      allow(object).to receive(:keyspace_structure){ keyspace_structure }
       allow(object).to receive(:versions_insert_cql){ versions_insert_cql }
     end
     it "writes structure to stream" do
       object.dump
-      expect(buffer.string).to start_with(structure)
+      expect(buffer.string).to start_with(keyspace_structure)
     end
     it "writes versions_insert_cql to stream" do
       object.dump
@@ -76,8 +76,8 @@ RSpec.describe Cassie::Schema::StructureDumper do
       allow(object).to receive(:versions){ versions }
     end
 
-    it "inserts into version table" do
-      expect(object.versions_insert_cql).to match(/^insert into versions/i)
+    it "inserts into fully qualified versions table" do
+      expect(object.versions_insert_cql).to match(/^insert into cassie_schema.versions/i)
     end
     it "inserts into 0th bucket" do
       expect(extract_cql_values(object.versions_insert_cql)['bucket']).to eq "0"
