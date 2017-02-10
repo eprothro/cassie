@@ -25,11 +25,11 @@ Each of these components are designed to be used independently or together in a 
 
 ```ruby
 # Gemfile
-gem 'cassie', '~> 1.0.0.alpha'
+gem 'cassie', '~> 1.0.0'
 ```
 or
 ```bash
-$ gem install cassie --pre
+$ gem install cassie
 ```
 
 ### Database Configuration

@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## 1.0.0
 
 ### Added
 - Full support for versioned schema migrations. See the [Migrations README](./lib/cassie/schema/README.md#readme) for more on features and usage.
