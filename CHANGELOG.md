@@ -8,7 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## Unreleased
 
 ### Added
-- Support for schema migrations. See the [Migrations README](./lib/cassie/schema/README.md#readme) for more on features and usage.
+- Full support for versioned schema migrations. See the [Migrations README](./lib/cassie/schema/README.md#readme) for more on features and usage.
+- Support for importing legacy `cassandra_migrations` migrations. See the [Migrations README](./lib/cassie/schema/README.md#readme).
+- Various `cassie` tasks, see [README](./README.md).
+- Inline documentation
 
 ### Changed
 - `Cassie::Support::SystemCommand` is now `Cassie::Support::SystemCommand`

@@ -143,7 +143,7 @@ Stopping Cassandra...
 [✓] Cassandra Stopped
 ```
 
-#### Restart / Kick
+#### Restart
 ```
 $ cassie restart
 Stopping Cassandra...
@@ -152,7 +152,7 @@ Starting Cassandra...
 [✓] Cassandra Running
 ```
 
-#### Tail / Log
+#### Tail
 ```
 $ cassie tail
 Tailing Cassandra system log, Ctrl-C to stop...
@@ -167,14 +167,15 @@ INFO  [main] 2016-09-23 11:18:05,407 CassandraDaemon.java:477 - Not starting RPC
 
 ### Versioned Schema Migrations
 
-Cassie allows you to migrate between schema states using semantically versioned, incremental mutations.
+Cassie allows you to migrate between schema states using semantically versioned, incremental migration files.
 
-Schema Version information is stored in Cassandra persistence, in the `cassie_schema` keyspace, by default.
+Schema Version information is stored in Cassandra persistence, in the `cassie_schema.versions` table (configurable).
 
+An executable schema file keeps the current state of the schema in-repo, at `db/cassandra/schema.cql`, (configurable).
+
+Various `cassie <task>` tasks are used to manage the schema version and migrations.
 
 #### Tasks
-
-`* = Not yet implemented`
 
 | Task | Description |
 | --- | --- |

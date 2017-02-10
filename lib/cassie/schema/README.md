@@ -2,13 +2,52 @@
 
 Cassie provides versioned migrations similar to many existing adapters and frameworks.
 
-Practically speaking, this gives your cluster Schema its own "version" and simplifies upgrading or downgrading the schema.
+Practically speaking, this gives your cluster Schema its own "version" and simplifies upgrading or rolling back the schema.
 
-As such, Cassie uses semantic versioning, where a defined version describes all non-system keyspaces.
+As such, Cassie uses semantic versioning, where a defined version describes the keyspace defined in the cluster configuration.
 
-Major, minor, patch, and build versions are used, however semantic extensions are not supported (prerelase or metadata, ex: 1.0.0.beta).
+Major, minor, patch, and build versions are used, however semantic extensions are not recommended (prerelase or metadata, eg: 1.0.0.beta).
 
 ### Schema Migrations
+
+#### Getting Started
+
+If an existing schema (e.g. keyspace, tables, types) is alredy defined, it can be imported and versioned.
+
+#### Coming from `cassandra_migrations`
+
+Import your existing `cassandra_migrations` migration files with a single task:
+
+```
+
+```
+
+> The original `cassandra_migrations` migration files and schema in the physical layer are not changed. Remove the old files when comfortable.
+
+
+
+#### Coming from no explicit migration/versioning management
+
+Import your existing schema held in Cassandra with a single task:
+
+* Dump your current schema into `db/cassandra/cassandra.cdl`
+* Copy the current schema into an initial `up` migration.
+* Result in a current version of `0.1.0`
+
+```
+cassie schema:import
+=> 0.1.0 - migrations/000_001_000_initial_schema.cdl
+schema now at v0.1.0
+```
+Set the version if something other than 0.1.0 is desired.
+
+```
+cassie schema:import 0.15.3
+=> 0.15.3 - migrations/000_015_003_initial_schema.cdl
+schema now at v0.15.3
+```
+
+
 #### Creating a migration
 
 ```
@@ -144,53 +183,6 @@ Example of changing replication for production and how overrides keep dev workin
 This works for starting out, single app, single dev.
 
 This also scales well to multiple apps or microservices, and multiple teams (ops, etc.), managing and depending on a central repository of migrations with a semantically versioned database schema.
-
-### Transitioning from Other Tools
-
-### Adding Versioning to an Existing Schema
-
-#### Coming from `cassandra_migrations`
-
-Support for sucking in `cassandra_migrations` migration files and changing to semantic versioning.
-
-Import your existing `cassandra_migrations` migration files with a single task:
-
-* Create files in `Cassie::configuration[:migrations_directory]` for each migration
-  * new file prefixes are `0000_0000_0000_000i` where i increments for each migration.
-* Add a versioned migration that removes `cassandra_migrations` schema from your database.
-* Results in a current version of `0.0.1.0`
-  * all imported versions are `0.0.0.i` where i increments for each migration.
-
-The original `cassandra_migrations` migration files and schema in the physical layer are not changed. Remove them when comfortable.
-
-```
-cassie schema:import db/cassandra_migrate
-=> 0.0.1 - cassandra_migrate/20160818213805_create_users.rb -> migrations/000_000_001_create_users.rb
-=> 0.0.2 - cassandra_migrate/20160818213811_create_widgets.rb -> migrations/000_000_002_create_widgets.rb
-=> 0.0.3 - cassandra_migrate/20160818213843_create_sprockets.rb -> migrations/000_000_003_create_sprockets.rb
-3 migrations imported
-```
-
-#### Coming from no explicit migration/versioning management
-
-Import your existing schema held in Cassandra with a single task:
-
-* Dump your current schema into `db/cassandra/cassandra.cdl`
-* Copy the current schema into an initial `up` migration.
-* Result in a current version of `0.1.0`
-
-```
-cassie schema:import
-=> 0.1.0 - migrations/000_001_000_initial_schema.cdl
-schema now at v0.1.0
-```
-Set the version if something other than 0.1.0 is desired.
-
-```
-cassie schema:import 0.15.3
-=> 0.15.3 - migrations/000_015_003_initial_schema.cdl
-schema now at v0.15.3
-```
 
 ### Architecture
 

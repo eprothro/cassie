@@ -13,6 +13,7 @@ namespace :cassie do
         if migrator.commands.count == 0
           if migrator.target_version == migrator.current_version
             puts "   > Already at #{migrator.target_version}, nothing to do..."
+            abort
           else
             raise "No migration files found to migrate to #{migrator.target_version}, staying at #{migrator.current_version}"
           end

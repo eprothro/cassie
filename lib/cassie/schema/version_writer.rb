@@ -74,7 +74,7 @@ module Cassie::Schema
     end
 
     def build_migration_contents
-      return @migration_contents if defined(@migration_contents)
+      return @migration_contents if defined?(@migration_contents)
       <<-EOS
 class #{version.migration_class_name} < Cassie::Schema::Migration
   def up

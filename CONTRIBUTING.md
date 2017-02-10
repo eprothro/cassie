@@ -18,7 +18,7 @@ If you need a real Cassandra connection to reproduce. To run the integration sui
 
 ## Ideas
 
-Open an issue for conversation about any ideas or suggestions.
+Feel more than free to open an issue for conversation about any ideas or suggestions.
 
 
 ## Making Changes

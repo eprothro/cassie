@@ -26,7 +26,7 @@ RSpec.describe Cassie::Schema::Migrator do
   end
 
   describe "migrate" do
-    let(:command){ double(execute: nil, version: nil) }
+    let(:command){ double(execute: nil, version: nil, direction: :up) }
 
     it "calls execute method on commands" do
       allow(object).to receive(:commands){ [command] }
@@ -41,7 +41,7 @@ RSpec.describe Cassie::Schema::Migrator do
     it "calls callback before with migration" do
       callback = Proc.new{}
       object.before_each = callback
-      expect(callback).to receive(:call).with(a_version_like(local_versions.last))
+      expect(callback).to receive(:call).with(a_version_like(local_versions.last), :up)
       object.migrate
     end
     it "calls callback after with migration and duration" do

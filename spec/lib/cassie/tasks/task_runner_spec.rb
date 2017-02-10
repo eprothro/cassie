@@ -35,7 +35,7 @@ RSpec.describe Cassie::Tasks::TaskRunner do
       "migrate:reset",
       "schema:version",
       "schema:history",
-      # "schema:status",
+      "schema:status",
       "schema:load",
       "schema:drop",
       "schema:reset",

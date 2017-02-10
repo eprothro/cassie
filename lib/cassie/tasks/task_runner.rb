@@ -11,8 +11,15 @@ module Cassie
         if Rake::Task.task_defined?(task)
           Rake::Task[task].invoke
         else
-          puts "'#{cmd}' is not a supported command.\n\n" unless args.delete('--help')
-          print_documentation
+          case args.delete_at(0)
+          when "--help"
+            print_documentation
+          when "-v"
+            puts Cassie::VERSION
+          else
+            puts "'#{cmd}' is not a supported command.\n\n"
+            print_documentation
+          end
         end
       end
 

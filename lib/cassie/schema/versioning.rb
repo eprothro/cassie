@@ -156,7 +156,7 @@ module Cassie::Schema
     end
 
     def uninitialized_message
-      "Cassie Schema Versions table not found at '#{schema_keyspace}.#{versions_table}'. Create a migration or initialize your schema to enable versioned migration support."
+      "Cassie Schema Versions table not found at '#{schema_keyspace}.#{versions_table}'. Enable versioned migration support with `cassie schema:init`."
     end
   end
 end
