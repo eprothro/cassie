@@ -13,7 +13,7 @@ module Cassie::Schema
 
     def build_filename
       path = VersionWriter.new(version).existing_file
-      File.absolute_path(path)
+      File.absolute_path(path) if path
     end
   end
 end

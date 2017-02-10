@@ -13,7 +13,7 @@ module Cassie::Schema
     def initialize(target)
       @target_version   = build_target_version(target)
       @current_version  = Cassie::Schema.version
-      @direction        = target_version >= current_version ? :up : :down
+      @direction        = build_direction
       @before_each      = Proc.new{}
       @after_each       = Proc.new{}
       @commands         = send("build_#{direction}_commands")
@@ -44,15 +44,19 @@ module Cassie::Schema
       when /^[\d\.]+$/
         Version.new(target)
       when nil
-        local_versions.last
+        local_versions.last || Cassie::Schema.version
       else
         raise ArgumentError, "Migrator target must be a `Version` object, version string, or nil"
       end
     end
 
+    def build_direction
+      target_version >= current_version ? :up : :down
+    end
+
     def commands_with_callbacks
       commands.each do |command|
-        before_each.call(command.version)
+        before_each.call(command.version, command.direction)
         duration = Benchmark.realtime do
           yield(command)
         end

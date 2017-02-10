@@ -11,6 +11,7 @@ namespace :cassie do
     else
       process.errors.each{|e| puts red("  " + e.gsub("; nested exception is:", "")) }
       puts "[#{red('✘')}] Cassandra Failed to Start"
+      abort
     end
   end
 end

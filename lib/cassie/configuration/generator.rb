@@ -19,6 +19,7 @@ module Cassie
       end
 
       def save
+        raise "#{destination_path} already exists" if File.exists?(destination_path)
         File.open(destination_path, "w+") do |f|
           f.write(render)
         end

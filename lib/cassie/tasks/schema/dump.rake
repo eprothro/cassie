@@ -5,12 +5,16 @@ namespace :cassie do
       include Cassie::Tasks::IO
 
       begin
+        puts "-- Dumping Cassandra schema (version #{Cassie::Schema.version})"
         dumper = Cassie::Schema::StructureDumper.new
+        puts "   - Writing to #{dumper.destination_path}"
         dumper.dump
-        puts "[#{green("✓")}] Cassandra schema (version #{Cassie::Schema.version}) written to #{dumper.destination_path}"
+        puts "   - done"
+        puts "-- done"
 
       rescue => e
-        puts red("Error:\n#{e.message}")
+        puts red("Error:  \n#{e.message}")
+        abort
       end
     end
   end

@@ -6,11 +6,13 @@ namespace :cassie do
 
       begin
         loader = Cassie::Schema::StructureLoader.new
+        puts "-- Loading Schema from #{loader.source_path}"
         loader.load
-        puts "[#{green("✓")}] Cassandra schema loaded from #{loader.source_path}. Schema is at #{Cassie::Schema.version}"
-
+        puts "   > Schema is now at version #{Cassie::Schema.version}"
+        puts "-- done"
       rescue => e
-        puts red("Error:\n#{e.message}")
+        puts red("Error:\n  #{e.message}")
+        abort
       end
     end
   end

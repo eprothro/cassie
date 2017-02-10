@@ -80,19 +80,23 @@ RSpec.describe Cassie::Schema::Versioning do
     end
   end
 
-  describe "next_local_version" do
+  describe "next_version" do
     context "when local_versions are empty" do
       before(:each) do
         allow(mod).to receive(:local_versions){[]}
       end
       it "gives 0.0.1.0 version" do
-        expect(mod.next_local_version).to eq(Cassie::Schema::Version.new('0.0.1.0'))
+        expect(mod.next_version).to eq(Cassie::Schema::Version.new('0.0.1.0'))
       end
     end
     context "when migrations exist" do
       it "bumps max version" do
       end
       it "returns new version" do
+      end
+    end
+    context "when current version is higher than local version" do
+      it "bumps from current version" do
       end
     end
   end

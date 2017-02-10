@@ -5,11 +5,12 @@ RSpec.describe "cassie:migrations:import rake task" do
   let(:object){ Rake::Task["cassie:migrations:import"] }
   let(:buffer){ StringIO.new }
   let(:versions){ [fake_version(1)] }
-  let(:importer){ double(import: true) }
+  let(:importer){ double(import: true, :before_each= => nil, :after_each= => nil ) }
   let(:options){ [] }
 
   before(:each) do
     allow_any_instance_of(Cassie::Tasks::IO).to receive(:options){ options }
+    allow_any_instance_of(Cassie::Tasks::IO).to receive(:abort){ nil }
   end
 
   describe "#invoke" do

@@ -27,6 +27,9 @@ RSpec.describe Cassie::Schema::VersionLoader do
     context "when the file doesn't define a migration class" do
       it "returns false"
     end
+    context "when there is no file" do
+      it "returns false"
+    end
   end
 end
 

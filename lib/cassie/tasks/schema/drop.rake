@@ -10,18 +10,18 @@ namespace :cassie do
         puts "-- Dropping #{keyspaces.count} keyspaces"
         keyspaces.each do |keyspace|
           query.keyspace = keyspace
+          puts "   - Dropping '#{keyspace}'"
           if Cassie.keyspace_exists?(keyspace)
             query.execute
-            puts "  Dropped '#{keyspace}'"
           else
-            puts "  '#{keyspace}' does not exist, proceeding..."
+            puts "     > '#{keyspace}' does not exist"
           end
-
-
+          puts "   - done"
         end
-        puts "done."
+        puts "-- done"
       rescue => e
-        puts red("Error:\n#{e.message}")
+        puts red("Error:\n  #{e.message}")
+        abort
       end
     end
   end

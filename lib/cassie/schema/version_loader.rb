@@ -12,6 +12,7 @@ module Cassie::Schema
     #
     # @raise [NameError] if the migration class could not be loaded
     def load
+      return false unless filename
       require filename
 
       begin

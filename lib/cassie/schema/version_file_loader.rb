@@ -28,7 +28,7 @@ module Cassie::Schema
       number = matches.first.tr('_','.')
       description = matches.last.try(:humanize)
 
-      Version.new(number, description).prepare_for_execution
+      Version.new(number, description)
     end
   end
 end

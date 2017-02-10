@@ -23,18 +23,21 @@ namespace :cassie do
       end.parse!(options)
 
       begin
-        name = options[0] || raise("A migration description is required:\n  $ cassie migration:create mutation_description")
+        raise("A migration description is required.\n\nUsage:\n  cassie migration:create simple description") if options.empty?
+        name = options.join(" ")
 
-        version = Cassie::Schema.next_local_version(opts[:bump_type])
+        version = Cassie::Schema.next_version(opts[:bump_type])
         version.description = name
-        puts("Creating migration for schema version #{version.number}")
+        puts("-- Creating migration file for version #{version.number}")
 
         writer = Cassie::Schema::VersionWriter.new(version)
         writer.write
         rel_path = writer.filename.sub(Dir.pwd, "")
-        puts green("  create #{rel_path}")
+        puts "   > #{green('created')} #{rel_path}"
+        puts "-- done"
       rescue => e
-        puts red("Error:\n#{e.message}")
+        puts red("Error:\n  #{e.message}")
+        abort
       end
     end
   end

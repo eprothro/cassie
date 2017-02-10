@@ -30,6 +30,42 @@ RSpec.describe Cassie::Schema::Version do
     end
   end
 
+  describe "==" do
+    it "matches for same version number" do
+      expect(klass.new('0.1.2') == klass.new('0.1.2.0')).to be true
+    end
+    it "doesn't match for different version number" do
+      expect(klass.new('0.1.2') == klass.new('0.1.3')).to be false
+    end
+  end
+
+  describe "eql?" do
+    it "matches for same version number" do
+      expect(klass.new('0.1.2').eql?(klass.new('0.1.2.0'))).to be true
+    end
+    it "doesn't match for different version number" do
+      expect(klass.new('0.1.2').eql?(klass.new('0.1.3'))).to be false
+    end
+  end
+
+  describe "hash" do
+    it "matches for same version number" do
+      expect(klass.new('0.1.2').hash).to eq(klass.new('0.1.2.0').hash)
+    end
+    it "doesn't match for different version number" do
+      expect(klass.new('0.1.2').hash).not_to eq(klass.new('0.1.3').hash)
+    end
+  end
+
+  describe "union with |" do
+    it "doesn't duplicate" do
+      expect([klass.new('1')] | [klass.new('1')]).to eq([klass.new('1')])
+    end
+    it "joins members" do
+      expect([klass.new('1')] | [klass.new('2')]).to eq([klass.new('1'), klass.new('2')])
+    end
+  end
+
   describe "next" do
     it "adds 1 to patch" do
       expect(object.next.number).to eq("0.1.3.0")

@@ -9,12 +9,16 @@ namespace :cassie do
       include Cassie::Tasks::IO
 
       begin
+        puts "-- Initializing Cassie Versioning"
         Cassie::Schema.initialize_versioning
-        puts "[#{green("✓")}] Versioned migrations initialized. Current version: #{Cassie::Schema.version}"
+        puts "-- done"
       rescue Cassie::Schema::AlreadyInitiailizedError
-        puts "[#{white('╍')}] Versioned migration metatdata already exists. Current version: #{Cassie::Schema.version}"
+        puts "   > Cassie Versioning already initialized "
+        puts "   > Schema is at version #{Cassie::Schema.version}"
+        puts "-- done"
       rescue => e
-        puts red("Error:\n#{e.message}")
+        puts red("Error:\n  #{e.message}")
+        abort
       end
     end
 
@@ -22,23 +26,28 @@ namespace :cassie do
     task :init_keyspace do
       include Cassie::Tasks::IO
       Cassie.keyspace = nil
+
       begin
+        name = Cassie.configuration[:keyspace]
+        puts "-- Initializing '#{name}' Keyspace"
         query = Cassie::Schema::CreateKeyspaceQuery.new
-        query.name = Cassie.configuration[:keyspace]
+        query.name = name
         if Cassie.configuration[:replication]
+          #@todo fill in
         end
 
         if Cassie.keyspace_exists?(query.name)
-          puts "[#{white("╍")}] Keyspace '#{query.name}' already exists."
+          puts "   > '#{name}' already exists"
         else
           query.execute
-          puts "[#{green("✓")}] Keyspace '#{query.name}' initialized."
         end
+        puts "-- done"
 
       rescue => e
-        puts "Couldn't create keyspace, check #{Cassie.paths[:cluster_configurations]}:\n#{query.to_cql}"
+        puts red("Couldn't create keyspace, check #{Cassie.paths[:cluster_configurations]}:\n#{query.to_cql}")
         puts "\t"
-        puts red("Error:\n#{e.message}")
+        puts red("Error:\n  #{e.message}")
+        abort
       end
     end
   end

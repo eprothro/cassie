@@ -1,3 +1,4 @@
+require 'etc'
 require_relative 'migration'
 require_relative 'version_writer'
 require_relative 'version_file_loader'
@@ -39,10 +40,26 @@ module Cassie::Schema
 
     # Record a version in the schema version store.
     # This should only be done if the version has been sucesfully migrated
+    # @param [Version] The version to record
+    # @param [Boolean] set_execution_metadata Determines whether or not to populate
+    #   the version object with execution tracking info (+id+, +executed_at+, and +executor+).
     # @return [Boolean] whether succesfull or not
-    def record_version(version)
-      InsertVersionQuery.new(version: version).execute
+    # @raises [StandardError] if version could not be recorded. If this happens,
+    #   execution_metadata will not be preset on the version object.
+    def record_version(version, set_execution_metadata=true)
+      if set_execution_metadata
+        time = Time.now
+        version.id = Cassandra::TimeUuid::Generator.new.at(time)
+        version.executed_at = time
+        version.executor = Etc.getlogin rescue '<unknown>'
+      end
+
+      InsertVersionQuery.new(version: version).execute!
       @applied_versions = nil
+    rescue StandardError
+      version.id = nil
+      version.executed_at = nil
+      version.executor = nil
     end
 
     # Remove the version from the schema version store.
@@ -69,8 +86,8 @@ module Cassie::Schema
       @local_versions ||= load_local_versions
     end
 
-    # A version with a version number after
-    # the most recent of {#local_versions}.
+    # A version with an incremented version number that would be
+    # applied after the latest (local or applied) migration.
     # @param [Symbol, nil] bump_type Which semantic version to bump
     # @option bump_type [Symbol] :build Bump the build version
     # @option bump_type [Symbol] :patch Bump the patch version, set build to 0
@@ -78,9 +95,11 @@ module Cassie::Schema
     # @option bump_type [Symbol] :major Bump the major version, set minor, patch, and build to 0
     # @option bump_type [nil] nil Default, bumps patch, sets build to 0
     # @return [Version] The initialized, bumped version
-    def next_local_version(bump_type=nil)
-      version = local_versions.max || Version.new('0')
-      version.next(bump_type)
+    def next_version(bump_type=nil)
+      local_max = local_versions.max || Version.new('0')
+      applied_max = applied_versions.max || Version.new('0')
+      max_version  = [local_max, applied_max].max
+      max_version.next(bump_type)
     end
 
     protected
@@ -93,6 +112,7 @@ module Cassie::Schema
       Cassie.keyspace_exists?(Cassie::Schema.schema_keyspace)
     end
 
+    # load version migration class from disk
     def load_applied_versions
       database_versions.tap do |versions|
         versions.each{|v| VersionObjectLoader.new(v).load }

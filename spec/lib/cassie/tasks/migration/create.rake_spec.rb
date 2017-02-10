@@ -15,7 +15,7 @@ RSpec.describe "cassie:migration:create rake task" do
   describe "#invoke" do
     before(:each) do
       allow_any_instance_of(Cassie::Tasks::IO).to receive(:io){ buffer }
-      allow(Cassie::Schema).to receive(:next_local_version){version}
+      allow(Cassie::Schema).to receive(:next_version){version}
     end
     after(:each) { object.reenable }
 
@@ -29,7 +29,7 @@ RSpec.describe "cassie:migration:create rake task" do
         object.invoke
       end
       it "uses next version" do
-        allow(Cassie::Schema).to receive(:next_local_version){ version }
+        allow(Cassie::Schema).to receive(:next_version){ version }
         expect(Cassie::Schema::VersionWriter).to receive(:new){ writer } do |v|
           expect(v).to eq(version)
         end

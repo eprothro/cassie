@@ -4,28 +4,31 @@ namespace :cassie do
     task :migrate do
       include Cassie::Tasks::IO
 
-      version = options[0]
+      begin
+        version = options[0]
 
-      migrator = Cassie::Schema::Migrator.new(version)
+        migrator = Cassie::Schema::Migrator.new(version)
+        puts "-- Migrating to version #{migrator.target_version}"
 
-      migrator.before_each = Proc.new do |v, direction|
-        puts "-- Migragting #{direction}: #{v}"
-      end
-
-      migrator.after_each = Proc.new do |_migration, duration|
-        puts "-- done (#{duration} ms)"
-      end
-
-      if migrator.commands.count == 0
-        if migrator.target_version == migrator.current_version
-          puts "Already at #{migrator.target_version}, no migrations to process..."
+        if migrator.commands.count == 0
+          if migrator.target_version == migrator.current_version
+            puts "   > Already at #{migrator.target_version}, nothing to do..."
+          else
+            raise "No migration files found to migrate to #{migrator.target_version}, staying at #{migrator.current_version}"
+          end
         else
-          puts "No migrations found to migrate to #{migrator.target_version}, staying at #{migrator.current_version}"
+          migrator.before_each = Proc.new do |v, direction|
+            puts "   - Migragting version #{v} #{direction.upcase}"
+          end
+          migrator.after_each = Proc.new do |_migration, duration|
+            puts "   - done (#{duration} ms)"
+          end
+          migrator.migrate
+          puts "-- done"
         end
-      else
-        puts "Migrating #{migrator.direction} to schema version #{migrator.target_version}:"
-        migrator.migrate
-        puts "\nMigration complete. Schema is at #{migrator.target_version}"
+      rescue => e
+        puts red("Error:\n  #{e.message}")
+        abort
       end
     end
   end

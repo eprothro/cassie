@@ -23,6 +23,7 @@ require 'cassie'
 require 'cassie_helper'
 require 'lookup_path'
 require 'break_io_popen'
+require 'break_task_abort'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

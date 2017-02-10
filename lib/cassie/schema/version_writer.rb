@@ -29,7 +29,20 @@ module Cassie::Schema
       else
         ensure_unique_version
         File.open(filename, 'w'){ |file| yield file }
+        # load the file, so the definition for source
+        # for the methods will come from that file
+        # instead of (eval)
+        load File.absolute_path(filename)
       end
+    end
+
+    def migration_contents=(contents)
+      @migration_contents = contents
+    end
+
+    def migration_contents
+      return @migration_contents if defined?(@migration_contents)
+      build_migration_contents
     end
 
     def filename
@@ -60,7 +73,8 @@ module Cassie::Schema
       end
     end
 
-    def migration_contents
+    def build_migration_contents
+      return @migration_contents if defined(@migration_contents)
       <<-EOS
 class #{version.migration_class_name} < Cassie::Schema::Migration
   def up
@@ -81,7 +95,7 @@ end
     def description_suffix
       return nil unless version.description
 
-      "_" + version.description.underscore
+      "_" + version.description.parameterize(separator: '_', preserve_case: true)
     end
 
     def default_up_code
