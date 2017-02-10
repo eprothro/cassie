@@ -10,6 +10,13 @@ Major, minor, patch, and build versions are used, however semantic extensions ar
 
 ### Schema Migrations
 
+Schema version and migrations are managed through various `cassie` tasks. See below for basic usage.
+
+List command descriptions and advanced options:
+```
+cassie --help
+```
+
 #### Getting Started
 
 If no schema has been defined yet (e.g. no keyspace, tables, or types), simply initialize Cassie versioning:

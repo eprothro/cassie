@@ -33,7 +33,14 @@ EOS
         Rake.application.tasks.each do |task|
           docs += "  #{task.name.sub('cassie:','').ljust(25)} # #{task.comment}\n"
         end
+        docs += <<-EOS
 
+Options:
+  -h, --help                # Print this documentation
+  -v, --version             # List the library version
+  <command> --help          # List options for a given command
+
+EOS
 
         puts docs
       end
