@@ -5,7 +5,7 @@ namespace :cassie do
       include Cassie::Tasks::IO
 
       begin
-        version = options[0]
+        version = argv[0]
 
         migrator = Cassie::Schema::Migrator.new(version)
         puts "-- Migrating to version #{migrator.target_version}"

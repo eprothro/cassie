@@ -2,13 +2,13 @@ require 'cassie/tasks'
 
 RSpec.describe "cassie:tail rake task" do
   let(:object){ Rake::Task["cassie:tail"] }
-  let(:options){ [] }
+  let(:argv){ [] }
   let(:buffer){ StringIO.new }
   let(:log_path){ "some path" }
 
   before(:each) do
     allow(Cassie::Support::ServerProcess).to receive(:log_path){ log_path }
-    allow_any_instance_of(Cassie::Tasks::IO).to receive(:options){ options }
+    allow_any_instance_of(Cassie::Tasks::IO).to receive(:argv){ argv }
     allow_any_instance_of(Cassie::Tasks::IO).to receive(:io){ buffer }
   end
   after(:each){ object.reenable }

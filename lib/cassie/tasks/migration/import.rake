@@ -14,7 +14,7 @@ namespace :cassie do
           args.on("-p", "--path", "Directory containing existing migrations. Defaults to 'db/cassandra_migrate'.") do |p|
             opts[:path] = p
           end
-        end.parse!(options)
+        end.parse!(argv)
 
         importer = Cassie::Schema::CassandraMigrations::Importer.new(opts[:path])
         importer.before_each = Proc.new do |migration_file|

@@ -19,7 +19,7 @@ namespace :cassie do
           args.on("-n", "--name", "Application name. Used as prefix for keyspace names. Defaults to 'my_app'") do |n|
             opts[:app_name] = n
           end
-        end.parse!(options)
+        end.parse!(argv)
 
         puts "-- Generating sample cassie cluster configuration file"
         generator = Cassie::Configuration::Generator.new(opts)

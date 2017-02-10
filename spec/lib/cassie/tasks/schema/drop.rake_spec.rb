@@ -4,10 +4,10 @@ require 'cassie/tasks'
 RSpec.describe "cassie:schema:drop rake task" do
   let(:object){ Rake::Task["cassie:schema:drop"] }
   let(:buffer){ StringIO.new }
-  let(:options){ [] }
+  let(:argv){ [] }
 
   before(:each) do
-    allow_any_instance_of(Cassie::Tasks::IO).to receive(:options){ options }
+    allow_any_instance_of(Cassie::Tasks::IO).to receive(:argv){ argv }
   end
 
   describe "#invoke" do

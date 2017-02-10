@@ -6,10 +6,10 @@ RSpec.describe "cassie:migrations:import rake task" do
   let(:buffer){ StringIO.new }
   let(:versions){ [fake_version(1)] }
   let(:importer){ double(import: true, :before_each= => nil, :after_each= => nil ) }
-  let(:options){ [] }
+  let(:argv){ [] }
 
   before(:each) do
-    allow_any_instance_of(Cassie::Tasks::IO).to receive(:options){ options }
+    allow_any_instance_of(Cassie::Tasks::IO).to receive(:argv){ argv }
     allow_any_instance_of(Cassie::Tasks::IO).to receive(:abort){ nil }
   end
 

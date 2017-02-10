@@ -8,7 +8,7 @@ namespace :cassie do
       args.on("-a", "--all", "Stop all cassandra processes, not just the server (e.g. cqlsh). Defaults to false.") do |a|
         opts[:kill_all] = a || false
       end
-    end.parse!(options)
+    end.parse!(argv)
 
     procs = Cassie::Support::ServerProcess.all
 

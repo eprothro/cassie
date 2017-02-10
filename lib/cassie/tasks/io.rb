@@ -8,7 +8,7 @@ module Cassie::Tasks
       $stdout
     end
 
-    def options
+    def argv
       ARGV
     end
   end

@@ -5,10 +5,10 @@ RSpec.describe "cassie:configuration:generate rake task" do
   let(:object){ Rake::Task["cassie:configuration:generate"] }
   let(:buffer){ StringIO.new }
   let(:generator){ double(save: true, destination_path: nil) }
-  let(:options){ [] }
+  let(:argv){ [] }
 
   before(:each) do
-    allow_any_instance_of(Cassie::Tasks::IO).to receive(:options){ options }
+    allow_any_instance_of(Cassie::Tasks::IO).to receive(:argv){ argv }
   end
 
   describe "#invoke" do

@@ -23,11 +23,11 @@ namespace :cassie do
         args.on("-v", "--version VERSION", "Explicitly set version") do |v|
           opts[:version] = v
         end
-      end.parse!(options)
+      end.parse!(argv)
 
       begin
-        raise("A migration description is required.\n\nUsage:\n  cassie migration:create simple description") if options.empty?
-        name = options.join(" ")
+        raise("A migration description is required.\n\nUsage:\n  cassie migration:create simple description") if argv.empty?
+        name = argv.join(" ")
 
         version = Cassie::Schema::Version.new(opts[:version]) if opts[:version]
         version ||= Cassie::Schema.next_version(opts[:bump_type])
