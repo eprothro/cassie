@@ -14,8 +14,7 @@ namespace :cassie do
       rescue Cassie::Schema::AlreadyInitiailizedError
         puts "[#{white('╍')}] Versioned migration metatdata already exists. Current version: #{Cassie::Schema.version}"
       rescue => e
-        puts e.message
-        exit(1)
+        puts red("Error:\n#{e.message}")
       end
     end
 
@@ -39,8 +38,7 @@ namespace :cassie do
       rescue => e
         puts "Couldn't create keyspace, check #{Cassie.paths[:cluster_configurations]}:\n#{query.to_cql}"
         puts "\t"
-        puts red(e.message)
-        exit(1)
+        puts red("Error:\n#{e.message}")
       end
     end
   end

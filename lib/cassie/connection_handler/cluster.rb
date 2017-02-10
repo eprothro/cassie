@@ -13,7 +13,7 @@ module Cassie::ConnectionHandler
       include Instrumentation
     end
 
-    # The cluster connection and metadata. This attribute is
+    # The cluster connection and metadata. This cluster connection is
     # lazy-loaded, not calling out to Cassandra until it is first
     # accessed. The single cluster object is cached for the entire process.
     # @return [Cassandra::Cluster] The underlying driver cluster object

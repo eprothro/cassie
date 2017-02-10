@@ -1,3 +1,5 @@
+require 'etc'
+
 module Cassie::Schema
   class Version
     include Comparable
@@ -120,6 +122,14 @@ module Cassie::Schema
 
     def to_s
       number
+    end
+
+    # @return [Version] the prepared version
+    def prepare_for_execution
+      self.id = Cassandra::TimeUuid::Generator.new.now
+      self.executor = Etc.getlogin rescue '<unknown>'
+      self.executed_at = Time.now
+      self
     end
 
     protected

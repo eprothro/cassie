@@ -190,7 +190,7 @@ Schema Version information is stored in Cassandra persistence, in the `cassie_sc
 | schema:drop | drop keyspace(s) |
 | schema:dump | Dumps the schema for all non-system keyspaces in CQL format (`db/cassandra/schema.cql` by default) |
 | schema:reset | runs schema:drop and schema:load|
-| *schema:import | Create an initial migration based on the current Cassandra non-system schema |
+| schema:import | Create an initial migration based on the current Cassandra non-system schema |
 
 See the [Migrations README](./lib/cassie/schema/README.md#readme) for more on features and usage.
 

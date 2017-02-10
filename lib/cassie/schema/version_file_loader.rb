@@ -1,4 +1,3 @@
-require 'etc'
 require_relative 'version_loader'
 
 module Cassie::Schema
@@ -16,8 +15,11 @@ module Cassie::Schema
 
       # return the applied version if it exists, since it will
       # have the full and current information about the version
-      # fall back to this unapplied_version if not
+      # fall back to this unapplied_version if version is not applied
       Cassie::Schema.applied_versions.find{ |v| v == unapplied_version } || unapplied_version
+    rescue Cassie::Schema::UninitializedError => e
+      # version cannot be applied if cassie schema meta is not initialized
+      unapplied_version
     end
 
     def build_unapplied_version
@@ -25,11 +27,8 @@ module Cassie::Schema
 
       number = matches.first.tr('_','.')
       description = matches.last.try(:humanize)
-      id = Cassandra::TimeUuid::Generator.new.now
-      executor = Etc.getlogin rescue '<unknown>'
-      executed_at = Time.now
 
-      Version.new(number, description, id, executor, executed_at)
+      Version.new(number, description).prepare_for_execution
     end
   end
 end

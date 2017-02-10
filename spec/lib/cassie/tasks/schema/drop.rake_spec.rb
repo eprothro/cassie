@@ -13,6 +13,7 @@ RSpec.describe "cassie:schema:drop rake task" do
   describe "#invoke" do
     before(:each) do
       allow_any_instance_of(Cassie::Tasks::IO).to receive(:io){ buffer }
+      allow(Cassie).to receive(:keyspace_exists?){ true }
     end
     after(:each) { object.reenable }
 

@@ -4,12 +4,16 @@ module Cassie::Schema
   class VersionWriter
     attr_reader :io
     attr_reader :version
-    attr_accessor :migration_contents
+
+    attr_accessor :up_code
+    attr_accessor :down_code
 
     def initialize(version, io=nil)
-      @version = version
-      @migration_contents = default_migration_contents
       @io = io
+      @version = version
+      @up_code = default_up_code
+      @down_code = default_down_code
+
       ensure_dir_exist
     end
 
@@ -56,15 +60,15 @@ module Cassie::Schema
       end
     end
 
-    def default_migration_contents
+    def migration_contents
       <<-EOS
 class #{version.migration_class_name} < Cassie::Schema::Migration
   def up
-    # Code to execute when executing this migration
+    #{up_code}
   end
 
   def down
-    # Code to execute when rolling back this migration
+    #{down_code}
   end
 end
       EOS
@@ -78,6 +82,14 @@ end
       return nil unless version.description
 
       "_" + version.description.underscore
+    end
+
+    def default_up_code
+      "# Code to execute when applying this migration"
+    end
+
+    def default_down_code
+      "# Code to execute when rolling back this migration"
     end
   end
 end

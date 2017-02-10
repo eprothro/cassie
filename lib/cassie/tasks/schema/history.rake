@@ -10,7 +10,7 @@ namespace :cassie do
       begin
         print_versions(Cassie::Schema.applied_versions)
       rescue Cassie::Schema::UninitializedError => e
-        puts red(e.message)
+        puts red("Error:\n#{e.message}")
       end
     end
   end

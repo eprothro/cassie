@@ -10,8 +10,7 @@ namespace :cassie do
         puts "[#{green("✓")}] Cassandra schema loaded from #{loader.source_path}. Schema is at #{Cassie::Schema.version}"
 
       rescue => e
-        puts e.message
-        exit(1)
+        puts red("Error:\n#{e.message}")
       end
     end
   end

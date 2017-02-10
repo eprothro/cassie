@@ -7,7 +7,7 @@ module Cassie::Schema
 
     def statement
       cql = %(
-        DROP KEYSPACE #{keyspace};
+        DROP KEYSPACE IF EXISTS #{keyspace};
        )
     end
   end

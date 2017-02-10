@@ -10,8 +10,7 @@ namespace :cassie do
         puts "[#{green("✓")}] Cassandra schema (version #{Cassie::Schema.version}) written to #{dumper.destination_path}"
 
       rescue => e
-        puts e.message
-        exit(1)
+        puts red("Error:\n#{e.message}")
       end
     end
   end
