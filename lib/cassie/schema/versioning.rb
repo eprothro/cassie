@@ -47,9 +47,9 @@ module Cassie::Schema
     # @raises [StandardError] if version could not be recorded. If this happens,
     #   execution_metadata will not be preset on the version object.
     def record_version(version, set_execution_metadata=true)
+      version.id ||= Cassandra::TimeUuid::Generator.new.at(time)
       if set_execution_metadata
         time = Time.now
-        version.id = Cassandra::TimeUuid::Generator.new.at(time)
         version.executed_at = time
         version.executor = Etc.getlogin rescue '<unknown>'
       end

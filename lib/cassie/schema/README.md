@@ -12,68 +12,107 @@ Major, minor, patch, and build versions are used, however semantic extensions ar
 
 #### Getting Started
 
-If an existing schema (e.g. keyspace, tables, types) is alredy defined, it can be imported and versioned.
+If no schema has been defined yet (e.g. no keyspace, tables, or types), simply initialize Cassie versioning:
+
+```
+cassie schema:init
+```
+
+```
+-- Initializing Cassie Versioning
+-- done
+-- Initializing 'my_app_development' Keyspace
+-- done
+```
+
+If an existing schema (e.g. keyspace, tables, types) is alredy defined, see below on how to import it.
 
 #### Coming from `cassandra_migrations`
 
 Import your existing `cassandra_migrations` migration files with a single task:
 
 ```
-
+cassie migrations:import
+```
+```bash
+-- Importing `cassandra_migrations` migration files
+   - Importing db/cassandra_migrate/20161206214301_initial_database.rb
+     > created /db/cassandra/migrations/0000_0000_0000_0001_initial_database.rb
+     > recorded version 0.0.0.1
+   - done
+   - Importing db/cassandra_migrate/20161212210447_add_username_to_users.rb
+     > created /db/cassandra/migrations/0000_0000_0001_0000_add_username_to_users.rb
+     > recorded version 0.0.1.0
+   - done
+   - Importing db/cassandra_migrate/20161213163201_add_reserved_to_users.rb
+     > created /db/cassandra/migrations/0000_0000_0002_0000_add_reserved_to_users.rb
+     > recorded version 0.0.2.0
+   - done
+-- done
 ```
 
 > The original `cassandra_migrations` migration files and schema in the physical layer are not changed. Remove the old files when comfortable.
-
 
 
 #### Coming from no explicit migration/versioning management
 
 Import your existing schema held in Cassandra with a single task:
 
-* Dump your current schema into `db/cassandra/cassandra.cdl`
-* Copy the current schema into an initial `up` migration.
-* Result in a current version of `0.1.0`
-
 ```
 cassie schema:import
-=> 0.1.0 - migrations/000_001_000_initial_schema.cdl
-schema now at v0.1.0
-```
-Set the version if something other than 0.1.0 is desired.
-
-```
-cassie schema:import 0.15.3
-=> 0.15.3 - migrations/000_015_003_initial_schema.cdl
-schema now at v0.15.3
 ```
 
+```
+-- Initializing Cassie Versioning
+-- done
+-- Initializing 'my_app_development' Keyspace
+   > 'my_app_development' already exists
+-- done
+-- Importing Schema from Cassandra
+   - Creating initial version
+     > created db/cassandra/migrations/0000_0000_0001_0000_import_my_app_development.rb
+     > recorded version 0.0.1.0
+   - done
+-- done
+-- Dumping Cassandra schema (version 0.0.1.0)
+   - Writing to db/cassandra/schema.cql
+   - done
+-- done
+```
 
 #### Creating a migration
 
 ```
-cassie migration:create that_killer_feature --minor
+cassie migration:create that killer feature
 ```
+
 ```
-Creating migration for schema version 0.2.0.0
-  create db/cassandra/migrations/000_002_000_000_that_killer_feature.rb
+-- Creating migration file for version 0.0.1.0
+   > created db/cassandra/migrations/0000_0000_0001_0000_that_killer_feature.rb
+-- done
 ```
 
 ```ruby
-# db/cassandra/migrations/000_002_000_000_that_killer_feature.rb
-class Migration_0_2_0_0 < Cassie::Schema::Migration
+# db/cassandra/migrations/0000_0000_0001_0000_that_killer_feature.rb
+class Migration_0_0_1_0 < Cassie::Schema::Migration
   def up
-    # Uses the excellent DSL from `cassandra_migrations`.
+    # Code to execute when applying this migration
+    # Supports the excellent `cassandra_migrations` DSL
+    # or call `execute` to call `Cassandra::Session.execute`
   end
 
   def down
-    # Uses the excellent DSL from `cassandra_migrations`.
+    # Code to execute when rolling back this migration
+    # Supports the excellent `cassandra_migrations` DSL
+    # or call `execute` to call `Cassandra::Session.execute`
   end
 end
+
 ```
 
-By default, the `patch` version will be bumped. Use the `--major`, `--minor`, or `--build` switch to bump differently. Or, explicitly set the version with `cassie migration:create that_fixup 0.1.3.15`.
+By default, the `patch` version will be bumped. Use the `--major` (`-M`), `--minor` (`-m`), or `--build` (`-b`) switches to bump differently. Or, explicitly set the version with `--version` (`-v`): `cassie migration:create that fixup -v 0.1.3.15`.
 
-> *Note:* The class name convention matches only the version in the filename. You can change the description suffix without having to change the classname.
+> *Note:* The class name only needs to match the version in the filename. The description suffix can be changed without having to change the classname.
 
 #### Executing migrations
 
@@ -97,94 +136,129 @@ Use the same interface to migrate up or down to a specific version.
 cassie migrate 0.1.9
 ```
 
-Migrating backwards rolls back the actual state of the schema in the given database. The in-database schema history keeps track of what migrations have been applied and rolls them back in that order. This is one reason for not recommending a `cassie rollback <STEP>` interface. This ensures the following scenario is supported:
-
-* Given the following mirgations exist:
-  * 0.1.0.0
-  * 0.1.1.0
-* And both migrations have been executed.
-* When a migraiton is created for version `0.1.0.99`
-* And the schema is migrated with `cassie migrate 0.1.0.0`
-* Then the `down` method for `0.1.0.99` is NOT executed
-
-* And then when the schema is migrated with `cassie migrate`, the `up` methods from the following migrations are executed:
-  * 0.1.0.99
-  * 0.1.1.0
-
-
 #### Reporting the current version
 ```
 cassie schema:version
-+---------+----------------+-------------+---------------------------+
-| Version | Description    | Migrated by | Migrated at               |
-+---------+----------------+-------------+---------------------------+
-| * 0.2.0 |  create users  | serverbot   | 2016-09-08 10:23:54 -0500 |
-+---------+----------------+-------------+---------------------------+
+```
+```
++-----------+----------------+-------------+---------------------------+
+|  Version  | Description    | Migrated by | Migrated at               |
++-----------+----------------+-------------+---------------------------+
+| * 0.2.0.0 |  create users  | serverbot   | 2016-09-08 10:23:54 -0500 |
++-----------+----------------+-------------+---------------------------+
 ```
 
 #### Reporting the version history
 ```
 cassie schema:history
-+---------+----------------+-------------+---------------------------+
-| Version | Description    | Migrated by | Migrated at               |
-+---------+----------------+-------------+---------------------------+
-| * 0.2.0 |  create users  | serverbot   | 2016-09-08 10:23:54 -0500 |
-|   0.1.0 | initial schema | eprothro    | 2016-09-08 09:23:54 -0500 |
-+---------+----------------+-------------+---------------------------+
+```
+```
++-----------+----------------+-------------+---------------------------+
+|  Version  | Description    | Migrated by | Migrated at               |
++-----------+----------------+-------------+---------------------------+
+| * 0.2.0.0 |  create users  | serverbot   | 2016-09-08 10:23:54 -0500 |
+|   0.1.0.0 | initial schema | eprothro    | 2016-09-08 09:23:54 -0500 |
++-----------+----------------+-------------+---------------------------+
 ```
 
 #### Reporting the version status
 ```
 cassie schema:status
-+---------+----------------+-------------+---------------------------+
-| Version | Description    |   Status    | Migration File            |
-+---------+----------------+-------------+---------------------------+
-| * 0.2.0 |  create users  | serverbot   | 2016-09-08 10:23:54 -0500 |
-|   0.1.0 | initial schema | eprothro    | 2016-09-08 09:23:54 -0500 |
-+---------+----------------+-------------+---------------------------+
+```
+```
++-----------+----------------+-------------+---------------------------+
+|  Version  | Description    |   Status    | Migration File            |
++-----------+----------------+-------------+---------------------------+
+| * 0.2.0.0 |  create users  | serverbot   | 2016-09-08 10:23:54 -0500 |
+|   0.1.0.0 | initial schema | eprothro    | 2016-09-08 09:23:54 -0500 |
++-----------+----------------+-------------+---------------------------+
 ```
 
-### Data Migrations
+### Schema Management
 
-####TODO:
+The full schema is stored in `schema.cql`, this is recommended to be checked into source control.
+It is updated (with a full dump) after each migration, to maintain a truth-store for the schema when used with multiple developers.
 
-Best practice is calling data massaging from the migration, implemented with nice OO elsewhere...
+### Dump the schema
 
-### Schema overrides per environment
+```
+cassie schema:dump
+```
+```
+-- Dumping Cassandra schema (version 0.2.0.0)
+   - Writing to db/cassandra/schema.cql
+   - done
+-- done
+```
 
-####TODO:
+### Drop the schema
+```
+cassie schema:drop
+```
+```
+-- Dropping 2 keyspaces
+   - Dropping 'my_app_development'
+   - done
+   - Dropping 'cassie_schema'
+   - done
+-- done
+```
 
-Migrations define production use case. Development and/or testing use cases may have slightly different needs.
+### Load the schema
+```
+cassie schema:load
+```
+```
+-- Loading Schema from db/cassandra/schema.cql
+   > Schema is now at version 0.2.0.0
+-- done
+```
 
-Configure keyspace and/or table properties per env that should override migrations.
+### Reset the schema
 
-Example of keyspace replication settings.
+```
+cassie schema:reset
+```
+```
+-- Dropping 2 keyspaces
+   - Dropping 'my_app_development'
+   - done
+   - Dropping 'cassie_schema'
+   - done
+-- done
+-- Loading Schema from db/cassandra/schema.cql
+   > Schema is now at version 0.2.0.0
+-- done
+```
 
-Make sure it is clear what the schema dump is (with or without overrides)
+### Reset the schema and migrate
 
-### Multiple Keyspaces
+This task reload the schema from the schema file, and then proceeds with incremental migrations up to the latest migration.
 
-####TODO:
+```
+cassie migrate:reset
+```
+```
+-- Dropping 2 keyspaces
+   - Dropping 'cassie_development'
+   - done
+   - Dropping 'cassie_schema'
+   - done
+-- done
+-- Loading Schema from db/cassandra/schema.cql
+   > Schema is now at version 0.2.0.0
+-- done
+-- Migrating to version 0.2.1.0
+   - Migragting version 0.2.1.0 UP
+   - done (4.89 ms)
+-- done
+-- Dumping Cassandra schema (version 0.2.1.0)
+   - Writing to db/cassandra/schema.cql
+   - done
+-- done
+```
 
-Don't agree with different ENVs for managing multiple keyspaces. That assumes keyspaces align with domains.
-
-Example of counter tables in a separate keyspace for higher replication to make read pressure lower.
-
-Manage multiple keyspaces in configruation.
-
-Configuration defaults to simple replication with durable writes.
-
-Example of changing replication for production and how overrides keep dev working.
-
-### Application Growth
-
-####TODO:
-
-This works for starting out, single app, single dev.
-
-This also scales well to multiple apps or microservices, and multiple teams (ops, etc.), managing and depending on a central repository of migrations with a semantically versioned database schema.
-
-### Architecture
+### Architecture (`cassie` developers)
 
 #### Versions
 
@@ -207,3 +281,19 @@ This class embeds the version number in it, but the `Migration` object does not 
 Cassie only expects that the version number emedded in the class name match the one embedded in the file name.
 
 This means you can change the description embedded in the migration file without having to rename the class.
+
+#### A Note on rollback
+
+Migrating down rolls back the state of the schema in the Cassandra database. The in-database schema history keeps track of what migrations have been applied and rolls them back in that order (as opposed to whatever order the files indicate). This ensures the following scenario is supported:
+
+* Given the following mirgations exist:
+  * 0.1.0.0
+  * 0.1.1.0
+* And both migrations have been executed.
+* When a migraiton is created for version `0.1.0.99`
+* And the schema is migrated with `cassie migrate 0.1.0.0`
+* Then the `down` method for `0.1.0.99` is NOT executed
+
+* And then when the schema is migrated with `cassie migrate`, the `up` methods from the following migrations are executed:
+  * 0.1.0.99
+  * 0.1.1.0

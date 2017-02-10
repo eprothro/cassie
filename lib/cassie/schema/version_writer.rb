@@ -95,7 +95,7 @@ end
     def description_suffix
       return nil unless version.description
 
-      "_" + version.description.parameterize(separator: '_', preserve_case: true)
+      "_" + version.description.parameterize(separator: '_')
     end
 
     def default_up_code
