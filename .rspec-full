@@ -1,6 +1,6 @@
 --color
 --require spec_helper
---require db_spec_helper
+--require full_spec_helper
 --tag only
 #--format documentation
 --format progress

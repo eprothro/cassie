@@ -5,7 +5,7 @@ begin
   RSpec::Core::RakeTask.new(:spec)
 
   RSpec::Core::RakeTask.new(:full_spec) do |t|
-    t.rspec_opts = "--options .rspec-with-db"
+    t.rspec_opts = "--options .rspec-full"
   end
 
   task :default => :spec

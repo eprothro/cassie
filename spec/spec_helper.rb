@@ -22,6 +22,7 @@ require 'code_coverage'
 require 'cassie'
 require 'cassie_helper'
 require 'lookup_path'
+require 'break_io_popen'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

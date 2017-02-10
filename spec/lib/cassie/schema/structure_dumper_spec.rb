@@ -16,25 +16,35 @@ RSpec.describe Cassie::Schema::StructureDumper do
   end
 
   describe "dump" do
-    let(:keyspace_structure){ "CREATE KEYSPACE dsfijo32809uagew WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}  AND durable_writes = true;" }
+    let(:keyspace_structure){ "keyspace structure CQL\n" }
+    let(:schema_meta_structure){ "schema tracking structure CQL\n" }
     let(:versions_insert_cql){ "INSERT into cassie_schema.versions (props) VALUES (vals);" }
     let(:buffer){ StringIO.new }
     before(:each) do
       allow(object).to receive(:stream){ buffer }
       allow(object).to receive(:keyspace_structure){ keyspace_structure }
+      allow(object).to receive(:schema_meta_structure){ schema_meta_structure }
       allow(object).to receive(:versions_insert_cql){ versions_insert_cql }
     end
-    it "writes structure to stream" do
+    it "writes keyspace structure to stream" do
       object.dump
       expect(buffer.string).to start_with(keyspace_structure)
     end
+    it "writes schema structure to stream" do
+      object.dump
+      expect(buffer.string).to match(/\n#{Regexp.quote(schema_meta_structure)}/)
+    end
     it "writes versions_insert_cql to stream" do
       object.dump
-      expect(buffer.string).to match(/\n\n#{Regexp.quote(versions_insert_cql)}/)
+      expect(buffer.string).to match(/\n#{Regexp.quote(versions_insert_cql)}/)
     end
     it "ends with newline" do
       object.dump
       expect(buffer.string).to end_with("\n")
+    end
+    it "closes io" do
+      expect(buffer).to receive(:close)
+      object.dump
     end
   end
 
