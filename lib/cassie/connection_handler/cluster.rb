@@ -25,7 +25,7 @@ module Cassie::ConnectionHandler
       @cluster ||= initialize_cluster
     end
 
-    # @param [String, Symbol] The keyspace name to search for
+    # @param [String, Symbol] name The keyspace name to search for
     # @return [Boolean] indicating if the cluster has the keyspace defined
     def keyspace_exists?(name)
       Cassie.cluster.keyspaces.map(&:name).any?{|k| k.to_s == name.to_s}

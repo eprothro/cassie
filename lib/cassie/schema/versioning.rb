@@ -13,7 +13,7 @@ module Cassie::Schema
   module Versioning
 
     # The current schema version
-    # @returns [Version]
+    # @return [Version]
     def version
       SelectVersionsQuery.new.fetch_first || Version.new('0')
     rescue Cassandra::Errors::InvalidError
@@ -55,12 +55,12 @@ module Cassie::Schema
     end
 
     # Absolute paths to the migration files in the migration directory
-    # @retun [Array<String>]
+    # @return [Array<String>]
     def migration_files
       Dir[root.join(paths["migrations_directory"], "[0-9]*_*.rb")]
     end
 
-    # Versions for the {#local_migrations}
+    # Versions for the {#migration_files}
     # If a migration is applied versions, the object for that
     # version will be the applied version, containing the full
     # information about the applied version
@@ -70,7 +70,7 @@ module Cassie::Schema
     end
 
     # A version with a version number after
-    # the most recent {#local_version}.
+    # the most recent of {#local_versions}.
     # @param [Symbol, nil] bump_type Which semantic version to bump
     # @option bump_type [Symbol] :build Bump the build version
     # @option bump_type [Symbol] :patch Bump the patch version, set build to 0

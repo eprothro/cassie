@@ -98,7 +98,7 @@ module Cassie::Schema
     end
 
     # The migration associated with this version
-    # @return nil if the expected migration class is not defined
+    # @return [Cassie::Schema::Migration, nil] if the expected migration class is not defined
     # @!parse attr_reader :migration
     def migration
       @migration ||= begin
