@@ -25,12 +25,14 @@ Each of these components are designed to be used independently or together in a 
 
 ```ruby
 # Gemfile
-gem 'cassie', '~> 1.0.0'
+gem 'cassie', '~> 1.0.2'
 ```
 or
 ```bash
 $ gem install cassie
 ```
+
+See [`cassie-rails`](https://github.com/eprothro/cassie-rails) for Rails integration.
 
 ### Database Configuration
 
@@ -60,8 +62,6 @@ Cassie.keyspace
 ```
 
 See the [`Configuration` README](./lib/cassie/configuration/README.md#readme) for more on features and usage.
-
-See [`cassie-rails`](https://github.com/eprothro/cassie-rails) for Rails integration with Cassie if you're using Rails.
 
 
 ### Connection Handling
