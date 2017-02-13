@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.3
+
+### Fixed
+- bug where `cassie` commands that accept value-based switches (--path path/to/foo.rb) didn't accept values correctly
+
 ## 1.0.2
 
 ### Fixed
