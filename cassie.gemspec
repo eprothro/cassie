@@ -23,12 +23,12 @@ Gem::Specification.new do |s|
     s.platform    = Gem::Platform::RUBY
   end
 
+  s.executables << "cassie"
+
   s.add_runtime_dependency 'cassandra-driver',  '~> 3.0', '>= 2.1.1'
   s.add_runtime_dependency 'activesupport',     '>= 4.2'
   s.add_runtime_dependency 'terminal-table',    '~> 1.0', '>= 1.4.0'
   s.add_runtime_dependency 'rake',              '>= 0.8.7'
-
-  s.executables << "cassie"
 
   s.add_development_dependency "bundler", "~> 1.10"
 end

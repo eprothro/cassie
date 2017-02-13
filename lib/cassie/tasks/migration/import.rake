@@ -11,7 +11,7 @@ namespace :cassie do
         puts "-- Importing `cassandra_migrations` migration files"
         opts = {}
         OptionParser.new do |args|
-          args.on("-p", "--path", "Directory containing existing migrations. Defaults to 'db/cassandra_migrate'.") do |p|
+          args.on("-p", "--path PATH", "Directory containing existing migrations. Defaults to 'db/cassandra_migrate'.") do |p|
             opts[:path] = p
           end
         end.parse!(argv)

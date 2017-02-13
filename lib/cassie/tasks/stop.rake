@@ -5,8 +5,8 @@ namespace :cassie do
 
     opts = {}
     OptionParser.new do |args|
-      args.on("-a", "--all", "Stop all cassandra processes, not just the server (e.g. cqlsh). Defaults to false.") do |a|
-        opts[:kill_all] = a || false
+      args.on("-a", "--all", "Stop all cassandra processes, not just the server (e.g. cqlsh). Defaults to false.") do
+        opts[:kill_all] = true
       end
     end.parse!(argv)
 

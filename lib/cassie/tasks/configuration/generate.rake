@@ -9,14 +9,14 @@ namespace :cassie do
       begin
         opts = {}
         OptionParser.new do |args|
-          args.on("-p", "--path", "Path to place configuration file. Defaults to './config/cassandra.yml'") do |p|
-            opts[:destination_path] = if path[0] == "/"
-              path
+          args.on("-p", "--path PATH", "Path to place configuration file. Defaults to './config/cassandra.yml'") do |p|
+            opts[:destination_path] = if p[0] == "/"
+              p
             else
-              File.join(Dir.pwd, path)
+              File.join(Dir.pwd, p)
             end
           end
-          args.on("-n", "--name", "Application name. Used as prefix for keyspace names. Defaults to 'my_app'") do |n|
+          args.on("-n", "--name NAME", "Application name. Used as prefix for keyspace names. Defaults to 'my_app'") do |n|
             opts[:app_name] = n
           end
         end.parse!(argv)
