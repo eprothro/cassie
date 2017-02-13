@@ -34,6 +34,12 @@ Integration tests that rely on a Cassandra server exist as an extra 'sanity chec
 
 Please do add them if they seem like a good idea! If you add one and it fails, please write a corresponding failing unit spec before fixing up.
 
+### Branches
+
+`cassie` uses a "Stable Major" branching strategy. The default branch is `dev`, with branches for the current stable major versions (e.g. `1_0_stable`).
+
+Please branch and target PRs appropriately.
+
 
 ## Working with Changes
 
