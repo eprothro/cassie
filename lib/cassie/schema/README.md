@@ -17,6 +17,8 @@ List command descriptions and advanced options:
 cassie --help
 ```
 
+If using Rails, and Rails needs to be initialized when loading `cassandra.yml` or your migration files, remember to use the `cassie-rails` commands.
+
 #### Getting Started
 
 If no schema has been defined yet (e.g. no keyspace, tables, or types), simply initialize Cassie versioning:
@@ -59,7 +61,6 @@ cassie migrations:import
 ```
 
 > The original `cassandra_migrations` migration files and schema in the physical layer are not changed. Remove the old files when comfortable.
-
 
 #### Coming from no explicit migration/versioning management
 
