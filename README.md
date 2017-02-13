@@ -1,8 +1,8 @@
 # Cassie
-[![Code Health](https://codeclimate.com/github/eprothro/cassie/badges/gpa.svg?)](https://codeclimate.com/github/eprothro/cassie)
-[![Test Coverage](https://codeclimate.com/github/eprothro/cassie/badges/coverage.svg?)](https://codeclimate.com/github/eprothro/cassie/coverage)
-[![Build Status](https://travis-ci.org/eprothro/cassie.svg?branch=latest_stable)](https://travis-ci.org/eprothro/cassie)
-[![Inline Docs](http://inch-ci.org/github/eprothro/cassie.svg?branch=latest_stable)](http://www.rubydoc.info/github/eprothro/cassie/master)
+[![Code Health](https://codeclimate.com/github/eprothro/cassie/badges/gpa.svg)](https://codeclimate.com/github/eprothro/cassie)
+[![Test Coverage](https://codeclimate.com/github/eprothro/cassie/badges/coverage.svg)](https://codeclimate.com/github/eprothro/cassie/coverage)
+[![Build Status](https://travis-ci.org/eprothro/cassie.svg?branch=latest_stable)](https://travis-ci.org/eprothro/cassie/branches)
+[![Inline Docs](http://inch-ci.org/github/eprothro/cassie.svg?branch=latest_stable)](http://www.rubydoc.info/github/eprothro/cassie/dev)
 
 
 Cassie provides ruby application support for Apache Cassandra. It provides components that most applications will need that are out of scope of the official `cassandra-driver`, including:
