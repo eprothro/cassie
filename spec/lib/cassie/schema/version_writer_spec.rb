@@ -31,7 +31,7 @@ RSpec.describe Cassie::Schema::VersionWriter do
 
   describe "directory" do
     it "is config directory for migrations" do
-      expect(object.directory).to eq(Cassie::Schema.paths["migrations_directory"])
+      expect(object.directory).to eq(Cassie::Schema.paths[:migrations_directory])
     end
   end
 

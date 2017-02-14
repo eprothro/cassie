@@ -25,7 +25,6 @@ namespace :cassie do
     desc "Initialize the keyspace for the current environment"
     task :init_keyspace do
       include Cassie::Tasks::IO
-      Cassie.keyspace = nil
 
       begin
         name = Cassie.configuration[:keyspace]

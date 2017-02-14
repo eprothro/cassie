@@ -18,7 +18,7 @@ RSpec.describe Cassie::Schema::Versioning do
   describe "migration_files" do
     it "lists files in config directory" do
       Dir.mktmpdir do |dir|
-        mod.paths["migrations_directory"] = dir
+        mod.paths[:migrations_directory] = dir
         File.new("#{dir}/0001_test.rb", "w")
         expect(mod.send(:migration_files)).to eq(["#{dir}/0001_test.rb"])
       end
@@ -28,7 +28,7 @@ RSpec.describe Cassie::Schema::Versioning do
   describe "local_versions" do
     it "lists classes from migration files" do
       Dir.mktmpdir do |dir|
-        mod.paths["migrations_directory"] = dir
+        mod.paths[:migrations_directory] = dir
         File.open("#{dir}/0001_test.rb", "w") do | file |
           file << %(
               class Migration_1_0_0_0 < Cassie::Schema::Migration
@@ -60,7 +60,7 @@ RSpec.describe Cassie::Schema::Versioning do
 
       it "raises exception with helpful description" do
         Dir.mktmpdir do |dir|
-          mod.paths["migrations_directory"] = dir
+          mod.paths[:migrations_directory] = dir
           File.open("#{dir}/0099_test.rb", "w") do | file |
             file << %(
                 class BadNameClass < Cassie::Schema::Migration

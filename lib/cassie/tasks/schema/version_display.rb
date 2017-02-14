@@ -14,8 +14,12 @@ module Cassie::Tasks
         current_version = Cassie::Schema.version
 
         versions.each.with_index do |v|
-          row = v.to_h.values_at(*members)
+          row = []
+          row[0] = v.number
           row[0] = "* #{row[0]}" if v == current_version
+          row[1] = v.description
+          row[2] = v.executor
+          row[3] ||= "Unknown"
           table.add_row(row)
         end
 
@@ -26,7 +30,6 @@ module Cassie::Tasks
       def print_statuses(versions)
         # Note: if we end up using this elsewhere, move to Version::VersionList
         # or something simliar, and have version collection methods return that
-        members = [:number, :description]
         titles  = ['Number', 'Description', 'Status', 'Migration File']
         table = Terminal::Table.new(headings:  titles)
         current_version = Cassie::Schema.version

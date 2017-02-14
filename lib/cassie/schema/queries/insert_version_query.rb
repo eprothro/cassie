@@ -11,12 +11,16 @@ module Cassie::Schema
     set :number
     set :description
     set :executor
-    set :executed_at
+    set :executed_at, if: :executed_at?
 
     map_from :version
 
     def bucket
       0
+    end
+
+    def executed_at?
+      !executed_at.nil?
     end
   end
 end

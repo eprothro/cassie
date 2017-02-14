@@ -14,5 +14,8 @@ namespace :cassie do
         abort
       end
     end
+
+    desc "Print the history of applied schema migrations"
+    task :versions => :history
   end
 end

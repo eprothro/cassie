@@ -12,7 +12,7 @@ module Cassie::Schema
     # @!visibility private
     def self.extended(extender)
       extender.paths["schema_file"] = "db/cassandra/schema.cql"
-      extender.paths["migrations_directory"] = "db/cassandra/migrations"
+      extender.paths[:migrations_directory] = "db/cassandra/migrations"
       extender.schema_keyspace = "cassie_schema"
       extender.versions_table = "versions"
     end

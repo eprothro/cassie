@@ -44,6 +44,10 @@ Import your existing `cassandra_migrations` migration files with a single task:
 cassie migrations:import
 ```
 ```bash
+-- Initializing Cassie Versioning
+-- done
+-- Initializing 'cassie_development' Keyspace
+-- done
 -- Importing `cassandra_migrations` migration files
    - Importing db/cassandra_migrate/20161206214301_initial_database.rb
      > created /db/cassandra/migrations/0000_0000_0000_0001_initial_database.rb
@@ -56,6 +60,10 @@ cassie migrations:import
    - Importing db/cassandra_migrate/20161213163201_add_reserved_to_users.rb
      > created /db/cassandra/migrations/0000_0000_0002_0000_add_reserved_to_users.rb
      > recorded version 0.0.2.0
+   - done
+-- done
+-- Dumping Cassandra schema (version 0.0.0.1)
+   - Writing to db/cassandra/schema.cql
    - done
 -- done
 ```

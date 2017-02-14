@@ -17,6 +17,11 @@ module Cassie::Schema
       ensure_dir_exist
     end
 
+    # Writes the version's migration clas code to a new
+    # ruby migraton file in the
+    # +Cassie::Schema.paths[:migrations_directory]+
+    # @return [String] the filename of the path written
+    # @raise [IOError] if a file with a matching version already exists
     def write
       with_io do |io|
         io << migration_contents
@@ -33,6 +38,7 @@ module Cassie::Schema
         # for the methods will come from that file
         # instead of (eval)
         load File.absolute_path(filename)
+        filename
       end
     end
 
@@ -50,7 +56,7 @@ module Cassie::Schema
     end
 
     def directory
-      Cassie::Schema.paths["migrations_directory"]
+      Cassie::Schema.paths[:migrations_directory]
     end
 
     def basename

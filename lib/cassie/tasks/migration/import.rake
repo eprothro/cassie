@@ -4,7 +4,7 @@ require 'cassie/schema/cassandra_migrations/importer'
 namespace :cassie do
   namespace :migrations do
     desc "Imports existing `cassandra_migrations` migration files and converts to semantic versioning"
-    task :import do
+    task :import => "cassie:schema:init" do
       include Cassie::Tasks::IO
 
       begin
@@ -31,9 +31,14 @@ namespace :cassie do
         importer.import
         puts "-- done"
       rescue => e
+        importer.imported_paths.each {|f| File.delete(f) }
         puts red("Error:\n  #{e.message}")
         abort
       end
     end
   end
+end
+
+Rake::Task["cassie:migrations:import"].enhance do
+  Rake::Task["cassie:schema:dump"].invoke
 end

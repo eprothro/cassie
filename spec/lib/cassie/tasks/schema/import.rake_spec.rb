@@ -11,6 +11,7 @@ RSpec.describe "cassie:migrations:import rake task" do
   before(:each) do
     allow_any_instance_of(Cassie::Tasks::IO).to receive(:argv){ argv }
     allow_any_instance_of(Cassie::Tasks::IO).to receive(:abort){ nil }
+    allow(Rake::Task["cassie:schema:dump"]).to receive(:invoke)
   end
 
   describe "#invoke" do

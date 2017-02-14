@@ -56,10 +56,11 @@ module Cassie::Schema
 
       InsertVersionQuery.new(version: version).execute!
       @applied_versions = nil
-    rescue StandardError
+    rescue StandardError => e
       version.id = nil
       version.executed_at = nil
       version.executor = nil
+      raise e
     end
 
     # Remove the version from the schema version store.
@@ -74,7 +75,7 @@ module Cassie::Schema
     # Absolute paths to the migration files in the migration directory
     # @return [Array<String>]
     def migration_files
-      Dir[root.join(paths["migrations_directory"], "[0-9]*_*.rb")]
+      Dir[root.join(paths[:migrations_directory], "[0-9]*_*.rb")]
     end
 
     # Versions for the {#migration_files}

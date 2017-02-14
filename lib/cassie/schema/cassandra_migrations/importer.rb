@@ -11,15 +11,18 @@ module Cassie::Schema
       attr_accessor :final_version
       # The migration files to be imported
       attr_accessor :migration_files
+      # The newly imported Cassie migration files
+      attr_accessor :imported_paths
       # A callback fired before importing each migration
       attr_accessor :before_each
       # A callback fired after importing each migration
       attr_accessor :after_each
 
       def initialize(source_path=nil)
-        @source = source_path || default_source_path
-        @final_version = Cassie::Schema::Version.new("0.0.1.0", "Remove cassandra_migrations schema")
-        @migration_files = find_migration_files
+        @source           = source_path || default_source_path
+        @final_version    = Cassie::Schema::Version.new("0.0.1.0", "Remove cassandra_migrations schema")
+        @migration_files  = find_migration_files
+        @imported_paths   = []
         @before_each      = Proc.new{}
         @after_each       = Proc.new{}
       end
@@ -27,7 +30,6 @@ module Cassie::Schema
       def import
         new_version = initial_version
         new_version.executor = "cassandra_migrations"
-        new_version.executed_at = Time.now
 
         migration_files.each do |old_migration_file|
           before_each.call(old_migration_file)
@@ -39,7 +41,7 @@ module Cassie::Schema
           # that is built from the old file
           writer.migration_contents = old_migration_file.build_migration_class(new_version)
 
-          writer.write
+          self.imported_paths << writer.write
 
           Cassie::Schema.record_version(new_version, false)
           after_each.call(new_version)
