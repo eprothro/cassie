@@ -5,10 +5,10 @@ Gem::Specification.new do |s|
   s.version     = Cassie::VERSION
   s.summary     = "Apache Cassandra application support"
   s.description = <<-EOS.strip.gsub(/\s+/, " ")
-    Cassie provides database configration, versioned migrations,
-    efficient session management, and query classes. This allows applications
-    to use the functionality provided by the official `cassandra-driver` through
-    lightweight and easy to use interfaces.
+    Application support for Apache Cassandra using the the official `cassandra-driver`.
+    Cassie provides cluster configration, versioned migrations,
+    efficient session management, and a class-based query DSL. Easy to use with
+    lightweight, component-style interfaces.
   EOS
 
   s.authors     = ["Evan Prothro"]
