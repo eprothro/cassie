@@ -22,10 +22,11 @@ Each of these components are designed to be used independently or together in a 
 * `cassandra-driver` 3.0
 
 ### Installation
+[![Gem Version](https://badge.fury.io/rb/cassie.svg)](https://badge.fury.io/rb/cassie)
 
 ```ruby
 # Gemfile
-gem 'cassie', '~> 1.0.3'
+gem 'cassie', '~> 1.0.4'
 ```
 or
 ```bash
