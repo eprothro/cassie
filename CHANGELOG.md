@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - `--trace` option to `cassie` commands to show backtrace
 
+### Fixed
+- bug where `cassie start` didn't show the readable error if cassandra was already
+
+### Changed
+- TaskRunner.new accepts `args`
+- Replaced TaskRunner.run_command(args) with `run`
+
 ## 1.0.5
 ### Fixed
 - bug where `Cassie::Schema.record_version` failed for new migrations

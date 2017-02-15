@@ -3,10 +3,6 @@
 require_relative '../lib/cassie'
 require_relative "../lib/cassie/tasks"
 
-runner = Cassie::Tasks::TaskRunner.new
-if ARGV.length > 0
-  runner.run_command(ARGV)
-else
-  runner.print_documentation
-end
+runner = Cassie::Tasks::TaskRunner.new(ARGV).run
+
 
