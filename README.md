@@ -1,4 +1,4 @@
-# Cassie
+## Cassie
 [![Code Health](https://codeclimate.com/github/eprothro/cassie/badges/gpa.svg)](https://codeclimate.com/github/eprothro/cassie)
 [![Test Coverage](https://codeclimate.com/github/eprothro/cassie/badges/coverage.svg)](https://codeclimate.com/github/eprothro/cassie/coverage)
 [![Build Status](https://travis-ci.org/eprothro/cassie.svg?branch=latest_stable)](https://travis-ci.org/eprothro/cassie/branches)
@@ -16,19 +16,22 @@ Cassie provides ruby application support for Apache Cassandra. It provides compo
 
 Each of these components are designed to be used independently or together in a ruby application. If you want to manage your own configuration, use Cassie for session management, and some other gem for your queries -- great!
 
-##### Tested against:
+**Tested against:**
 
 * Ruby: MRI 2.2, 2.3, and JRuby 1.9
 * `cassandra-driver` 3.0
 
 ### Installation
+
 [![Gem Version](https://badge.fury.io/rb/cassie.svg)](https://badge.fury.io/rb/cassie)
 
 ```ruby
 # Gemfile
 gem 'cassie', '~> 1.0.4'
 ```
+
 or
+
 ```bash
 $ gem install cassie
 ```
@@ -50,7 +53,7 @@ Cassie.confurations
 => {"development"=>{"hosts"=>["127.0.0.1"], "port"=>9042, "keyspace"=>"my_app_development"}, "test"=>{"hosts"=>["127.0.0.1"], "port"=>9042, "idle_timeout"=>"nil", "keyspace"=>"my_app_test"}, "production"=>{"hosts"=>["cass1.my_app.biz", "cass2.my_app.biz", "cass3.my_app.biz"], "port"=>9042, "keyspace"=>"my_app_production"}}
 ```
 
-Setting `Cassie::env` results in the corresponding `Cassie::configuration` being used.
+Cassie.configuration` pulls the appropriate configuration from `Cassie.configurations`, based on `Cassie.env`.
 
 ```ruby
 Cassie.env = "production"
@@ -61,6 +64,8 @@ Cassie.configuration
 Cassie.keyspace
 => 'my_app_production'
 ```
+
+`Cassie.env` prefers `ENV["CASSANDRA_ENV"]`, then `ENV["RACK_ENV"]`, and falls back to `development`.
 
 See the [`Configuration` README](./lib/cassie/configuration/README.md#readme) for more on features and usage.
 
@@ -77,19 +82,22 @@ Cassie provides cluster and session connection creation according to `cassie-dri
 # continuing from above 'production' configuration
 
 Cassie.cluster
-=> #<Cassandra::Cluster:0x3fc087f7f9b8> #<= configured with production options
+=> #<Cassandra::Cluster:0x3fc032f7f9b8> #<= configured with production cluster `configuration` options
 
 Cassie.session
-=> #<Cassandra::Session:0x3fc084caa344> #<= session scoped to 'my_app_production' keyspace
+=> #<Cassandra::Session:0x3fc084caa344> #<= session scoped to default 'my_app_production' keyspace
 
 Cassie.session(nil)
-=> #<Cassandra::Session:0x3fc084caa344> #<= session without scoped keyspace
+=> #<Cassandra::Session:0x3fc084caba22> #<= session without scoped keyspace
 
 Cassie.session('my_other_keyspace')
-=> #<Cassandra::Session:0x3fc084caa344> #<= session scoped to 'my_other_keyspace' keyspace
+=> #<Cassandra::Session:0x3fc084cabf33> #<= session scoped to 'my_other_keyspace' keyspace
+
+Cassie.session
+=> #<Cassandra::Session:0x3fc084caa344> #<= cached session, scoped to default 'my_app_production' keyspace
 ```
 
-If using Cassie Configuration as described above via `cassandra.yml`, cluster configuration will happen automatically. If not, assign a cluster options hash to `Cassie::configuration` before using a `cluster` or `session`.
+If using Cassie Configuration as described above via `cassandra.yml`, cluster configuration happens automatically. If not, assign a cluster environments hash to `Cassie::configurations` before using a `cluster` or `session`.
 
 ##### Using cluster and session objects in Classes
 
@@ -100,11 +108,13 @@ class MyQuery
   include Cassie::Connection
 
   # An explicit keyspace that will determine the session used
-  # instead of falling back to the value in Cassie::keyspace
+  # instead of falling back to the value in `Cassie.keyspace`
+  # for all instances of this class.
+  # Override `#keyspace` for per-object evaluation.
   keyspace :some_other_keyspace
 
   def find_user(id)
-    # session is a vanilla Cassandra::Session
+    # `session` is a vanilla Cassandra::Session
     # connected to `some_other_keyspace`
     session.execute('SELECT * FROM users WHERE id = ?;', arguments: [id])
   end
@@ -118,6 +128,7 @@ See the [Connection README](./lib/cassie/connection_handler/README.md#readme) fo
 Cassie provides simple commands to control Cassandra execution in *nix development. These simplify execution and reduce output to provide faster management of your Cassandra processes.
 
 #### Start
+
 ```
 $ cassie start
 Starting Cassandra...
@@ -125,6 +136,7 @@ Starting Cassandra...
 ```
 
 #### Stop
+
 ```
 $ cassie stop
 Stopping Cassandra...
@@ -145,6 +157,7 @@ Stopping Cassandra...
 ```
 
 #### Restart
+
 ```
 $ cassie restart
 Stopping Cassandra...
@@ -154,6 +167,7 @@ Starting Cassandra...
 ```
 
 #### Tail
+
 ```
 $ cassie tail
 Tailing Cassandra system log, Ctrl-C to stop...
