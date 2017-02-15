@@ -210,7 +210,7 @@ Various `cassie <task>` tasks are used to manage the schema version and migratio
 
 See the [Migrations README](./lib/cassie/schema/README.md#readme) for more on features and usage.
 
-### Query Classes
+### Query DSL
 
 Cassie provides base Query Classes to manage interactions to the database.
 Create application specific subclasses and construct queries with a simple CQL DSL.
