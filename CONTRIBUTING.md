@@ -36,7 +36,9 @@ Please do add them if they seem like a good idea! If you add one and it fails, p
 
 ### Branches
 
-`cassie` uses a "Stable Major" branching strategy. The default branch is `dev`, with branches for the current stable major versions (e.g. `1_0_stable`).
+`cassie` uses a "Stable Minor" branching strategy. The default branch is `dev`, with branches for the latest stable major version (i.e. `latest_stable`) and currently supported stable major versions (e.g. `1_1_stable`).
+
+While there is only 1 minor version, there will only be a `latest_stable` branch (e.g. no `1_0_stable`).
 
 Please branch and target PRs appropriately.
 
