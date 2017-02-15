@@ -14,8 +14,7 @@ RSpec.describe "cassie:schema:version rake task" do
 
     it "prints current version" do
       allow(Cassie::Schema).to receive(:version){version}
-      expect_any_instance_of(Cassie::Tasks::Schema::VersionDisplay).to receive(:print_versions) do |main, v|
-        # note: rspec bug passing 'main' as 1st arg.
+      expect_any_instance_of(Cassie::Tasks::Schema::VersionDisplay).to receive(:print_versions) do |receiver, v|
         expect(v).to eq([version])
       end
       object.invoke
