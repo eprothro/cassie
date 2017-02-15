@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unrelease
+### Added
+- `--trace` option to `cassie` commands to show backtrace
+
 ## 1.0.5
 ### Fixed
 - bug where `Cassie::Schema.record_version` failed for new migrations

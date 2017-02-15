@@ -28,7 +28,7 @@ namespace :cassie do
           puts "-- done"
         end
       rescue => e
-        puts red("Error:\n  #{e.message}")
+        output_error(e)
         abort
       end
     end

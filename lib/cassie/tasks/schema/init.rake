@@ -17,7 +17,7 @@ namespace :cassie do
         puts "   > Schema is at version #{Cassie::Schema.version}"
         puts "-- done"
       rescue => e
-        puts red("Error:\n  #{e.message}")
+        output_error(e)
         abort
       end
     end
@@ -45,7 +45,7 @@ namespace :cassie do
       rescue => e
         puts red("Couldn't create keyspace, check #{Cassie.paths[:cluster_configurations]}:\n#{query.to_cql}")
         puts "\t"
-        puts red("Error:\n  #{e.message}")
+        output_error(e)
         abort
       end
     end

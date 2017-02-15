@@ -11,7 +11,7 @@ namespace :cassie do
         puts "   > Schema is now at version #{Cassie::Schema.version}"
         puts "-- done"
       rescue => e
-        puts red("Error:\n  #{e.message}")
+        output_error(e)
         abort
       end
     end

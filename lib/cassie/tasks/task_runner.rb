@@ -39,6 +39,7 @@ Options:
   -h, --help                # Print this documentation
   -v, --version             # List the library version
   <command> --help          # List options for a given command
+  <command> --trace         # Show exception backtrace
 
 EOS
 

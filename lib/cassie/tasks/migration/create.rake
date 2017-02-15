@@ -40,7 +40,7 @@ namespace :cassie do
         puts "   > #{green('created')} #{rel_path}"
         puts "-- done"
       rescue => e
-        puts red("Error:\n  #{e.message}")
+        output_error(e)
         abort
       end
     end

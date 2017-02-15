@@ -32,7 +32,7 @@ namespace :cassie do
         puts "-- done"
       rescue => e
         importer.imported_paths.each {|f| File.delete(f) }
-        puts red("Error:\n  #{e.message}")
+        output_error(e)
         abort
       end
     end
