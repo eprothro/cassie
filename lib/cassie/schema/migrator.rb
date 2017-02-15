@@ -11,6 +11,7 @@ module Cassie::Schema
 
 
     def initialize(target)
+      puts target
       @target_version   = build_target_version(target)
       @current_version  = Cassie::Schema.version
       @direction        = build_direction

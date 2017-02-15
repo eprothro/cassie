@@ -225,7 +225,7 @@ cassie schema:status
 The full schema is stored in `schema.cql`, this is recommended to be checked into source control.
 It is updated (with a full dump) after each migration, to maintain a truth-store for the schema when used with multiple developers.
 
-### Dump the schema
+#### Dump the schema
 
 ```
 cassie schema:dump
@@ -237,7 +237,7 @@ cassie schema:dump
 -- done
 ```
 
-### Drop the schema
+#### Drop the schema
 ```
 cassie schema:drop
 ```
@@ -250,7 +250,7 @@ cassie schema:drop
 -- done
 ```
 
-### Load the schema
+#### Load the schema
 ```
 cassie schema:load
 ```
@@ -260,7 +260,7 @@ cassie schema:load
 -- done
 ```
 
-### Reset the schema
+#### Reset the schema
 
 ```
 cassie schema:reset
@@ -277,7 +277,7 @@ cassie schema:reset
 -- done
 ```
 
-### Reset the schema and migrate
+#### Reset the schema and migrate
 
 This task reload the schema from the schema file, and then proceeds with incremental migrations up to the latest migration.
 
@@ -304,7 +304,20 @@ cassie migrate:reset
 -- done
 ```
 
-### Architecture (`cassie` developers)
+### Multiple Envrionments
+
+Set the environment with `RACK_ENV`, `CASSANDRA_ENV` or the `--env`(`-e`) switch for `cassie` commands:
+
+```
+RACK_ENV=test cassie migrate:reset
+```
+is equivalent to
+```
+cassie migrate:reset -e test
+```
+
+
+### Version / Migration Architecture (`cassie` developers)
 
 #### Versions
 

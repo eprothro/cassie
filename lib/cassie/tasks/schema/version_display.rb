@@ -24,6 +24,8 @@ module Cassie::Tasks
         end
 
         table.align_column(0, :right)
+        puts "Application: #{Cassie::Schema.application}"
+        puts "Environment: #{Cassie.env}"
         puts table
       end
 
@@ -46,6 +48,8 @@ module Cassie::Tasks
 
         table.align_column(0, :right)
         table.align_column(2, :center)
+        puts "Application: #{Cassie::Schema.application}"
+        puts "Environment: #{Cassie.env}"
         puts table
       end
     end
