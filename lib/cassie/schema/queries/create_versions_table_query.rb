@@ -4,14 +4,15 @@ module Cassie::Schema
 
     def statement
       %(
-         CREATE TABLE #{Cassie::Schema.versions_table} (
-           bucket int,
+         CREATE TABLE IF NOT EXISTS #{Cassie::Schema.versions_table} (
+           application text,
+           env text,
            id timeuuid,
            number text,
            description text,
            executor text,
            executed_at timestamp,
-           PRIMARY KEY (bucket, id)
+           PRIMARY KEY ((application, env), id)
          ) WITH CLUSTERING ORDER BY (id DESC);
         )
     end

@@ -17,6 +17,19 @@ module Cassie
 
     extend Configuration
     extend Versioning
+
+    # The application namespace. Only applicaple
+    # When cassie manages multiple applicaiton
+    # schemas within the same cluster.
+    # @return [String] the application namespace
+    def self.application
+      return @application if defined?(@application)
+      "global"
+    end
+
+    def self.application=(app_name)
+      @application = app_name
+    end
   end
 
   require_relative 'schema/structure_dumper'

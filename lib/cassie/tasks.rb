@@ -1,4 +1,5 @@
 require 'rake'
+require 'active_support/core_ext/string'
 
 require_relative "tasks/task_runner"
 require_relative "tasks/io"
