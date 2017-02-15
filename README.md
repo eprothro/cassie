@@ -182,7 +182,7 @@ INFO  [main] 2016-09-23 11:18:05,407 CassandraDaemon.java:477 - Not starting RPC
 
 ### Versioned Schema Migrations
 
-Cassie allows you to migrate between schema states using semantically versioned, incremental migration files.
+Cassie supports migration between schema states using semantically versioned, incremental migration files.
 
 Schema Version information is stored in Cassandra persistence, in the `cassie_schema.versions` table (configurable).
 
