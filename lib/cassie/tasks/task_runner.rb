@@ -17,6 +17,7 @@ module Cassie
       def run
         build_options
         Cassie.logger.level = ::Logger::WARN unless options[:debug]
+        Cassie.env = options[:environment] if options[:environment]
 
         run_command || display_info
       rescue OptionParser::InvalidOption => e
@@ -67,6 +68,7 @@ Options:
   -h, --help                # Print this documentation
   -v, --version             # List the library version
   -d, --debug               # Show debug log lines
+  -e, --env                 # The Cassie.env to use
   <command> --help          # List options for a given command
   <command> --trace         # Show exception backtrace
 
@@ -88,6 +90,10 @@ EOS
           # Need to revisit and probably ditch rake tasks.
           h[:trace] = args.delete("-t") || args.delete("--trace")
           h[:debug] = args.delete("-d") || args.delete("--debug")
+          if env_index = (args.index("-e") || args.index("--env"))
+            h[:environment] = args.delete_at(env_index + 1)
+            args.delete_at(env_index)
+          end
           h[:show_version] = args.include?("-v") || args.include?("--version")
           h[:show_help] = args.include?("-h") || args.include?("--help")
         end
