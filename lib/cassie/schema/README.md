@@ -98,6 +98,30 @@ cassie schema:import
 -- done
 ```
 
+##### Initializing versioning
+
+Locally, these import tasks will also initialiaze the local version tracking to have all migration versions recorded.
+
+However, another developer's or environment's database does not have this schema metadata. Syncronize version tracking by initializing cassie schema with the version of the current in-database schema.
+
+```
+cassie schema:init -v 0.0.2.0
+```
+
+```
+-- Initializing Cassie Versioning
+-- done
+-- Fast-forwarding to version 0.0.2.0
+   > Recorded version 0.0.0.1
+   > Recorded version 0.0.1.0
+   > Recorded version 0.0.2.0
+-- done
+-- Initializing 'cassie_development' Keyspace
+-- done
+```
+
+This does not run any migrations, but rather updates schema version metadata, so future migrations begin after the provided version.
+
 #### Creating a migration
 
 ```
@@ -180,16 +204,20 @@ cassie schema:history
 ```
 
 #### Reporting the version status
+
+Display all applied and unapplied migrations.
+
 ```
 cassie schema:status
 ```
 ```
-+-----------+----------------+-------------+---------------------------+
-|  Version  | Description    |   Status    | Migration File            |
-+-----------+----------------+-------------+---------------------------+
-| * 0.2.0.0 |  create users  | serverbot   | 2016-09-08 10:23:54 -0500 |
-|   0.1.0.0 | initial schema | eprothro    | 2016-09-08 09:23:54 -0500 |
-+-----------+----------------+-------------+---------------------------+
++-----------+----------------+--------+---------------------------------------------------------------+
+| Number    | Description    | Status | Migration File                                                |
++-----------+----------------+--------+---------------------------------------------------------------+
+|   0.0.3.0 | create friends |  DOWN  | db/cassandra/migrations/0000_0000_0003_0000_create_friends.rb |
+| * 0.0.2.0 | create users   |   UP   | db/cassandra/migrations/0000_0000_0002_0000_create_users.rb   |
+|   0.1.0.0 | initial schema |   UP   | db/cassandra/migrations/0000_0000_0001_0000_initial_schema.rb |
++-----------+----------------+--------+---------------------------------------------------------------+
 ```
 
 ### Schema Management
