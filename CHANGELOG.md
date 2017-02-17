@@ -5,9 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unrelease
+## 1.0.6 (prerelease)
 ### Added
-- `--trace` option to `cassie` commands to show backtrace
+- `--trace` option to `cassie` commands to show error backtraces
 - `--version` option to `cassie schema:init` to fast-forward to a version that matches an existing schema
 
 ### Fixed
