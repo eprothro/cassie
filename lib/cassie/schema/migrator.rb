@@ -11,7 +11,6 @@ module Cassie::Schema
 
 
     def initialize(target)
-      puts target
       @target_version   = build_target_version(target)
       @current_version  = Cassie::Schema.version
       @direction        = build_direction
@@ -61,6 +60,9 @@ module Cassie::Schema
         duration = Benchmark.realtime do
           yield(command)
         end
+        # Sleep for 50ms to ensure TimeUuid generation jitter
+        # doesn't cause out-of-order records
+        sleep(0.050)
         after_each.call(command.version, (duration*1000).round(2))
       end
     end

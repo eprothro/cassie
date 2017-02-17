@@ -15,14 +15,14 @@ RSpec.describe "cassie executable" do
     context "when passed a command" do
       let(:command){ "some_command" }
       it "calls run command" do
-        expect_any_instance_of(Cassie::Tasks::TaskRunner).to receive(:run_command)
+        expect_any_instance_of(Cassie::Tasks::TaskRunner).to receive(:run)
         run
       end
     end
 
     context "when passed no command"  do
       it "calls documentation" do
-        expect_any_instance_of(Cassie::Tasks::TaskRunner).to receive(:print_documentation)
+        expect_any_instance_of(Cassie::Tasks::TaskRunner).to receive(:display_info)
         run
       end
     end

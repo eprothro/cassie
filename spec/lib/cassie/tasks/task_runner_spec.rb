@@ -11,10 +11,10 @@ RSpec.describe Cassie::Tasks::TaskRunner do
     Rake.application.tasks.each do |t|
       context "with the #{t.name} task" do
         let(:command){ t.name.sub("cassie:", "") }
+        let(:task) { Rake::Task["cassie:#{command}"] }
 
         it "finds an associated command" do
-          task = Rake::Task["cassie:#{command}"]
-          expect(task).to receive(:invoke)
+          expect(task).to receive(:invoke){ true }
           object.run
         end
       end
@@ -46,7 +46,7 @@ RSpec.describe Cassie::Tasks::TaskRunner do
         let(:task){ Rake::Task["cassie:#{command}"] }
 
         it "runs an associated task" do
-          expect(task).to receive(:invoke)
+          expect(task).to receive(:invoke){ true }
           object.run
         end
       end

@@ -25,11 +25,6 @@ module Cassie
         display_info
       end
 
-      # @returns [Boolean] if task was invoked
-      def run_command
-        task && task.invoke
-      end
-
       # @returns [Rake::Task, nil] nil if task is not defined, otherwise the task object itself
       def task
         task_name = "cassie:#{command}"
@@ -51,6 +46,11 @@ module Cassie
       end
 
       protected
+
+      # @returns [Boolean] if task was invoked
+      def run_command
+        task && task.invoke
+      end
 
       def print_documentation
         docs = <<-EOS

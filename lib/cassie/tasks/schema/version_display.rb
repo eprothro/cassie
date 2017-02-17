@@ -9,8 +9,9 @@ module Cassie::Tasks
         # Note: if we end up using this elsewhere, move to Version::VersionList
         # or something simliar, and have version collection methods return that
         members = [:number, :description, :executor, :executed_at]
-        titles  = ['Number', 'Description', 'Migrated by', 'Migrated at']
-        table = Terminal::Table.new(headings:  titles)
+        headings  = ['Number', 'Description', 'Migrated by', 'Migrated at']
+        title = "Environment: #{Cassie.env}"
+        table = Terminal::Table.new(headings:  headings, title: title)
         current_version = Cassie::Schema.version
 
         versions.each.with_index do |v|
@@ -19,21 +20,21 @@ module Cassie::Tasks
           row[0] = "* #{row[0]}" if v == current_version
           row[1] = v.description
           row[2] = v.executor
+          row[3] = v.executed_at
           row[3] ||= "Unknown"
           table.add_row(row)
         end
 
         table.align_column(0, :right)
-        puts "Application: #{Cassie::Schema.application}"
-        puts "Environment: #{Cassie.env}"
         puts table
       end
 
       def print_statuses(versions)
         # Note: if we end up using this elsewhere, move to Version::VersionList
         # or something simliar, and have version collection methods return that
-        titles  = ['Number', 'Description', 'Status', 'Migration File']
-        table = Terminal::Table.new(headings:  titles)
+        headings  = ['Number', 'Description', 'Status', 'Migration File']
+        title = "Environment: #{Cassie.env}"
+        table = Terminal::Table.new(headings:  headings, title: title)
         current_version = Cassie::Schema.version
 
         versions.each.with_index do |v|
@@ -48,8 +49,6 @@ module Cassie::Tasks
 
         table.align_column(0, :right)
         table.align_column(2, :center)
-        puts "Application: #{Cassie::Schema.application}"
-        puts "Environment: #{Cassie.env}"
         puts table
       end
     end

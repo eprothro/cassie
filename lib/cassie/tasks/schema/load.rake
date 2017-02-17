@@ -1,14 +1,14 @@
 namespace :cassie do
   namespace :schema do
-    desc "Creates the schema by executing the CQL in the schema file (`db/cassandra/schema.cql` by default)"
+    desc "Creates the schema by executing the schema file (`db/cassandra/schema.rb` by default)"
     task :load do
       include Cassie::Tasks::IO
 
       begin
-        loader = Cassie::Schema::StructureLoader.new
-        puts "-- Loading Schema from #{loader.source_path}"
+        loader = Cassie::Schema::SchemaLoader.new
+        puts "-- Loading '#{Cassie.env}' Schema from #{loader.source_path}"
         loader.load
-        puts "   > Schema is now at version #{Cassie::Schema.version}"
+        puts "   > '#{Cassie.env}' schema is now at version #{Cassie::Schema.version}"
         puts "-- done"
       rescue => e
         output_error(e)

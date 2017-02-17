@@ -32,6 +32,8 @@ build/
 Gemfile.lock
 .ruby-version
 .ruby-gemset
+
+# any db files are local artifacts from manual tests
 /db/
 
 
