@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## Unrelease
 ### Added
 - `--trace` option to `cassie` commands to show backtrace
+- `--version` option to `cassie schema:init` to fast-forward to a version that matches an existing schema
 
 ### Fixed
 - bug where `cassie start` didn't show the readable error if cassandra was already

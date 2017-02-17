@@ -2,52 +2,44 @@ namespace :cassie do
   namespace :schema do
 
     desc "Initialize versioning schema and the keyspace for this environment"
-    task :init => [:init_versioning, :init_keyspace]
+    task :init => :init_versioning do
+      opts = {}
+      OptionParser.new do |args|
+        args.on("-v", "--version VERSION", "Set an initial schema version representing the currenet version of the schema.") do |v|
+          opts[:version] = v
+        end
+      end.parse!(argv)
 
-    desc "Initialize cassie schema versioning"
-    task :init_versioning do
-      include Cassie::Tasks::IO
+      not_found = Proc.new do
+        str   =  "Version #{version} was not found locally, can't fast-forward there."
+        str   += "  Did you mean one of these local versions?" if Cassie::Schema.local_versions
+        Cassie::Schema.local_versions.reverse.each do |v|
+          str += "    - #{v.to_s.ljust(10)} # #{v.description}"
+        end
+        raise str
+      end
 
       begin
-        puts "-- Initializing Cassie Versioning"
-        Cassie::Schema.initialize_versioning
-        puts "-- done"
-      rescue Cassie::Schema::AlreadyInitiailizedError
-        puts "   > Cassie Versioning already initialized "
-        puts "   > Schema is at version #{Cassie::Schema.version}"
-        puts "-- done"
+        if opts[:version]
+          version = Cassie::Schema::Version.new(opts[:version])
+          version = Cassie::Schema.local_versions.find(not_found){|v| version == v}
+          versions = Cassie::Schema.local_versions.select{|v| v <= version}.sort
+          puts "-- Fast-forwarding to version #{version}"
+            versions.each do |v|
+              Cassie::Schema.record_version(v, false)
+              puts "   > Recorded version #{version}"
+            end
+          puts "-- done"
+
+        end
       rescue => e
         output_error(e)
         abort
       end
     end
 
-    desc "Initialize the keyspace for the current environment"
-    task :init_keyspace do
-      include Cassie::Tasks::IO
-
-      begin
-        name = Cassie.configuration[:keyspace]
-        puts "-- Initializing '#{name}' Keyspace"
-        query = Cassie::Schema::CreateKeyspaceQuery.new
-        query.name = name
-        if Cassie.configuration[:replication]
-          #@todo fill in
-        end
-
-        if Cassie.keyspace_exists?(query.name)
-          puts "   > '#{name}' already exists"
-        else
-          query.execute
-        end
-        puts "-- done"
-
-      rescue => e
-        puts red("Couldn't create keyspace, check #{Cassie.paths[:cluster_configurations]}:\n#{query.to_cql}")
-        puts "\t"
-        output_error(e)
-        abort
-      end
+    Rake::Task["cassie:schema:init"].enhance do
+      Rake::Task["cassie:schema:init_keyspace"].invoke
     end
   end
 end
