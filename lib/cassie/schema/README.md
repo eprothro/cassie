@@ -36,7 +36,9 @@ cassie schema:init
 
 If an existing schema (e.g. keyspace, tables, types) is alredy defined, see below on how to import it.
 
-#### Coming from `cassandra_migrations`
+#### Importing an existing schema
+
+##### Coming from `cassandra_migrations`
 
 Import your existing `cassandra_migrations` migration files with a single task:
 
@@ -70,7 +72,7 @@ cassie migrations:import
 
 > The original `cassandra_migrations` migration files and schema in the physical layer are not changed. Remove the old files when comfortable.
 
-#### Coming from no explicit migration/versioning management
+##### Coming from no explicit migration/versioning management
 
 Import your existing schema held in Cassandra with a single task:
 

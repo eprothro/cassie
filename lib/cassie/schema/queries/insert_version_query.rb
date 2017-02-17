@@ -3,6 +3,7 @@ module Cassie::Schema
     # use fully-qualified tablename
     # for cql generation for standalone queries
     self.keyspace = nil
+    consistency :all
 
     insert_into "#{Cassie::Schema.schema_keyspace}.#{Cassie::Schema.versions_table}"
 

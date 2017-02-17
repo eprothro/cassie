@@ -9,7 +9,7 @@ module Cassie::Tasks
 
       return unless exception.backtrace.try(:any?)
 
-      if argv.include?("--trace")
+      if Cassie::Tasks::IO.trace?
         puts "  #{exception.class}:"
         puts "    #{exception.backtrace.join("\n    ")}"
       else
@@ -23,6 +23,14 @@ module Cassie::Tasks
 
     def argv
       ARGV
+    end
+
+    def self.trace?
+      !!@trace
+    end
+
+    def self.trace!
+      @trace = true
     end
   end
 end

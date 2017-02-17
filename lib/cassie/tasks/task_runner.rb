@@ -6,9 +6,8 @@ module Cassie
       attr_reader :command
       attr_reader :options
 
-      def initialize(raw_args)
-        @raw_args = raw_args
-        @args = raw_args.dup
+      def initialize(args)
+        @args = args
         @command = nil
         @command = args.delete_at(0) if args.first =~ /\A[^-]/
         @options = {}
@@ -18,6 +17,7 @@ module Cassie
         build_options
         Cassie.logger.level = ::Logger::WARN unless options[:debug]
         Cassie.env = options[:environment] if options[:environment]
+        Cassie::Tasks::IO.trace! if options[:trace]
 
         run_command || display_info
       rescue OptionParser::InvalidOption => e

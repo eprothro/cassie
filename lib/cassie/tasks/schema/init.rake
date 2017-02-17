@@ -10,11 +10,11 @@ namespace :cassie do
         end
       end.parse!(argv)
 
-      not_found = Proc.new do
-        str   =  "Version #{version} was not found locally, can't fast-forward there."
-        str   += "  Did you mean one of these local versions?" if Cassie::Schema.local_versions
+      def raise_not_found(version)
+        str   =  "Version #{version} was not found locally, can't fast-forward there.\n"
+        str   += "  Did you mean one of these local versions?\n" if Cassie::Schema.local_versions
         Cassie::Schema.local_versions.reverse.each do |v|
-          str += "    - #{v.to_s.ljust(10)} # #{v.description}"
+          str += "    - #{v.to_s.ljust(10)} # #{v.description}\n"
         end
         raise str
       end
@@ -22,12 +22,17 @@ namespace :cassie do
       begin
         if opts[:version]
           version = Cassie::Schema::Version.new(opts[:version])
-          version = Cassie::Schema.local_versions.find(not_found){|v| version == v}
+          version = Cassie::Schema.local_versions.find{|v| version == v} || raise_not_found(version)
           versions = Cassie::Schema.local_versions.select{|v| v <= version}.sort
           puts "-- Fast-forwarding to version #{version}"
-            versions.each do |v|
+            t0 = Time.now
+            versions.each.with_index do |v, i|
+              # space IDs out by 10 seconds to ensure they get written in order
+              time = t0 - (versions.count - i * 10)
+              v.id = ::Cassandra::TimeUuid::Generator.new.at(time)
+              v.executor = "cassie"
               Cassie::Schema.record_version(v, false)
-              puts "   > Recorded version #{version}"
+              puts "   > Recorded version #{v}"
             end
           puts "-- done"
 
