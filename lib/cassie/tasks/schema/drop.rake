@@ -7,7 +7,7 @@ namespace :cassie do
         query = Cassie::Schema::DropKeyspaceQuery.new
         keyspaces = [Cassie.configuration[:keyspace]]
 
-        puts "-- Dropping schema for #{Cassie::Schema.application}[#{Cassie.env}]"
+        puts "-- Dropping '#{Cassie.env}' schema"
         keyspaces.each do |keyspace|
           query.keyspace = keyspace
           puts "   - Dropping '#{keyspace}'"

@@ -14,9 +14,11 @@ module Cassie
   module Schema
     require_relative 'schema/configuration'
     require_relative 'schema/versioning'
+    require_relative 'schema/definition'
 
     extend Configuration
     extend Versioning
+    extend Definition
 
     # The application namespace. Only applicaple
     # When cassie manages multiple applicaiton
@@ -34,4 +36,6 @@ module Cassie
 
   require_relative 'schema/structure_dumper'
   require_relative 'schema/structure_loader'
+  require_relative 'schema/schema_loader'
+  require_relative 'schema/schema_dumper'
 end
