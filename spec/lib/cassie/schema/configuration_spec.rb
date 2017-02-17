@@ -7,10 +7,10 @@ RSpec.describe Cassie::Configuration::Core do
 
   describe "paths" do
     it "has a default path for schema_structure" do
-      expect(mod.paths[:schema_file]).to eq 'db/cassandra/schema.cql'
+      expect(mod.paths[:schema_file]).to eq 'db/cassandra/schema.rb'
     end
     it "allows setting values" do
-      expect{ mod.paths[:schema_file] = 'db/cassie.cql' }.to change{ mod.paths[:schema_file] }.to 'db/cassie.cql'
+      expect{ mod.paths[:schema_file] = 'db/cassie.rb' }.to change{ mod.paths[:schema_file] }.to 'db/cassie.rb'
     end
   end
   describe "schema_keyspace" do

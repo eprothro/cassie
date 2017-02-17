@@ -30,11 +30,10 @@ module Cassie::Schema
     end
 
     # Create the keyspace and table for tracking schema versions
-    # in the Cassandra database
+    # in the Cassandra database if they don't already exist
     # @return [void]
     def initialize_versioning
       create_schema_keyspace unless keyspace_exists?
-      raise Cassie::Schema::AlreadyInitiailizedError if version_exists?
       create_versions_table unless versions_table_exists?
     end
 
@@ -119,7 +118,7 @@ module Cassie::Schema
       database_versions.tap do |versions|
         versions.each{|v| VersionObjectLoader.new(v).load }
       end
-    rescue Cassandra::Errors::InvalidError
+    rescue Cassandra::Errors::InvalidError => e
       raise uninitialized_error
     end
 

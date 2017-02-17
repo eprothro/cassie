@@ -65,7 +65,7 @@ cassie migrations:import
    - done
 -- done
 -- Dumping Cassandra schema (version 0.0.0.1)
-   - Writing to db/cassandra/schema.cql
+   - Writing to db/cassandra/schema.rb
    - done
 -- done
 ```
@@ -93,7 +93,7 @@ cassie schema:import
    - done
 -- done
 -- Dumping Cassandra schema (version 0.0.1.0)
-   - Writing to db/cassandra/schema.cql
+   - Writing to db/cassandra/schema.rb
    - done
 -- done
 ```
@@ -222,7 +222,7 @@ cassie schema:status
 
 ### Schema Management
 
-The full schema is stored in `schema.cql`, this is recommended to be checked into source control.
+The full schema is stored in `schema.rb`, this is recommended to be checked into source control.
 It is updated (with a full dump) after each migration, to maintain a truth-store for the schema when used with multiple developers.
 
 #### Dump the schema
@@ -232,7 +232,7 @@ cassie schema:dump
 ```
 ```
 -- Dumping Cassandra schema (version 0.2.0.0)
-   - Writing to db/cassandra/schema.cql
+   - Writing to db/cassandra/schema.rb
    - done
 -- done
 ```
@@ -255,7 +255,7 @@ cassie schema:drop
 cassie schema:load
 ```
 ```
--- Loading Schema from db/cassandra/schema.cql
+-- Loading Schema from db/cassandra/schema.rb
    > Schema is now at version 0.2.0.0
 -- done
 ```
@@ -272,7 +272,7 @@ cassie schema:reset
    - Dropping 'cassie_schema'
    - done
 -- done
--- Loading Schema from db/cassandra/schema.cql
+-- Loading Schema from db/cassandra/schema.rb
    > Schema is now at version 0.2.0.0
 -- done
 ```
@@ -291,7 +291,7 @@ cassie migrate:reset
    - Dropping 'cassie_schema'
    - done
 -- done
--- Loading Schema from db/cassandra/schema.cql
+-- Loading Schema from db/cassandra/schema.rb
    > Schema is now at version 0.2.0.0
 -- done
 -- Migrating to version 0.2.1.0
@@ -299,7 +299,7 @@ cassie migrate:reset
    - done (4.89 ms)
 -- done
 -- Dumping Cassandra schema (version 0.2.1.0)
-   - Writing to db/cassandra/schema.cql
+   - Writing to db/cassandra/schema.rb
    - done
 -- done
 ```
