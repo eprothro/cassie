@@ -1,6 +1,6 @@
 RSpec.describe Cassie::Schema::Definition::DSL do
   let(:klass) { Cassie::Schema::Definition::DSL }
-  let(:cql){ "valid cql" }
+  let(:cql){ "valid cql;" }
   let(:session){ double(execute: nil) }
 
   describe "create_schema" do
@@ -16,7 +16,11 @@ RSpec.describe Cassie::Schema::Definition::DSL do
     end
 
     context "with instance eval'd interpolated cql" do
-      let(:cql){ "cql with #{default_keyspace}" }
+      def klass_eval
+        klass.instance_eval do
+          create_schema("cql with #{default_keyspace}")
+        end
+      end
 
       it "receives default kesypace interpolation" do
         allow(klass).to receive(:default_keyspace){ "some_keyspace" }
@@ -24,9 +28,21 @@ RSpec.describe Cassie::Schema::Definition::DSL do
           expect(statement).to include("some_keyspace")
         end
 
-        klass.instance_eval do
-          create_schema("cql with #{default_keyspace}")
+        klass_eval
+      end
+    end
+
+    context "with multiple cql statements" do
+      let(:cql){ " valid cql; \n valid cql2; \n\n " }
+
+      it "executes multiple statements" do
+        statements = []
+        allow(session).to receive(:execute) do |statement|
+          statements << statement
         end
+
+        klass.create_schema(cql)
+        expect(statements).to eq(["valid cql;", "valid cql2;"])
       end
     end
   end

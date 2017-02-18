@@ -23,7 +23,9 @@ module Cassie::Schema
         # Table names must be fully qualified.
         # @return [Cassandra::Result] the result of execution
         def create_schema(cql)
-          Cassie.session(nil).execute(cql)
+          cql.strip.split(";").each do |statement|
+            Cassie.session(nil).execute("#{statement.strip};")
+          end
         end
 
         def record_version(number, description, uuid, executor, executed_at_utc)
