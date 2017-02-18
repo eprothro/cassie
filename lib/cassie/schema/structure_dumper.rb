@@ -1,6 +1,7 @@
 module Cassie::Schema
   require_relative 'queries'
 
+  # @deprecated Use {Cassie::Schema::SchemaDumper} instead
   class StructureDumper
     attr_reader :destination_path
 

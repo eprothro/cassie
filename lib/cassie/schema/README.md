@@ -184,6 +184,8 @@ cassie schema:version
 ```
 ```
 +-----------+----------------+-------------+---------------------------+
+|                      Environment: development                        |
++-----------+----------------+-------------+---------------------------+
 |  Version  | Description    | Migrated by | Migrated at               |
 +-----------+----------------+-------------+---------------------------+
 | * 0.2.0.0 |  create users  | serverbot   | 2016-09-08 10:23:54 -0500 |
@@ -195,6 +197,8 @@ cassie schema:version
 cassie schema:history
 ```
 ```
++-----------+----------------+-------------+---------------------------+
+|                      Environment: development                        |
 +-----------+----------------+-------------+---------------------------+
 |  Version  | Description    | Migrated by | Migrated at               |
 +-----------+----------------+-------------+---------------------------+
@@ -211,6 +215,8 @@ Display all applied and unapplied migrations.
 cassie schema:status
 ```
 ```
++-----------+----------------+--------+---------------------------------------------------------------+
+|                                      Environment: development                                       |
 +-----------+----------------+--------+---------------------------------------------------------------+
 | Number    | Description    | Status | Migration File                                                |
 +-----------+----------------+--------+---------------------------------------------------------------+
@@ -304,7 +310,7 @@ cassie migrate:reset
 -- done
 ```
 
-### Multiple Envrionments
+### Managing Envrionments
 
 Set the environment with `RACK_ENV`, `CASSANDRA_ENV` or the `--env`(`-e`) switch for `cassie` commands:
 
@@ -315,6 +321,8 @@ is equivalent to
 ```
 cassie migrate:reset -e test
 ```
+
+The `schema.rb` file contains keyspace-agnostic DSL. When loading the schema, its commands will be run against the default keyspace for the environment.
 
 
 ### Version / Migration Architecture (`cassie` developers)
