@@ -85,7 +85,7 @@ RSpec.describe Cassie::Schema::Definition::DSL do
 
     it "makes date string a valid date" do
       allow(Cassie::Schema).to receive(:record_version) do |v|
-        expect(v.executed_at).to eq(date)
+        expect((v.executed_at.to_time - date).abs).to be < (0.001)
       end
 
       eval
