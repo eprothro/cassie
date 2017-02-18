@@ -6,9 +6,9 @@ namespace :cassie do
 
       begin
         loader = Cassie::Schema::SchemaLoader.new
-        puts "-- Loading Schema from #{loader.source_path}"
+        puts "-- Loading '#{Cassie.env}' Schema from #{loader.source_path}"
         loader.load
-        puts "   > Schema is now at version #{Cassie::Schema.version}"
+        puts "   > '#{Cassie.env}' schema is now at version #{Cassie::Schema.version}"
         puts "-- done"
       rescue => e
         output_error(e)

@@ -5,7 +5,7 @@ namespace :cassie do
       include Cassie::Tasks::IO
 
       begin
-        puts "-- Dumping Cassandra schema (version #{Cassie::Schema.version})"
+        puts "-- Dumping '#{Cassie.env}' schema (version #{Cassie::Schema.version})"
         dumper = Cassie::Schema::SchemaDumper.new
         puts "   - Writing to #{dumper.destination_path}"
         dumper.dump
