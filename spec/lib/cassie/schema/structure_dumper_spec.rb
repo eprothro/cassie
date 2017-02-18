@@ -89,11 +89,14 @@ RSpec.describe Cassie::Schema::StructureDumper do
     it "inserts into fully qualified versions table" do
       expect(object.versions_insert_cql).to match(/^insert into cassie_schema.versions/i)
     end
-    it "inserts into 0th bucket" do
-      expect(extract_cql_values(object.versions_insert_cql)['bucket']).to eq "0"
+    it "inserts into current application" do
+      expect(extract_cql_values(object.versions_insert_cql)['application']).to eq "\'#{Cassie::Schema.application}\'"
+    end
+    it "inserts into current env" do
+      expect(extract_cql_values(object.versions_insert_cql)['env']).to eq "\'#{Cassie.env}\'"
     end
     it "inserts for each element of versions" do
-      expect(object.versions_insert_cql).to match(/\(bucket, id, number, description, executor, executed_at\) VALUES/i)
+      expect(object.versions_insert_cql).to match(/\(application, env, id, number, description, executor, executed_at\) VALUES/i)
     end
     it "inserts id" do
       expect(extract_cql_values(object.versions_insert_cql)['id']).to eq version.id.to_s

@@ -3,6 +3,17 @@ module Cassie::Schema
 
     select_from Cassie::Schema.versions_table
 
+    where :application, :eq
+    where :env, :eq
+
+    def env
+      Cassie.env
+    end
+
+    def application
+      Cassie::Schema.application
+    end
+
     def build_result(row)
       Version.new(row["number"],
                   row["description"],

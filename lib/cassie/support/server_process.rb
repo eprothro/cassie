@@ -3,6 +3,8 @@ module Cassie
     class ServerProcess
 
       attr_reader :pid
+      # @return [Array<String>] The Cassandra output lines tagged with ERROR
+      attr_reader :errors
 
       # Scan the system for cassandra processes running
       # @return [Array<ServerProcess>] Running cassandra processes
@@ -26,6 +28,7 @@ module Cassie
       # Starts a cassandra server process. {#running?} will be true if it started correctly.
       def initialize(pid=nil)
         @pid = pid
+        @errors = []
 
         if pid
           @running = true
@@ -59,13 +62,6 @@ module Cassie
         details[:command]
       end
 
-      # @return [Array<String>] The Cassandra output lines tagged with ERROR
-      # @!parse attr_reader :errors
-      def errors
-        return [] unless command && command.output
-        command.output.split("\n").grep(/ERROR/)
-      end
-
       protected
 
       def self.pids
@@ -83,6 +79,7 @@ module Cassie
         Cassie.logger.warn "[WARN] - Multiple cassandra processes started, using first one." if new_pids.length > 1
 
         @running = !!(cassandra.output =~ /state jump to NORMAL/)
+        @errors = cassandra.output.split("\n").grep(/ERROR/)
         @pid = new_pids.first
       end
 

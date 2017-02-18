@@ -11,7 +11,7 @@ namespace :cassie do
         all_versions = Cassie::Schema.applied_versions.to_a | Cassie::Schema.local_versions.to_a
         print_statuses(all_versions.sort.reverse)
       rescue Cassie::Schema::UninitializedError => e
-        puts red("Error:\n  #{e.message}")
+        output_error(e)
         abort
       end
     end

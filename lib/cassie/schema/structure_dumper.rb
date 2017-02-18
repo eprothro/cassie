@@ -1,6 +1,7 @@
 module Cassie::Schema
   require_relative 'queries'
 
+  # @deprecated Use {Cassie::Schema::SchemaDumper} instead
   class StructureDumper
     attr_reader :destination_path
 
@@ -33,17 +34,7 @@ module Cassie::Schema
     # an empty string is returned.
     # @return [String] CQL commands
     def schema_meta_structure
-      @schema_meta_structure ||= begin
-        args = ["-e", "'DESCRIBE KEYSPACE #{Cassie::Schema.schema_keyspace}'"]
-        runner = Cassie::Support::SystemCommand.new("cqlsh", args)
-        runner.run
-
-        if runner.success?
-          runner.output
-        else
-          ""
-        end
-      end
+      CreateVersionsTableQuery.new.to_cql
     end
 
     def versions

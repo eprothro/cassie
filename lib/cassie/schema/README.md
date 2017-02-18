@@ -36,7 +36,9 @@ cassie schema:init
 
 If an existing schema (e.g. keyspace, tables, types) is alredy defined, see below on how to import it.
 
-#### Coming from `cassandra_migrations`
+#### Importing an existing schema
+
+##### Coming from `cassandra_migrations`
 
 Import your existing `cassandra_migrations` migration files with a single task:
 
@@ -46,7 +48,7 @@ cassie migrations:import
 ```bash
 -- Initializing Cassie Versioning
 -- done
--- Initializing 'cassie_development' Keyspace
+-- Initializing 'my_app_development' Keyspace
 -- done
 -- Importing `cassandra_migrations` migration files
    - Importing db/cassandra_migrate/20161206214301_initial_database.rb
@@ -63,14 +65,14 @@ cassie migrations:import
    - done
 -- done
 -- Dumping Cassandra schema (version 0.0.0.1)
-   - Writing to db/cassandra/schema.cql
+   - Writing to db/cassandra/schema.rb
    - done
 -- done
 ```
 
 > The original `cassandra_migrations` migration files and schema in the physical layer are not changed. Remove the old files when comfortable.
 
-#### Coming from no explicit migration/versioning management
+##### Coming from no explicit migration/versioning management
 
 Import your existing schema held in Cassandra with a single task:
 
@@ -91,10 +93,34 @@ cassie schema:import
    - done
 -- done
 -- Dumping Cassandra schema (version 0.0.1.0)
-   - Writing to db/cassandra/schema.cql
+   - Writing to db/cassandra/schema.rb
    - done
 -- done
 ```
+
+##### Initializing versioning
+
+Locally, these import tasks will also initialiaze the local version tracking to have all migration versions recorded.
+
+However, another developer's or environment's database does not have this schema metadata. Syncronize version tracking for these databases by initializing cassie schema with the version of the current in-database schema.
+
+```
+cassie schema:init -v 0.0.2.0
+```
+
+```
+-- Initializing Cassie Versioning
+-- done
+-- Fast-forwarding to version 0.0.2.0
+   > Recorded version 0.0.0.1
+   > Recorded version 0.0.1.0
+   > Recorded version 0.0.2.0
+-- done
+-- Initializing 'my_app_development' Keyspace
+-- done
+```
+
+This does not run any migrations, but rather updates schema version metadata, so future migrations begin after the provided version.
 
 #### Creating a migration
 
@@ -146,7 +172,7 @@ cassie migrate 0.2.0
 
 ##### Rolling back
 
-Use the same interface to migrate up or down to a specific version.
+Use the same command to migrate up or down to a specific version.
 
 ```
 cassie migrate 0.1.9
@@ -157,6 +183,8 @@ cassie migrate 0.1.9
 cassie schema:version
 ```
 ```
++-----------+----------------+-------------+---------------------------+
+|                      Environment: development                        |
 +-----------+----------------+-------------+---------------------------+
 |  Version  | Description    | Migrated by | Migrated at               |
 +-----------+----------------+-------------+---------------------------+
@@ -170,6 +198,8 @@ cassie schema:history
 ```
 ```
 +-----------+----------------+-------------+---------------------------+
+|                      Environment: development                        |
++-----------+----------------+-------------+---------------------------+
 |  Version  | Description    | Migrated by | Migrated at               |
 +-----------+----------------+-------------+---------------------------+
 | * 0.2.0.0 |  create users  | serverbot   | 2016-09-08 10:23:54 -0500 |
@@ -178,76 +208,84 @@ cassie schema:history
 ```
 
 #### Reporting the version status
+
+Display all applied and unapplied migrations.
+
 ```
 cassie schema:status
 ```
 ```
-+-----------+----------------+-------------+---------------------------+
-|  Version  | Description    |   Status    | Migration File            |
-+-----------+----------------+-------------+---------------------------+
-| * 0.2.0.0 |  create users  | serverbot   | 2016-09-08 10:23:54 -0500 |
-|   0.1.0.0 | initial schema | eprothro    | 2016-09-08 09:23:54 -0500 |
-+-----------+----------------+-------------+---------------------------+
++-----------+----------------+--------+---------------------------------------------------------------+
+|                                      Environment: development                                       |
++-----------+----------------+--------+---------------------------------------------------------------+
+| Number    | Description    | Status | Migration File                                                |
++-----------+----------------+--------+---------------------------------------------------------------+
+|   0.0.3.0 | create friends |  DOWN  | db/cassandra/migrations/0000_0000_0003_0000_create_friends.rb |
+| * 0.0.2.0 | create users   |   UP   | db/cassandra/migrations/0000_0000_0002_0000_create_users.rb   |
+|   0.1.0.0 | initial schema |   UP   | db/cassandra/migrations/0000_0000_0001_0000_initial_schema.rb |
++-----------+----------------+--------+---------------------------------------------------------------+
 ```
 
 ### Schema Management
 
-The full schema is stored in `schema.cql`, this is recommended to be checked into source control.
+The full schema is stored in `schema.rb`, this is recommended to be checked into source control.
 It is updated (with a full dump) after each migration, to maintain a truth-store for the schema when used with multiple developers.
 
-### Dump the schema
+#### Dump the schema
 
 ```
 cassie schema:dump
 ```
 ```
--- Dumping Cassandra schema (version 0.2.0.0)
-   - Writing to db/cassandra/schema.cql
+-- Dumping 'development' schema (version 0.2.0.0)
+   - Writing to db/cassandra/schema.rb
    - done
 -- done
 ```
 
-### Drop the schema
+#### Drop the schema
 ```
 cassie schema:drop
 ```
 ```
--- Dropping 2 keyspaces
+-- Dropping 'development' schema
    - Dropping 'my_app_development'
    - done
-   - Dropping 'cassie_schema'
+   - Clearning schema version metadata
+     > removed 2 versions
    - done
 -- done
 ```
 
-### Load the schema
+#### Load the schema
 ```
 cassie schema:load
 ```
 ```
--- Loading Schema from db/cassandra/schema.cql
+-- Loading 'development' schema from db/cassandra/schema.rb
    > Schema is now at version 0.2.0.0
 -- done
 ```
 
-### Reset the schema
+#### Reset the schema
 
 ```
 cassie schema:reset
 ```
 ```
--- Dropping 2 keyspaces
+-- Dropping 'development' schema
    - Dropping 'my_app_development'
    - done
-   - Dropping 'cassie_schema'
+   - Clearning schema version metadata
+     > removed 2 versions
    - done
 -- done
--- Loading Schema from db/cassandra/schema.cql
+-- Loading 'development' schema from db/cassandra/schema.rb
    > Schema is now at version 0.2.0.0
 -- done
 ```
 
-### Reset the schema and migrate
+#### Reset the schema and migrate
 
 This task reload the schema from the schema file, and then proceeds with incremental migrations up to the latest migration.
 
@@ -255,26 +293,42 @@ This task reload the schema from the schema file, and then proceeds with increme
 cassie migrate:reset
 ```
 ```
--- Dropping 2 keyspaces
-   - Dropping 'cassie_development'
+-- Dropping 'development' schema
+   - Dropping 'my_app_development'
    - done
-   - Dropping 'cassie_schema'
+   - Clearning schema version metadata
+     > removed 2 versions
    - done
 -- done
--- Loading Schema from db/cassandra/schema.cql
+-- Loading 'development' schema from db/cassandra/schema.rb
    > Schema is now at version 0.2.0.0
 -- done
--- Migrating to version 0.2.1.0
+-- Migrating 'development' schema to version 0.2.1.0
    - Migragting version 0.2.1.0 UP
    - done (4.89 ms)
 -- done
--- Dumping Cassandra schema (version 0.2.1.0)
-   - Writing to db/cassandra/schema.cql
+-- Dumping 'development' schema (version 0.2.1.0)
+   - Writing to db/cassandra/schema.rb
    - done
 -- done
 ```
 
-### Architecture (`cassie` developers)
+### Managing Envrionments
+
+Set the environment with `RACK_ENV`, `CASSANDRA_ENV` or the `--env`(`-e`) switch for `cassie` commands:
+
+```
+RACK_ENV=test cassie migrate:reset
+```
+is equivalent to
+```
+cassie migrate:reset -e test
+```
+
+The `schema.rb` file contains keyspace-agnostic DSL. When loading the schema, its commands will be run against the default keyspace for the environment.
+
+
+### Version / Migration Architecture (`cassie` developers)
 
 #### Versions
 

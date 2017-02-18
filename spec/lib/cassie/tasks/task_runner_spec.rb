@@ -2,23 +2,20 @@ require 'cassie/tasks'
 
 RSpec.describe Cassie::Tasks::TaskRunner do
   let(:klass){ Cassie::Tasks::TaskRunner }
-  let(:object){ klass.new }
+  let(:object){ klass.new(args) }
   let(:args){ Array(command) + params }
   let(:params){ [] }
   let(:command){ nil }
 
-  describe "#run_command" do
-    def run
-      object.run_command(args)
-    end
+  describe "#run" do
     Rake.application.tasks.each do |t|
       context "with the #{t.name} task" do
         let(:command){ t.name.sub("cassie:", "") }
+        let(:task) { Rake::Task["cassie:#{command}"] }
 
         it "finds an associated command" do
-          task = Rake::Task["cassie:#{command}"]
-          expect(task).to receive(:invoke)
-          run
+          expect(task).to receive(:invoke){ true }
+          object.run
         end
       end
     end
@@ -49,8 +46,8 @@ RSpec.describe Cassie::Tasks::TaskRunner do
         let(:task){ Rake::Task["cassie:#{command}"] }
 
         it "runs an associated task" do
-          expect(task).to receive(:invoke)
-          run
+          expect(task).to receive(:invoke){ true }
+          object.run
         end
       end
     end

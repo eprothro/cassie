@@ -18,7 +18,9 @@ RSpec.describe "cassie:schema:drop rake task" do
     after(:each) { object.reenable }
 
     it "deletes from cassandra" do
-      expect_any_instance_of(Cassie::Schema::DropKeyspaceQuery).to receive(:execute).twice
+      allow(Cassie::Schema).to receive(:applied_versions){[]}
+      expect_any_instance_of(Cassie::Schema::DropKeyspaceQuery).to receive(:execute!)
+      expect_any_instance_of(Cassie::Schema::DeleteVersionQuery).to receive(:execute!)
       object.invoke
     end
   end

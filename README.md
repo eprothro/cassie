@@ -182,11 +182,11 @@ INFO  [main] 2016-09-23 11:18:05,407 CassandraDaemon.java:477 - Not starting RPC
 
 ### Versioned Schema Migrations
 
-Cassie allows you to migrate between schema states using semantically versioned, incremental migration files.
+Cassie supports migration between schema states using semantically versioned, incremental migration files.
 
 Schema Version information is stored in Cassandra persistence, in the `cassie_schema.versions` table (configurable).
 
-An executable schema file keeps the current state of the schema in-repo, at `db/cassandra/schema.cql`, (configurable).
+A schema file holds the current state of the schema in-repo, at `db/cassandra/schema.rb`, (configurable).
 
 Various `cassie <task>` tasks are used to manage the schema version and migrations.
 
@@ -202,15 +202,15 @@ Various `cassie <task>` tasks are used to manage the schema version and migratio
 | schema:version | Print the current schema version information for the Cassandra cluster |
 | schema:history | Print the the historical version information the current Cassandra cluster state |
 | schema:status | Print the the migration status for each local migration (up/down) |
-| schema:load | Creates the schema by executing the CQL schema in the schema file (`db/cassandra/schema.cql` by default) |
+| schema:load | Creates the schema by executing the CQL schema in the schema file (`db/cassandra/schema.rb` by default) |
 | schema:drop | drop keyspace(s) |
-| schema:dump | Dumps the schema for all non-system keyspaces in CQL format (`db/cassandra/schema.cql` by default) |
+| schema:dump | Dumps the schema for all non-system keyspaces in CQL format (`db/cassandra/schema.rb` by default) |
 | schema:reset | runs schema:drop and schema:load|
 | schema:import | Create an initial migration based on the current Cassandra non-system schema |
 
 See the [Migrations README](./lib/cassie/schema/README.md#readme) for more on features and usage.
 
-### Query Classes
+### Query DSL
 
 Cassie provides base Query Classes to manage interactions to the database.
 Create application specific subclasses and construct queries with a simple CQL DSL.

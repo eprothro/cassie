@@ -8,7 +8,7 @@ namespace :cassie do
         version = argv[0]
 
         migrator = Cassie::Schema::Migrator.new(version)
-        puts "-- Migrating to version #{migrator.target_version}"
+        puts "-- Migrating '#{Cassie.env}' schema to version #{migrator.target_version}"
 
         if migrator.commands.count == 0
           if migrator.target_version == migrator.current_version
@@ -28,7 +28,7 @@ namespace :cassie do
           puts "-- done"
         end
       rescue => e
-        puts red("Error:\n  #{e.message}")
+        output_error(e)
         abort
       end
     end
