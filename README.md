@@ -27,7 +27,7 @@ Each of these components are designed to be used independently or together in a 
 
 ```ruby
 # Gemfile
-gem 'cassie', '~> 1.0.4'
+gem 'cassie', '~> 1.1.0'
 ```
 
 or
