@@ -186,7 +186,7 @@ Cassie supports migration between schema states using semantically versioned, in
 
 Schema Version information is stored in Cassandra persistence, in the `cassie_schema.versions` table (configurable).
 
-An executable schema file keeps the current state of the schema in-repo, at `db/cassandra/schema.rb`, (configurable).
+A schema file holds the current state of the schema in-repo, at `db/cassandra/schema.rb`, (configurable).
 
 Various `cassie <task>` tasks are used to manage the schema version and migrations.
 

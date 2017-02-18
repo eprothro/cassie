@@ -48,7 +48,7 @@ cassie migrations:import
 ```bash
 -- Initializing Cassie Versioning
 -- done
--- Initializing 'cassie_development' Keyspace
+-- Initializing 'my_app_development' Keyspace
 -- done
 -- Importing `cassandra_migrations` migration files
    - Importing db/cassandra_migrate/20161206214301_initial_database.rb
@@ -102,7 +102,7 @@ cassie schema:import
 
 Locally, these import tasks will also initialiaze the local version tracking to have all migration versions recorded.
 
-However, another developer's or environment's database does not have this schema metadata. Syncronize version tracking by initializing cassie schema with the version of the current in-database schema.
+However, another developer's or environment's database does not have this schema metadata. Syncronize version tracking for these databases by initializing cassie schema with the version of the current in-database schema.
 
 ```
 cassie schema:init -v 0.0.2.0
@@ -116,7 +116,7 @@ cassie schema:init -v 0.0.2.0
    > Recorded version 0.0.1.0
    > Recorded version 0.0.2.0
 -- done
--- Initializing 'cassie_development' Keyspace
+-- Initializing 'my_app_development' Keyspace
 -- done
 ```
 
@@ -172,7 +172,7 @@ cassie migrate 0.2.0
 
 ##### Rolling back
 
-Use the same interface to migrate up or down to a specific version.
+Use the same command to migrate up or down to a specific version.
 
 ```
 cassie migrate 0.1.9
@@ -237,7 +237,7 @@ It is updated (with a full dump) after each migration, to maintain a truth-store
 cassie schema:dump
 ```
 ```
--- Dumping Cassandra schema (version 0.2.0.0)
+-- Dumping 'development' schema (version 0.2.0.0)
    - Writing to db/cassandra/schema.rb
    - done
 -- done
@@ -248,10 +248,11 @@ cassie schema:dump
 cassie schema:drop
 ```
 ```
--- Dropping 2 keyspaces
+-- Dropping 'development' schema
    - Dropping 'my_app_development'
    - done
-   - Dropping 'cassie_schema'
+   - Clearning schema version metadata
+     > removed 2 versions
    - done
 -- done
 ```
@@ -261,7 +262,7 @@ cassie schema:drop
 cassie schema:load
 ```
 ```
--- Loading Schema from db/cassandra/schema.rb
+-- Loading 'development' schema from db/cassandra/schema.rb
    > Schema is now at version 0.2.0.0
 -- done
 ```
@@ -272,13 +273,14 @@ cassie schema:load
 cassie schema:reset
 ```
 ```
--- Dropping 2 keyspaces
+-- Dropping 'development' schema
    - Dropping 'my_app_development'
    - done
-   - Dropping 'cassie_schema'
+   - Clearning schema version metadata
+     > removed 2 versions
    - done
 -- done
--- Loading Schema from db/cassandra/schema.rb
+-- Loading 'development' schema from db/cassandra/schema.rb
    > Schema is now at version 0.2.0.0
 -- done
 ```
@@ -291,20 +293,21 @@ This task reload the schema from the schema file, and then proceeds with increme
 cassie migrate:reset
 ```
 ```
--- Dropping 2 keyspaces
-   - Dropping 'cassie_development'
+-- Dropping 'development' schema
+   - Dropping 'my_app_development'
    - done
-   - Dropping 'cassie_schema'
+   - Clearning schema version metadata
+     > removed 2 versions
    - done
 -- done
--- Loading Schema from db/cassandra/schema.rb
+-- Loading 'development' schema from db/cassandra/schema.rb
    > Schema is now at version 0.2.0.0
 -- done
--- Migrating to version 0.2.1.0
+-- Migrating 'development' schema to version 0.2.1.0
    - Migragting version 0.2.1.0 UP
    - done (4.89 ms)
 -- done
--- Dumping Cassandra schema (version 0.2.1.0)
+-- Dumping 'development' schema (version 0.2.1.0)
    - Writing to db/cassandra/schema.rb
    - done
 -- done
