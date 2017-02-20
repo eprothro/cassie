@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+### Changed
+- Optimization: use cluster metadata instead of queries to see if schema table exists when loading schema.rb
+
 ## 1.1.0
 
 ### Changed
