@@ -3,6 +3,8 @@ RSpec.describe Cassie::ConnectionHandler::Cluster do
     Class.new do
       include Cassie::ConnectionHandler::Cluster
 
+      attr_accessor :keyspace
+
       def configuration
       end
       def logger
@@ -49,6 +51,54 @@ RSpec.describe Cassie::ConnectionHandler::Cluster do
       it "doesn't create a new one" do
         expect(Cassandra).not_to receive(:cluster)
         mod.cluster
+      end
+    end
+  end
+
+  describe "keyspace_exists?" do
+    let(:cluster){ double(hosts: [], name: "", keyspaces: keyspaces) }
+    let(:keyspaces){ [double(name: :foo), double(name: name)] }
+    let(:name){ :bar }
+    before(:each) do
+      allow(Cassandra).to receive(:cluster){cluster}
+    end
+
+    it "returns true" do
+      expect(mod.keyspace_exists?(name)).to eq true
+    end
+    it "returns false" do
+      expect(mod.keyspace_exists?(:baz)).to eq false
+    end
+  end
+
+    describe "keyspace_exists?" do
+    let(:cluster){ double(hosts: [], name: "", keyspaces: keyspaces) }
+    let(:keyspaces){ [double(name: :foo, tables: []), double(name: keyspace_name, tables: tables)] }
+    let(:tables){ [double(name: :table_foo), double(name: table_name)] }
+    let(:keyspace_name){ "keyspace" }
+    let(:table_name){ "table" }
+    before(:each) do
+      allow(Cassandra).to receive(:cluster){cluster}
+    end
+
+    context "with fully qualified table name" do
+      it "returns true" do
+        expect(mod.table_exists?("#{keyspace_name}.#{table_name}")).to eq true
+      end
+      it "returns false" do
+        expect(mod.table_exists?(:baz)).to eq false
+      end
+    end
+
+    context "with scoped table name" do
+      let(:name){ :table_bar }
+      before(:each) { mod.keyspace = keyspace_name }
+
+      it "returns true" do
+        expect(mod.table_exists?(table_name)).to eq true
+      end
+      it "returns false" do
+        expect(mod.table_exists?(:baz)).to eq false
       end
     end
   end

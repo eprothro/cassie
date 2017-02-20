@@ -33,7 +33,7 @@ module Cassie::Schema
     # in the Cassandra database if they don't already exist
     # @return [void]
     def initialize_versioning
-      create_schema_keyspace unless keyspace_exists?
+      create_schema_keyspace unless schema_keyspace_exists?
       create_versions_table unless versions_table_exists?
     end
 
@@ -109,8 +109,12 @@ module Cassie::Schema
       '0.0.1.0'
     end
 
-    def keyspace_exists?
+    def schema_keyspace_exists?
       Cassie.keyspace_exists?(Cassie::Schema.schema_keyspace)
+    end
+
+    def versions_table_exists?
+      Cassie.table_exists?(qualified_table_name)
     end
 
     # load version migration class from disk
@@ -138,12 +142,6 @@ module Cassie::Schema
       false
     end
 
-    def versions_table_exists?
-      !!SelectVersionsQuery.new(limit: 1).fetch
-    rescue Cassandra::Errors::InvalidError
-      false
-    end
-
     def create_schema_keyspace
       CreateKeyspaceQuery.new(name: Cassie::Schema.schema_keyspace).execute
     end
@@ -157,7 +155,11 @@ module Cassie::Schema
     end
 
     def uninitialized_message
-      "Cassie Schema Versions table not found at '#{schema_keyspace}.#{versions_table}'. Enable versioned migration support with `cassie schema:init`."
+      "Cassie Schema Versions table not found at '#{qualified_table_name}'. Enable versioned migration support with `cassie schema:init`."
+    end
+
+    def qualified_table_name
+      "#{schema_keyspace}.#{versions_table}"
     end
   end
 end
