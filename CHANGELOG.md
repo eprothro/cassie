@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+### Fixed
+- Bug where `replication` settings from legacy cassandra_migrations style config file weren't honored and caused failed `schema:init` task.
+
 ### Changed
 - Optimization: use cluster metadata instead of queries to see if schema table exists when loading schema.rb
 

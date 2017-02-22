@@ -11,7 +11,7 @@ namespace :cassie do
 
         query = Cassie::Schema::CreateKeyspaceQuery.new
         query.name = name
-        if replicaiton = Cassie.configuration[:replication]
+        if replication = Cassie.configuration[:replication]
           query.replication_class = replication[:class] if replication.has_key?(:class)
           query.replication_factor = replication[:replication_factor] if replication.has_key?(:replication_factor)
         end
