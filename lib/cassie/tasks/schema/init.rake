@@ -24,11 +24,12 @@ namespace :cassie do
           version = Cassie::Schema::Version.new(opts[:version])
           version = Cassie::Schema.local_versions.find{|v| version == v} || raise_not_found(version)
           versions = Cassie::Schema.local_versions.select{|v| v <= version}.sort
-          puts "-- Fast-forwarding to version #{version}"
+          puts "-- Fast-forwarding '#{Cassie.env}' schema to version #{version}"
             t0 = Time.now
             versions.each.with_index do |v, i|
               # space IDs out by 10 seconds to ensure they get written in order
-              time = t0 - (versions.count - i * 10)
+              # end on 10 seconds ago in case migrations are run immediately
+              time = t0 - ((versions.count - i) * 10)
               v.id = ::Cassandra::TimeUuid::Generator.new.at(time)
               v.executor = "cassie"
               Cassie::Schema.record_version(v, false)

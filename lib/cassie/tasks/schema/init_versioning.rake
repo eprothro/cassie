@@ -8,9 +8,6 @@ namespace :cassie do
       begin
         puts "-- Initializing Cassie Versioning"
         Cassie::Schema.initialize_versioning
-        puts "-- done"
-      rescue Cassie::Schema::AlreadyInitiailizedError
-        puts "   > Cassie Versioning already initialized "
         puts "   > Schema is at version #{Cassie::Schema.version}"
         puts "-- done"
       rescue => e

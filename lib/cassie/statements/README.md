@@ -82,7 +82,7 @@ CQL statements are used for 3 different kinds of queries:
 * data modification (e.g. `INSERT`, `UPDATE`, `DELETE`)
 * data query (e.g. `SELECT`)
 
-Cassie provides 3 base classes for these 3 kinds of queries. Subclass `Cassie::Definition`, `Cassie::Modification`, and `Cassie::Query` to define your applicaiton query classes.
+Cassie provides 3 base classes for these 3 kinds of queries. Subclass `Cassie::Definition`, `Cassie::Modification`, and `Cassie::Query` to define your application query classes.
 
 ##### `Cassie::Definition`
   Only includes the core functionality for statement execution:

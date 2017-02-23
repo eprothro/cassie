@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## 1.1.2
+
+### Fixed
+- Bug where executing `schema:migrate` immediately after `schema:init -v SOME_VERSION` recorded incorrectly ordered version history.
+
+## 1.1.1
 
 ### Fixed
 - Bug where `replication` settings from legacy cassandra_migrations style config file weren't honored and caused failed `schema:init` task.

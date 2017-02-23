@@ -21,7 +21,7 @@ module Cassie
     extend Definition
 
     # The application namespace. Only applicaple
-    # When cassie manages multiple applicaiton
+    # When cassie manages multiple application
     # schemas within the same cluster.
     # @return [String] the application namespace
     def self.application
