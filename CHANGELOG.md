@@ -5,10 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## 1.1.3
+## 1.1.4
 
 ### Changed
 - Cassie::Statements::Execution#execute now accepts an optional hash of cassandra_driver execution options
+
+### Fixed
+- Tasks that drop, now have a 10 second timeout. Fixes [Issue 26](https://github.com/eprothro/cassie/issues/26)
 
 ## 1.1.2
 

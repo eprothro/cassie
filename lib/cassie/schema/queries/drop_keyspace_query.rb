@@ -10,5 +10,10 @@ module Cassie::Schema
         DROP KEYSPACE IF EXISTS #{keyspace};
        )
     end
+
+    def execute(opts={})
+      opts[:timeout] ||= 10
+      super(opts)
+    end
   end
 end
