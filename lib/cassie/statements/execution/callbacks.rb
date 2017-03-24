@@ -13,7 +13,7 @@ module Cassie::Statements::Execution
       end
     end
 
-    def execute
+    def execute(*args)
       super || run_callbacks(:failure)
     end
   end

@@ -6,14 +6,14 @@ module Cassie::Statements::Execution
       @result_class = Cassie::Statements::Results::PeekingResult
     end
 
-    def execute
+    def execute(*args)
       assert_limit
       @unpeeked_limit = limit
       with_limit(limit + 1) do
        super
       end
     end
-    
+
     def unpeeked_limit
       @unpeeked_limit if defined?(@unpeeked_limit)
     end

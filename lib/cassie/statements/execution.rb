@@ -54,16 +54,18 @@ module Cassie::Statements
     end
 
     # Executes the statment and populates result
+    # @param [Hash{Symbol => Object}] cassandra_driver execution options
     # @return [Boolean] indicating a successful execution or not
-    def execute
-      @result = result_class.new(session.execute(statement, execution_options), result_opts)
+    def execute(opts={})
+      @result = result_class.new(session.execute(statement, execution_options.merge(opts)), result_opts)
       result.success?
     end
 
     # Same as {#execute}. Raises if not succesfull.
+    # @param [Hash{Symbol => Object}] cassandra_driver execution options
     # @return [Boolean] true if sucessful
     # @raise [Cassie::Statements::ExecutionError] if the result was not sucessful, see {Cassie::Statements::Results::Core#success?}
-    def execute!
+    def execute!(opts={})
       execute || (raise Cassie::Statements::ExecutionError.new(result))
     end
 

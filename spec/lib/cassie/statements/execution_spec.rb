@@ -8,9 +8,18 @@ RSpec.describe Cassie::Statements::Execution do
   let(:object) do
     klass.new
   end
+  let(:result){ [] }
 
   describe "#execute" do
-    it "passes the statment and execution_options to Cassandra" do
+    it "passes the statment to Cassandra" do
+      expect(object.session).to receive(:execute).with(object.statement, anything){result}
+      object.execute
+    end
+
+    it "passes along param options to Cassandra" do
+      options = {foo: :bar}
+      expect(object.session).to receive(:execute).with(anything, hash_including(options)){result}
+      object.execute(options)
     end
 
     it "returns true" do

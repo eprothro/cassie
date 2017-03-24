@@ -1,7 +1,7 @@
 module Cassie::Statements::Execution
   module Instrumentation
 
-    def execute
+    def execute(*args)
       Cassie.instrumenter.instrument("cassie.cql.execution") do |payload|
         execution_val = super #execution populates #result
 

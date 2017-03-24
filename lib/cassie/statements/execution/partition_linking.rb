@@ -29,7 +29,7 @@ module Cassie::Statements::Execution
       end
     end
 
-    def execute
+    def execute(*args)
       success = super
       if success && partition_linker?
         @result = build_partition_linker.link
