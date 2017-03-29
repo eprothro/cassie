@@ -18,10 +18,16 @@ module Cassie::Schema::Migration::DSL
     end
 
     def announce(msg)
-      announcing_stream << msg
+      announcing_stream << msg + "\n"
     end
 
     protected
+
+    # -- Migrating 'development' schema to version 0.0.21.0
+    #    - Migragting version 0.0.22.0 DOWN
+    #      -> drop_table(configuration_by_context)
+    #        > DROP TABLE configuration_by_context
+    #   remove_column(latest_owner_id)
 
     # Generates output labeled with name of migration and a line that goes up
     # to 75 characters long in the terminal
@@ -33,11 +39,11 @@ module Cassie::Schema::Migration::DSL
     end
 
     def announce_operation(message)
-      announce("  " + message)
+      announce("      -> " + message)
     end
 
     def announce_suboperation(message)
-      announce("  -> " + message)
+      announce("        > " + message)
     end
 
     def name
