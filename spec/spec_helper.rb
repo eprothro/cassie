@@ -74,7 +74,7 @@ RSpec.configure do |config|
 
   # Full backtrace (into gems)
   # or only show app portion of backtrace
-  # config.full_backtrace = true
+  config.full_backtrace = true
 
   # This setting enables warnings. It's recommended, but in some cases may
   # be too noisy due to issues in dependencies.

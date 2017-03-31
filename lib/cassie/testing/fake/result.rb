@@ -35,7 +35,7 @@ module Cassie::Testing::Fake
     alias each_row each
 
     def empty?
-      !!rows.peek
+      !rows.peek
     rescue StopIteration
       true
     end
