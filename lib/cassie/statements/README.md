@@ -215,7 +215,7 @@ query.execute
 #=> true
 ```
 
-Mapping assignemtnt values from a domain object is supported.
+Mapping assignment values from a domain object is supported.
 
 ```ruby
 class UpdateUserQuery < Cassandra::Modification
@@ -269,41 +269,6 @@ user
 #=> #<User:0x007ff8895ce660 @id=6539, @phone="+15555555555", @email="etp@example.com", @address=nil, @username= "ETP">
 UpdateUserQuery.new(user: user).execute
 ```
-
-<pre><b>
-(1.2ms) UPDATE users_by_id (phone, email, address, username) VALUES (?, ?, ?, ?) WHERE id = ?; [["+15555555555", "etp@example.com", nil, "etp", 6539]]
-</b></pre>
-
-The above examples use positional terms (e.g. the term is '?' in the statement). The assignement's term can be defined explicitly.
-
-```ruby
-insert_into :posts
-
-set :id, term: "now()"
-```
-
-```ruby
-update :post_counts
-
-set :comments_count, "comments_count + 1"
-
-non_idempotent
-```
-
-A value will be fetched and placed as an argument in the statement if the provided term includes a positional marker ('?').
-
-```ruby
-select :posts
-
-where :id, :gteq, term: "minTimeuuid(?)", value: :window_min_timestamp
-
-def window_min_timestamp
-  '2013-02-02 10:00+0000'
-end
-```
-
-> Note: The `term` option should be used with care. Using it innapropriately could result in inefficient use of prepared statements, and/or leave you potentially vulnerable to injection attacks.
-
 
 #### Column Selection (`select`)
 
@@ -372,6 +337,59 @@ By default, all columns for specified CQL rows will be deleted. Identify a subse
 
 ```
 #=> DELETE nickname FROM authors_by_id where id = 123;
+```
+
+#### Non-Positional Terms
+
+<pre><b>
+(1.2ms) UPDATE users_by_id (phone, email, address, username) VALUES (?, ?, ?, ?) WHERE id = ?; [["+15555555555", "etp@example.com", nil, "etp", 6539]]
+</b></pre>
+
+BY default, Cassie uses positional terms as shown in this update statement (e.g. the term is '?' in the statement). The assignement's term can also be defined explicitly.
+
+```ruby
+insert_into :posts
+
+set :id, term: "now()"
+```
+<pre><b>
+(1.2ms) INSERT into posts_by_id (id) VALUES (now());
+</b></pre>
+
+```ruby
+update :post_counts
+
+set :comments_count, "comments_count + 1"
+
+non_idempotent
+```
+
+A value will be fetched and placed as an argument in the statement if the provided term includes a positional marker ('?').
+
+```ruby
+select :posts
+
+where :id, :gteq, term: "minTimeuuid(?)", value: :window_min_timestamp
+
+def window_min_timestamp
+  '2013-02-02 10:00+0000'
+end
+```
+
+> Note: The `term` option should be used with care. Using it innapropriately could result in inefficient use of prepared statements, and/or leave you potentially vulnerable to injection attacks.
+
+#### Setting Column TTL and Timestamp (`using`)
+
+```ruby
+class InsertSessionQuery < Cassandra::Modification
+
+  insert :sessions_by_token
+
+  set :token
+  set :username
+
+  using ttl: 300, if: :expiring?
+end
 ```
 
 #### Execution and Result

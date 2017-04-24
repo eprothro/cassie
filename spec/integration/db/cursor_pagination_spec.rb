@@ -88,4 +88,29 @@ RSpec.describe "Cassie curosred pagination" do
       expect(object.fetch.map(&:id)).to eq((45..49).to_a.reverse)
     end
   end
+
+  context "when setting the limit in initializer" do
+    let(:sibling_klass) do
+      Class.new(Cassie::Query) do
+        select_from :bucketed_records_desc_by_owner
+
+        where :owner_id, :eq
+        where :bucket, :eq
+        cursor_by :id
+
+        def bucket
+          4
+        end
+      end
+    end
+    let(:limit){ rand(1000)}
+
+    it "doesn't affect sibling's limit" do
+      sibling_klass.new
+      a = klass.new(limit: limit)
+      b = sibling_klass.new
+
+      expect(b.limit).not_to eq(limit)
+    end
+  end
 end

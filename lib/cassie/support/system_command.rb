@@ -3,6 +3,28 @@ module Cassie
     class SystemCommand
       attr_reader :binary, :args, :command, :status, :duration, :output
 
+      # Indicates whether a binary exists in the current user's PATH
+      # @param [String, Symbol] name the name of the command to search for
+      # @return [Boolean] true if the binary could be found
+      def self.exist?(name)
+        !!which(name)
+      end
+
+      # Find the path to the executable file, using the current user's PATH
+      # @param [String, Symbol] name the name of the command to search for
+      # @return [String, nil] the fully qualified path
+      def self.which(name)
+        # windows support
+        exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+        ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+          exts.each { |ext|
+            exe = File.join(path, "#{name}#{ext}")
+            return exe if File.executable?(exe) && !File.directory?(exe)
+          }
+        end
+        return nil
+      end
+
       # When a block is given, the command runs before yielding
       def initialize(binary, args=[])
         @binary = binary
@@ -14,6 +36,14 @@ module Cassie
           run
           yield self
         end
+      end
+
+      def exist?
+        self.class.exist?(binary)
+      end
+
+      def which
+        self.class.which(binary)
       end
 
       # Runs the command

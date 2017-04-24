@@ -135,6 +135,26 @@ RSpec.describe Cassie::Statements::Statement::Limiting do
     end
   end
 
+  describe "sibling class" do
+    let(:sibling_class) do
+      Class.new(base_class) do
+        select_from :users
+      end
+    end
+
+    it "doesn't affect it's sibling's limit set by initializer" do
+      subclass
+      sibling_class.new(limit: alt_limit)
+      expect(subclass.limit).not_to eq(alt_limit)
+    end
+
+    it "isn't affected by it's sibling's limit set by setter" do
+      query = sibling_class.new
+      query.limit = alt_limit
+      expect(subclass.limit).not_to eq(alt_limit)
+    end
+  end
+
   describe "#with_limit" do
     let!(:original_limit){ object.limit }
     let(:alt_limit){ original_limit + 1 }

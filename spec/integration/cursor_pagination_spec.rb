@@ -34,4 +34,8 @@ RSpec.describe Cassie::Statements::Statement::Pagination::Cursors do
   describe "paging through all events" do
   end
 
+
+
+
+
 end

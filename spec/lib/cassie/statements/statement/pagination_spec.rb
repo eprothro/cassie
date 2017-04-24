@@ -13,6 +13,7 @@ RSpec.describe Cassie::Statements::Statement::Pagination do
       klass.limit = limit - 1
       expect{klass.limit = limit}.to change{klass.page_size}.to(limit)
     end
+    it "sets limit for subqueries"
     context "with dsl limit setting" do
       let(:klass) do
         Class.new(Cassie::FakeQuery) do
@@ -36,6 +37,7 @@ RSpec.describe Cassie::Statements::Statement::Pagination do
       expect{object.limit = limit}.to change{object.page_size}.to(limit)
     end
   end
+
   describe "#page_size=" do
     it "aliases limit" do
       expect{object.page_size = limit}.to change{object.limit}.to(limit)

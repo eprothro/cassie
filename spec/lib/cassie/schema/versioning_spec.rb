@@ -102,9 +102,15 @@ module Cassie::Schema
         end
       end
       context "when migrations exist" do
+        let(:version){ Version.new("0.2.0") }
+        before(:each) do
+          allow(mod).to receive(:local_versions){[version]}
+        end
         it "bumps max version" do
+          expect(mod.next_version).to eq(version.next)
         end
         it "returns new version" do
+          expect(mod.next_version.object_id).not_to eq version.object_id
         end
       end
       context "when current version is higher than local version" do
