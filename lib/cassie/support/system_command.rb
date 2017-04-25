@@ -25,17 +25,63 @@ module Cassie
         return nil
       end
 
-      # When a block is given, the command runs before yielding
-      def initialize(binary, args=[])
-        @binary = binary
-        @args = args
-        @command = (Array(binary) + args).join(" ")
+      # Creates a new SystemCommand object that has
+      # not yet been executed.
+      #
+      # @overload initialize(command)
+      #   @param [#to_s] the command to execute
+      #
+      # @overload initialize(binary, [args]=[])
+      #   @param [#to_s] binary the binary to be called
+      #   @param [Array<#to_s>] args Arguments to be passed to the binary
+      #
+      # @overload initialize(binary, arg, ...)
+      #   @param [#to_s] binary the binary to be called
+      #   @param [#to_s, Array<#to_s>] arg Argument(s) to be passed to the binary
+      #   @param [#to_s, Array<#to_s>] ... more argument(s) to be passed to the binary
+      #
+      # @example command string
+      #   cmd = SystemCommand.new("git reset --hard HEAD")
+      #   cmd.binary
+      #   #=> "git"
+      #   cmd.args
+      #   #=> ["reset", "--hard", "HEAD"]
+      #
+      # @example binary and arguments strings
+      #   cmd = SystemCommand.new("git", "reset --hard HEAD")
+      #   cmd.binary
+      #   #=> "git"
+      #   cmd.args
+      #   #=> ["reset", "--hard", "HEAD"]
+      #
+      # @example binary and arguments string with splat
+      #   cmd = SystemCommand.new("git", "reset", "--hard HEAD")
+      #   cmd.binary
+      #   #=> "git"
+      #   cmd.args
+      #   #=> ["reset", "--hard", "HEAD"]
+      #
+      # @example binary with arguments array
+      #   cmd = SystemCommand.new("git", ["reset", "--hard", "HEAD"])
+      #   cmd.binary
+      #   #=> "git"
+      #   cmd.args
+      #   #=> ["reset", "--hard", "HEAD"]
+      #
+      # @example array
+      #   cmd = SystemCommand.new(["git", "reset", "--hard", "HEAD"])
+      #   cmd.binary
+      #   #=> "git"
+      #   cmd.args
+      #   #=> ["reset", "--hard", "HEAD"]
+      def initialize(*cmd)
+        @args = []
+        cmd.flatten.each{|a| @args += a.to_s.split(" ")}
+
+        @command = args.join(" ")
         @command = command + " 2>&1" unless command =~ / > /
 
-        if block_given?
-          run
-          yield self
-        end
+        @binary = @args.shift
       end
 
       def exist?
@@ -52,8 +98,8 @@ module Cassie
         t1=Time.now
 
         IO.popen(command) do |io|
-          @output=io.read
           @status=Process.waitpid2(io.pid)[1]
+          @output=io.read.sub(/\n\z/, "")
         end
 
         @duration=Time.now-t1
