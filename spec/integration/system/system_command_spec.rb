@@ -22,7 +22,8 @@ RSpec.describe Cassie::Support::SystemCommand do
     context "when binary exists" do
       let(:path) do
        # @todo add integration spec for this?
-       cmd = klass.new('which', [command]).succeed
+       cmd = klass.new('which', [command])
+       cmd.succeed
        cmd.output
      end
 
