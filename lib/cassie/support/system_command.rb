@@ -98,8 +98,8 @@ module Cassie
         t1=Time.now
 
         IO.popen(command) do |io|
-          @status=Process.waitpid2(io.pid)[1]
-          @output=io.read.sub(/\n\z/, "")
+          @output= io.read.sub(/\n+\z/, "")
+          @status= Process.waitpid2(io.pid)[1]
         end
 
         @duration=Time.now-t1

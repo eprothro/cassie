@@ -71,6 +71,25 @@ RSpec.describe Cassie::ConnectionHandler::Sessions do
         mod.session
       end
     end
+    context "when multiple threads fetch at once" do
+      context "when no session exists" do
+        it "only one session is initilized" do
+          expect(cluster).to receive(:connect).with(keyspace) do |keyspace|
+            # simulate IO block so GIL yeilds to other threads
+            sleep(0.001)
+            session
+          end.exactly(1).times
+
+          threads = 2.times.map do
+            Thread.new do
+              mod.session(keyspace)
+            end
+          end
+          threads.map(&:join)
+        end
+      end
+      context "when a session has already been created"
+    end
   end
 end
 

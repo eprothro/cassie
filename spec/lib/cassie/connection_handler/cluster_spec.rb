@@ -40,6 +40,23 @@ RSpec.describe Cassie::ConnectionHandler::Cluster do
 
         mod.cluster
       end
+
+      context "when multiple threads access at once" do
+        it "only initializes one cluster" do
+          expect(Cassandra).to receive(:cluster) do |config|
+            # simulate IO block so GIL yeilds to other threads
+            sleep(0.001)
+            cluster
+          end.exactly(1).times
+
+          threads = 2.times.map do
+            Thread.new do
+              mod.cluster
+            end
+          end
+          threads.map(&:join)
+        end
+      end
     end
 
     context "when cluster has already been created" do

@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.2.0.pre1
+
+### Changed
+- `Cassie.cluster` is now thread-safe, ensuring that only one cluster is created per process
+- `Cassies.session(keyspace)` is now thread-safe, ensuring that only one session is created per keyspace, per process
+
 ## 1.1.6
 
 ### Added

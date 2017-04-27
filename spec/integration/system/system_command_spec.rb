@@ -24,7 +24,7 @@ RSpec.describe Cassie::Support::SystemCommand do
        # @todo add integration spec for this?
        cmd = klass.new('which', [command])
        cmd.succeed
-       cmd.output
+       cmd.output.sub(/\n\z/, "")
      end
 
       it "returns fully qualified path" do

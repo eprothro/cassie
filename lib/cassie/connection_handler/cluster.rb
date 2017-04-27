@@ -11,6 +11,7 @@ module Cassie::ConnectionHandler
 
     included do
       include Instrumentation
+      CREATE_CLUSTER_LOCK = Mutex.new
     end
 
     # The cluster connection and metadata. This cluster connection is
@@ -50,7 +51,13 @@ module Cassie::ConnectionHandler
     protected
 
     def initialize_cluster
-      Cassandra.cluster(configuration.try(:symbolize_keys))
+      CREATE_CLUSTER_LOCK.synchronize do
+        # check to see if another thread
+        # initialized the cluster while
+        # we waited on lock to be available
+        # e.g. this ||= is critical
+        @cluster ||= Cassandra.cluster(configuration.try(:symbolize_keys))
+      end
     end
   end
 end
