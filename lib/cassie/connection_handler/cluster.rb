@@ -56,8 +56,14 @@ module Cassie::ConnectionHandler
         # initialized the cluster while
         # we waited on lock to be available
         # e.g. this ||= is critical
-        @cluster ||= Cassandra.cluster(configuration.try(:symbolize_keys))
+        @cluster ||= Cassandra.cluster(default_configuration.merge(configuration.try(:symbolize_keys) || {}))
       end
+    end
+
+    def default_configuration
+      {
+        logger: Cassie.logger
+      }
     end
   end
 end

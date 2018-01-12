@@ -23,11 +23,6 @@ RSpec.describe Cassie::ConnectionHandler::Cluster do
       before(:each) do
         allow(mod).to receive(:configuration){config}
       end
-      it "creates cluster with configuration" do
-        expect(Cassandra).to receive(:cluster).with(config.symbolize_keys){cluster}
-
-        mod.cluster
-      end
       it "passes symbols as configuration keys" do
         expect(Cassandra).to receive(:cluster).with(hash_including(config.symbolize_keys)){cluster}
 

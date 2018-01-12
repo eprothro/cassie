@@ -13,18 +13,22 @@ module Cassie::Statements::Statement
           @data[key] = value
         end
       end
+
       def read(key)
         synchronize do
           data[key]
         end
       end
+
       def fetch(key)
         return read(key) if data.has_key?(key)
         write(key, yield) if block_given?
       end
+
       def clear
         @data = {}
       end
+
       def close
         clear
       end
